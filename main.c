@@ -6,7 +6,7 @@
 /*   By: kanlee <kanlee@student.42seoul.kr>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/11 16:59:43 by kanlee            #+#    #+#             */
-/*   Updated: 2021/12/11 17:33:01 by kanlee           ###   ########.fr       */
+/*   Updated: 2021/12/12 19:44:46 by kanlee           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,9 +16,11 @@
 #include <sys/wait.h>
 #include "minishell.h"
 #include "libft/libft.h"
+#include "parse/tmp_listfunc.h"
 
 int	main(void)
 {
+#if 0
 	t_list	*head;
 	t_list	*node;
 
@@ -41,8 +43,34 @@ int	main(void)
 		printf("%s ", data);
 		node = node->next;
 	}
+#else
+	t_cmd	*head;
+	t_cmd	*node;
+	head = 0;
+	node = init_cmd(); node->token = ft_strdup("ls"); add_cmd(&head, node);
+	node = init_cmd(); node->token = ft_strdup(">"); add_cmd(&head, node);
+	node = init_cmd(); node->token = ft_strdup("outfile"); add_cmd(&head, node);
+	node = init_cmd(); node->token = ft_strdup("-al"); add_cmd(&head, node);
+	node = init_cmd(); node->token = ft_strdup("|"); add_cmd(&head, node);
+	node = init_cmd(); node->token = ft_strdup("tail"); add_cmd(&head, node);
+	node = init_cmd(); node->token = ft_strdup("-n"); add_cmd(&head, node);
+	node = init_cmd(); node->token = ft_strdup("4"); add_cmd(&head, node);
+	node = init_cmd(); node->token = ft_strdup("|"); add_cmd(&head, node);
+	node = init_cmd(); node->token = ft_strdup("sort"); add_cmd(&head, node);
+
+	printf("input: ");
+	node = head;
+	while (node != NULL)
+	{
+		printf("%s ", node->token);
+		if (node->next == NULL || ft_strequ(node->next->token, "|"))
+			node->cmd_end = 1;
+		node = node->next;
+	}
+#endif
 	printf("\n\n\n");
 	exec_line(head);
+	destory_cmd(&head); //FIXME: heap-use-after-free
 	printf("\nreturn to prompt\n");
 	return (0);
 }

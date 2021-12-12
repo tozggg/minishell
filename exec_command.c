@@ -6,7 +6,7 @@
 /*   By: kanlee <kanlee@student.42seoul.kr>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/11 17:13:43 by kanlee            #+#    #+#             */
-/*   Updated: 2021/12/11 17:36:38 by kanlee           ###   ########.fr       */
+/*   Updated: 2021/12/12 19:27:11 by kanlee           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,8 +16,9 @@
 #include <sys/wait.h>
 #include "minishell.h"
 #include "libft/libft.h"
+#include "parse/tmp_listfunc.h"
 
-int	execute_command(t_list *node, int piperead, int pipewrite)
+int	execute_command(t_cmd *node, int piperead, int pipewrite)
 {
 	char	*cmd;
 	char	**av;
@@ -59,37 +60,39 @@ int	execute_command(t_list *node, int piperead, int pipewrite)
 	}
 	waitpid(pid, NULL, 0);
 	free(av);
-	ft_lstclear(&node, free);
 	return (0);
 }
 
-int	is_redirection_node(t_list *node)
+int	is_redirection_node(t_cmd *node)
 {
-	char	*data;
-
-	data = (char *)node->content;
-	return (ft_strncmp(data, ">", 1) == 0 || ft_strncmp(data, ">>", 2) == 0
-		|| ft_strncmp(data, "<", 1) == 0 || ft_strncmp(data, "<<", 2) == 0);
+	if (ft_strequ(node->token, ">"))
+		return (1);
+	if (ft_strequ(node->token, ">>"))
+		return (1);
+	if (ft_strequ(node->token, "<"))
+		return (1);
+	if (ft_strequ(node->token, "<<"))
+		return (1);
+	return (0);
 }
 
-int	command(t_list *node, int piperead, int pipewrite)
+int	command(t_cmd *node, int piperead, int pipewrite)
 {
-	t_list	*head;
-	t_list	*tmp;
+	t_cmd	*head;
 
 	head = node;
-	// TODO: save redirection info and pass it to execute_cmd()
-	while (node != NULL)
+	while (1)
 	{
 		if (is_redirection_node(node))
+		// TODO: save redirection info and pass it to execute_cmd()
 		{
-			tmp = node->next->next;
-			ft_lstremove(&head, node->next);
-			ft_lstremove(&head, node);
-			node = tmp;
-		}
-		else
+			node->cmd_type = TYPE_RDSIGN;
+			node->next->cmd_type = TYPE_RDTARGET;
 			node = node->next;
+		}
+		if (node->cmd_end)
+			break ;
+		node = node->next;
 	}
 #ifdef DEBUG
 	printf("read from %d - write to %d\n", piperead, pipewrite);
