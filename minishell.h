@@ -6,7 +6,7 @@
 /*   By: kanlee <kanlee@student.42seoul.kr>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/11 17:00:27 by kanlee            #+#    #+#             */
-/*   Updated: 2021/12/12 19:23:19 by kanlee           ###   ########.fr       */
+/*   Updated: 2021/12/12 21:37:22 by kanlee           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,11 +21,27 @@ typedef struct s_pipefd {
 	int	write_fd;
 }	t_pipefd;
 
+typedef struct s_rdinfo {
+	int read_fd;
+	int write_fd;
+}	t_rdinfo;
+
+enum e_rdtype {
+	NONE = 0,
+	RD_WRITE,
+	RD_APPEND,
+	RD_READ,
+	RD_HEREDOC
+};
+
 /* exec_line.c */
 int	exec_line(t_cmd *head);
 
 /* exec_command.c */
 int	command(t_cmd *node, int piperead, int pipewrite);
+
+/* redirection.c */
+int	store_rdinfo(t_cmd *node, t_rdinfo *rd, int rdtype);
 
 /* utils.c */
 void	ft_lstcut(t_list *lst, t_list *el);

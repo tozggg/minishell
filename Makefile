@@ -1,5 +1,5 @@
 NAME = a.out
-SRCS = exec_line.c main.c utils.c exec_command.c \
+SRCS = exec_line.c main.c utils.c exec_command.c redirection.c \
 	   parse/tmp_listfunc.c
 OBJS = $(SRCS:.c=.o)
 CFLAGS = -Wall -Wextra

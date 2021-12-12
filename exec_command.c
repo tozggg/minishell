@@ -6,7 +6,7 @@
 /*   By: kanlee <kanlee@student.42seoul.kr>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/11 17:13:43 by kanlee            #+#    #+#             */
-/*   Updated: 2021/12/12 19:27:11 by kanlee           ###   ########.fr       */
+/*   Updated: 2021/12/12 21:50:13 by kanlee           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,7 +18,7 @@
 #include "libft/libft.h"
 #include "parse/tmp_listfunc.h"
 
-int	execute_command(t_cmd *node, int piperead, int pipewrite)
+int	execute_command(t_cmd *node, t_rdinfo rd, int piperead, int pipewrite)
 {
 	char	*cmd;
 	char	**av;
@@ -50,6 +50,11 @@ int	execute_command(t_cmd *node, int piperead, int pipewrite)
 				dup2(piperead, STDIN_FILENO);
 			if (pipewrite != STDOUT_FILENO)
 				dup2(pipewrite, STDOUT_FILENO);
+////////// redirection /////////
+			if (rd.write_fd != STDOUT_FILENO)
+				dup2(rd.write_fd, STDOUT_FILENO);
+////////////////////////////////
+
 			if (execvp(cmd, av) == -1) //TODO: make ft_execvpe() using execve  
 			{
 				dup2(stdout_bak, STDOUT_FILENO);
@@ -59,6 +64,8 @@ int	execute_command(t_cmd *node, int piperead, int pipewrite)
 		}
 	}
 	waitpid(pid, NULL, 0);
+	if (rd.write_fd != STDOUT_FILENO)
+		close(rd.write_fd);
 	free(av);
 	return (0);
 }
@@ -66,26 +73,32 @@ int	execute_command(t_cmd *node, int piperead, int pipewrite)
 int	is_redirection_node(t_cmd *node)
 {
 	if (ft_strequ(node->token, ">"))
-		return (1);
+		return (RD_WRITE);
 	if (ft_strequ(node->token, ">>"))
-		return (1);
+		return (RD_APPEND);
 	if (ft_strequ(node->token, "<"))
-		return (1);
+		return (RD_READ);
 	if (ft_strequ(node->token, "<<"))
-		return (1);
-	return (0);
+		return (RD_HEREDOC);
+	return (NONE);
 }
 
 int	command(t_cmd *node, int piperead, int pipewrite)
 {
-	t_cmd	*head;
+	t_cmd		*head;
+	t_rdinfo	rd;
+	int			rdtype;
 
+	rd = (t_rdinfo){STDIN_FILENO, STDOUT_FILENO};
 	head = node;
 	while (1)
 	{
-		if (is_redirection_node(node))
+		rdtype = is_redirection_node(node);
+		if (rdtype != NONE)
 		// TODO: save redirection info and pass it to execute_cmd()
 		{
+			if (store_rdinfo(node, &rd, rdtype) < 0)
+				return (-1);
 			node->cmd_type = TYPE_RDSIGN;
 			node->next->cmd_type = TYPE_RDTARGET;
 			node = node->next;
@@ -97,6 +110,6 @@ int	command(t_cmd *node, int piperead, int pipewrite)
 #ifdef DEBUG
 	printf("read from %d - write to %d\n", piperead, pipewrite);
 #endif
-	execute_command(head, piperead, pipewrite);
+	execute_command(head, rd, piperead, pipewrite);
 	return (0);
 }
