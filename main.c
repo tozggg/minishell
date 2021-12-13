@@ -6,7 +6,7 @@
 /*   By: taejkim <taejkim@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/08 16:59:27 by taejkim           #+#    #+#             */
-/*   Updated: 2021/12/11 04:48:51 by taejkim          ###   ########.fr       */
+/*   Updated: 2021/12/14 05:10:58 by taejkim          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,6 +25,10 @@
 #include <term.h>
 
 
+#define SYNTAX_ERR 1
+#define QUOTE_ERR 2
+#define EMPTY_LINE 3
+
 // 명령어 token으로 나눈 linkedlist 구조체
 typedef struct	s_cmd
 {
@@ -40,6 +44,7 @@ typedef struct	s_env_key
 	char				*key;
 	struct s_env_key	*next;
 }	t_env_key;
+
 
 // Libft-------------------------------------------------------------------------
 
@@ -98,6 +103,18 @@ int		ft_strncmp(const char *s1, const char *s2, size_t n)
 		return (0);
 }	
 
+int	ft_strequ(const char *s1, const char *s2)
+{
+	size_t	i;
+
+	i = 0;
+	while (s1[i] && s2[i] && (s1[i] == s2[i]))
+		i++;
+	if (s1[i] || s2[i])
+		return (0);
+	return (1);
+}
+
 //-------------------------------------------------------------------------
 
 char	*append(char *str, char c)
@@ -147,7 +164,7 @@ t_cmd	*init_cmd(void)
 	return (cmd);
 }
 
-void	destory_cmd(t_cmd **ptr)
+void	destroy_cmd(t_cmd **ptr)
 {
 	t_cmd		*cmd;
 	t_cmd		*tmp_c;
@@ -156,17 +173,17 @@ void	destory_cmd(t_cmd **ptr)
 	cmd = *ptr;
 	while (cmd)
 	{
-		tmp_c = cmd;
+		tmp_c = cmd->next;
 		while (cmd->env_key)
 		{
-			tmp_e = cmd->env_key;
+			tmp_e = cmd->env_key->next;
 			free(cmd->env_key->key);
 			free(cmd->env_key);
-			cmd->env_key = tmp_e->next;
+			cmd->env_key = tmp_e;
 		}
 		free(cmd->token);
 		free(cmd);
-		cmd = tmp_c->next;
+		cmd = tmp_c;
 	}
 	*ptr = NULL;
 }
@@ -239,6 +256,14 @@ int	is_allow_envpname(char c)
 	if ('A' <= c && c <= 'Z')
 		return (1);
 	if (c == '_')
+		return (1);
+	return (0);
+}
+
+int	is_unspecified_char(char c)
+{
+	if (c == '\\' || c == ';' || c == '(' \
+		|| c == ')' || c == '*' || c == '&' || c == '#')
 		return (1);
 	return (0);
 }
@@ -388,7 +413,7 @@ char	*big_quote_envp_decision(t_cmd *cmd, char *line)
 	return (line);
 }
 
-char	*start_quote(t_cmd *cmd, char *line)
+char	*start_quote(t_cmd *cmd, char *line, int *err_flag)
 {
 	char quote;
 
@@ -408,37 +433,64 @@ char	*start_quote(t_cmd *cmd, char *line)
 		else
 			cmd->token = append(cmd->token, *(line++));
 	}
-	//quote error
-	return (NULL);
+	*err_flag = QUOTE_ERR;
+	return (line);
 }
 
-
-
-void	parse(t_cmd **ptr, char *line)
+void	parse(t_cmd **ptr, char *line, int *err_flag)
 {
 	t_cmd	*cmd;
-
+	
 	if (*ptr)
-		destory_cmd(ptr);
-	if (*line)
-		cmd = init_cmd();
+		destroy_cmd(ptr);
+	if (!(*line))
+		*err_flag = EMPTY_LINE;
+	cmd = init_cmd();
 	while (*line && is_space(*line))
 		++line;
 	while (*line)
 	{
+		if (is_unspecified_char(*line))
+			*err_flag = SYNTAX_ERR;
 		if (is_space(*line) || is_separator(*line))
 			line = separate(ptr, &cmd, line);
 		else if (*line == '\"' || *line == '\'')
-			line = start_quote(cmd, line);
+			line = start_quote(cmd, line, err_flag);
 		else if (*line == '$')
 			line = envp_decision(cmd, line);
-	//	else if (*line == ';' || *line == '\\')
-			// syntax error
 		else
 			cmd->token = append(cmd->token, *(line++));
 	}
-	if (cmd)
-		add_cmd(ptr, cmd);
+	add_cmd(ptr, cmd);
+}
+
+int	check_cmd(t_cmd *cmd)
+{
+	int	prev_token_is_pipe;
+	int	prev_token_is_rdr;
+
+	if (ft_strequ(cmd->token, "|"))
+		return (SYNTAX_ERR);
+	prev_token_is_pipe = 0;
+	prev_token_is_rdr = 0;
+	while (cmd)
+	{
+		if ((prev_token_is_pipe || prev_token_is_rdr) && ft_strequ(cmd->token, "|"))
+			return (SYNTAX_ERR);
+		if (ft_strequ(cmd->token, "|"))
+			prev_token_is_pipe = 1;
+		else
+			prev_token_is_pipe = 0;
+		if (ft_strequ(cmd->token, "<") || ft_strequ(cmd->token, ">") ||\
+				ft_strequ(cmd->token, "<<") || ft_strequ(cmd->token, ">>"))
+			prev_token_is_rdr = 1;
+		else
+			prev_token_is_rdr = 0;
+		if (!(cmd->next) && ft_strequ(cmd->token, "|"))
+			return (SYNTAX_ERR);
+		cmd = cmd->next;
+	}
+	return (0);
 }
 
 
@@ -446,6 +498,7 @@ int	main(int ac, char *av[], char *envp[])
 {
 	char	*line;
 	t_cmd	*cmd;
+	int		err_flag;
 
 	(void)ac;
 	(void)av;
@@ -455,7 +508,14 @@ int	main(int ac, char *av[], char *envp[])
 	while (1)
 	{
 		get_line(&line);
-		parse(&cmd, line);
+		err_flag = 0;
+		parse(&cmd, line, &err_flag);
+		if (!err_flag)
+			err_flag = check_cmd(cmd);
+		
+
+		
+
 		printf("===========================\n");
 		t_cmd *tmp = cmd;
 		while (tmp)
@@ -470,7 +530,9 @@ int	main(int ac, char *av[], char *envp[])
 			printf("\n");
 			tmp = tmp->next;
 		}
+		printf("errflag=%d\n", err_flag);
 		printf("===========================\n");
+
 	}
 	return (0);
 }
