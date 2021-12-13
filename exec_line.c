@@ -6,7 +6,7 @@
 /*   By: kanlee <kanlee@student.42seoul.kr>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/11 17:34:32 by kanlee            #+#    #+#             */
-/*   Updated: 2021/12/13 20:10:14 by kanlee           ###   ########.fr       */
+/*   Updated: 2021/12/13 21:53:57 by kanlee           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,6 +15,7 @@
 #include "minishell.h"
 #include "libft/libft.h"
 #include "parse/tmp_listfunc.h"
+#include <stdio.h>
 
 // node 이후에 pipe가 존재하는지 확인
 // pipe 바로 전 또는 list_end까지가 하나의 커맨드
@@ -27,6 +28,17 @@ t_cmd	*has_pipe(t_cmd *node)
 			node->cmd_end = 1;
 			return (node->next);
 		}
+		node = node->next;
+	}
+	return (NULL);
+}
+
+t_cmd	*has_heredoc(t_cmd *node)
+{
+	while (node != NULL)
+	{
+		if (node->next != NULL && ft_strequ(node->next->token, "<<"))
+			return (node->next);
 		node = node->next;
 	}
 	return (NULL);
@@ -53,9 +65,22 @@ int	exec_line(t_cmd *node)
 	// before executing, read HEREDOC first as bash does it.
 	// echo asdf > outfile | cat << HERE
 	// will not run echo or create outfile until heredoc input is successfully completed.
-	//	if (node has heredoc)
+	// if (node has heredoc)
 	//		if (read_heredoc == -1)
-	//			print warning and return;
+	//			print warning;
+	//////////////////////////////////////////
+	t_cmd		*heredoc_node;
+
+	heredoc_node = has_heredoc(node);
+	if (heredoc_node)
+	{
+		if (read_heredoc(heredoc_node) == -1)
+		{
+//			printf("warning\n");
+//			return (-1);
+		}
+	}
+	//////////////////////////////////////////
 	piperead= STDIN_FILENO;
 	pipewrite = STDOUT_FILENO;
 	while (1)

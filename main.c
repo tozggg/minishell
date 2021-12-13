@@ -6,7 +6,7 @@
 /*   By: kanlee <kanlee@student.42seoul.kr>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/11 16:59:43 by kanlee            #+#    #+#             */
-/*   Updated: 2021/12/13 05:21:38 by kanlee           ###   ########.fr       */
+/*   Updated: 2021/12/13 21:33:53 by kanlee           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,14 +47,14 @@ int	main(void)
 	t_cmd	*head;
 	t_cmd	*node;
 	head = 0;
-	node = init_cmd(); node->token = ft_strdup("ls"); add_cmd(&head, node);
+	node = init_cmd(); node->token = ft_strdup("echo"); add_cmd(&head, node);
+	node = init_cmd(); node->token = ft_strdup("asdf"); add_cmd(&head, node);
 	node = init_cmd(); node->token = ft_strdup(">"); add_cmd(&head, node);
 	node = init_cmd(); node->token = ft_strdup("outfile"); add_cmd(&head, node);
-	node = init_cmd(); node->token = ft_strdup("-al"); add_cmd(&head, node);
 	node = init_cmd(); node->token = ft_strdup("|"); add_cmd(&head, node);
-	node = init_cmd(); node->token = ft_strdup("tail"); add_cmd(&head, node);
-	node = init_cmd(); node->token = ft_strdup("-n"); add_cmd(&head, node);
-	node = init_cmd(); node->token = ft_strdup("4"); add_cmd(&head, node);
+	node = init_cmd(); node->token = ft_strdup("cat"); add_cmd(&head, node);
+	node = init_cmd(); node->token = ft_strdup("<<"); add_cmd(&head, node);
+	node = init_cmd(); node->token = ft_strdup("EOF"); add_cmd(&head, node);
 	node = init_cmd(); node->token = ft_strdup("|"); add_cmd(&head, node);
 	node = init_cmd(); node->token = ft_strdup("sort"); add_cmd(&head, node);
 
