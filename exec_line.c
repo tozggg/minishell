@@ -6,7 +6,7 @@
 /*   By: kanlee <kanlee@student.42seoul.kr>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/11 17:34:32 by kanlee            #+#    #+#             */
-/*   Updated: 2021/12/12 19:30:07 by kanlee           ###   ########.fr       */
+/*   Updated: 2021/12/12 19:23:24 by kanlee           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,40 +16,58 @@
 #include "libft/libft.h"
 #include "parse/tmp_listfunc.h"
 
+// node 이후에 pipe가 존재하는지 확인
+// pipe 바로 전 또는 list_end까지가 하나의 커맨드
 t_cmd	*has_pipe(t_cmd *node)
 {
 	while (node != NULL)
 	{
-		if (ft_strequ(node->token, "|"))
-			return (node);
+		if (node->next == NULL || ft_strequ(node->next->token, "|"))
+		{
+			node->cmd_end = 1;
+			return (node->next);
+		}
 		node = node->next;
 	}
-	return (0);
+	return (NULL);
 }
 
+// **envp 전달을 위해 arguments 압축
+void exec_pipe(t_cmd *node, int read_fd, int write_fd)
+{
+	t_pipefd	pipefd;
+
+	pipefd = (t_pipefd){read_fd, write_fd};
+	command(node, pipefd);
+}
+
+// node부터 pipe_node까지를 한 단위로 끊어서 실행
+// 첫 cmd의 입력은 STDIN, 마지막 cmd의 입력은 STDOUT
 int	exec_line(t_cmd *node)
 {
 	t_cmd		*pipe_node;
 	int			pfd[2];
-	t_pipefd	pipefd;
+	int			piperead;
+	int			pipewrite;
 
-	pipefd = (t_pipefd){STDIN_FILENO, STDOUT_FILENO};
+	piperead= STDIN_FILENO;
+	pipewrite = STDOUT_FILENO;
 	while (1)
 	{
 		pipe_node = has_pipe(node);
 		if (!pipe_node)
-			break ;
-		pipe(pfd);
-		pipefd.write_fd = pfd[1];
-		command(node, pipefd.read_fd, pipefd.write_fd);
-		if (pipefd.read_fd != STDIN_FILENO)
-			close(pipefd.read_fd);
-		close(pipefd.write_fd);
-		pipefd.read_fd = pfd[0];
+			break ;	//                pipewrite           piperead
+		pipe(pfd);	// data written to pfd[1] is passed to pfd[0]
+		pipewrite = pfd[1];	// when process1 writes data to pipewrite, then process2 will read it from piperead
+		exec_pipe(node, piperead, pipewrite);
+		if (piperead != STDIN_FILENO)
+			close(piperead);
+		close(pipewrite);
+		piperead = pfd[0];
 		node = pipe_node->next;
 	}
-	command(node, pipefd.read_fd, STDOUT_FILENO);
-	if (pipefd.read_fd != STDIN_FILENO)
-		close(pipefd.read_fd);
+	exec_pipe(node, piperead, STDOUT_FILENO);
+	if (piperead != STDIN_FILENO)
+		close(piperead);
 	return (0);
 }

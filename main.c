@@ -6,7 +6,7 @@
 /*   By: kanlee <kanlee@student.42seoul.kr>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/11 16:59:43 by kanlee            #+#    #+#             */
-/*   Updated: 2021/12/12 19:44:46 by kanlee           ###   ########.fr       */
+/*   Updated: 2021/12/13 05:21:38 by kanlee           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -63,8 +63,6 @@ int	main(void)
 	while (node != NULL)
 	{
 		printf("%s ", node->token);
-		if (node->next == NULL || ft_strequ(node->next->token, "|"))
-			node->cmd_end = 1;
 		node = node->next;
 	}
 #endif

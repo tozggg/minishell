@@ -6,7 +6,7 @@
 /*   By: kanlee <kanlee@student.42seoul.kr>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/11 17:00:27 by kanlee            #+#    #+#             */
-/*   Updated: 2021/12/12 21:37:22 by kanlee           ###   ########.fr       */
+/*   Updated: 2021/12/12 19:18:23 by kanlee           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,7 +38,7 @@ enum e_rdtype {
 int	exec_line(t_cmd *head);
 
 /* exec_command.c */
-int	command(t_cmd *node, int piperead, int pipewrite);
+int	command(t_cmd *node, t_pipefd pipefd);
 
 /* redirection.c */
 int	store_rdinfo(t_cmd *node, t_rdinfo *rd, int rdtype);
