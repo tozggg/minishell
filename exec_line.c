@@ -6,7 +6,7 @@
 /*   By: kanlee <kanlee@student.42seoul.kr>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/11 17:34:32 by kanlee            #+#    #+#             */
-/*   Updated: 2021/12/12 19:23:24 by kanlee           ###   ########.fr       */
+/*   Updated: 2021/12/13 20:10:14 by kanlee           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,6 +50,12 @@ int	exec_line(t_cmd *node)
 	int			piperead;
 	int			pipewrite;
 
+	// before executing, read HEREDOC first as bash does it.
+	// echo asdf > outfile | cat << HERE
+	// will not run echo or create outfile until heredoc input is successfully completed.
+	//	if (node has heredoc)
+	//		if (read_heredoc == -1)
+	//			print warning and return;
 	piperead= STDIN_FILENO;
 	pipewrite = STDOUT_FILENO;
 	while (1)

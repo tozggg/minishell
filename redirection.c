@@ -6,7 +6,7 @@
 /*   By: kanlee <kanlee@student.42seoul.kr>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/12 20:53:33 by kanlee            #+#    #+#             */
-/*   Updated: 2021/12/12 19:36:12 by kanlee           ###   ########.fr       */
+/*   Updated: 2021/12/13 20:11:20 by kanlee           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,6 +17,24 @@
 #include "minishell.h"
 #include "libft/libft.h"
 #include "parse/tmp_listfunc.h"
+
+void heredoc()
+{
+	// open tmp file for write
+	//   print heredoc prompt
+	//   read input from stdin
+	// while input==limitstr
+	// close tmpfile
+	// open it again read-only
+	// unlink() --- tmpfile will be deleted after it's closed
+	// read input from tmpfile
+}
+
+// returns -1 when reached to EOF before Limitstr found.
+int	read_heredoc(t_cmd *node)
+{
+	return (0);
+}
 
 int	open_target(int rdtype, char *rdtarget)
 {

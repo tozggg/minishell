@@ -6,7 +6,7 @@
 /*   By: kanlee <kanlee@student.42seoul.kr>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/11 17:00:27 by kanlee            #+#    #+#             */
-/*   Updated: 2021/12/12 19:18:23 by kanlee           ###   ########.fr       */
+/*   Updated: 2021/12/13 19:28:18 by kanlee           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,6 +42,7 @@ int	command(t_cmd *node, t_pipefd pipefd);
 
 /* redirection.c */
 int	store_rdinfo(t_cmd *node, t_rdinfo *rd, int rdtype);
+int	read_heredoc(t_cmd *node);
 
 /* utils.c */
 void	ft_lstcut(t_list *lst, t_list *el);
