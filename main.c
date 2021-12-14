@@ -6,7 +6,7 @@
 /*   By: taejkim <taejkim@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/08 16:59:27 by taejkim           #+#    #+#             */
-/*   Updated: 2021/12/14 17:38:39 by taejkim          ###   ########.fr       */
+/*   Updated: 2021/12/14 20:58:21 by taejkim          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,6 +46,18 @@ typedef struct	s_env_key
 }	t_env_key;
 
 
+
+
+
+
+
+
+void	error_out(char *str)
+{
+	printf("%s\n", str);
+	exit(1);
+}
+
 // Libft-------------------------------------------------------------------------
 
 size_t		ft_strlen(const char *s)
@@ -67,9 +79,7 @@ char	*ft_strdup(const char *s1)
 	len = ft_strlen(s1);
 	ptr = (char *)malloc(sizeof(char) * (len + 1));
 	if (!ptr)
-	{
-		// malloc error
-	}
+		error_out("malloc error");
 	i = 0;
 	while (i < len)
 	{
@@ -117,6 +127,7 @@ int	ft_strequ(const char *s1, const char *s2)
 
 //-------------------------------------------------------------------------
 
+
 char	*append(char *str, char c)
 {
 	char	*res;
@@ -139,14 +150,18 @@ char	*append(char *str, char c)
 
 void	get_line(char **line)
 {
+	extern int rl_catch_signals;
+
+	rl_catch_signals = 0;
 	if (*line)
 	{
 		free(*line);
 		*line = NULL;
 	}
 	*line = readline("$>");
-	// readline 에러처리
-	// history 여기서 저장?
+	if (*line == NULL)
+		error_out("exit");
+	add_history(*line);
 }
 
 t_cmd	*init_cmd(void)
@@ -154,10 +169,8 @@ t_cmd	*init_cmd(void)
 	t_cmd	*cmd;
 
 	cmd = (t_cmd *)malloc(sizeof(t_cmd));
-	if (cmd)
-	{
-		// malloc error
-	}
+	if (!cmd)
+		error_out("malloc error");
 	cmd->token = ft_strdup("");
 	cmd->env_key = NULL;
 	cmd->next = NULL;
@@ -223,10 +236,8 @@ t_env_key	*init_env_key(void)
 	t_env_key	*env_key;
 
 	env_key = (t_env_key *)malloc(sizeof(t_env_key));
-	if (env_key)
-	{
-		// malloc error
-	}
+	if (!env_key)
+		error_out("malloc error");
 	env_key->is_key = 0;
 	env_key->key = ft_strdup("");
 	env_key->next = NULL;
@@ -496,9 +507,9 @@ int	check_cmd(t_cmd *cmd)
 void	err_print(int err_flag)
 {
 	if (err_flag == QUOTE_ERR)
-		printf("Error : the number of quote is odd");
+		printf("Error : the number of quote is odd\n");
 	if (err_flag == SYNTAX_ERR)
-		printf("Erorr : invalid syntax");
+		printf("Erorr : invalid syntax\n");
 }
 
 void	sig_handler(int signo)
@@ -511,26 +522,19 @@ void	sig_handler(int signo)
 	{
 		if (pid == -1)
 		{
-			printf("kk");
+			printf("\n");
 			rl_on_new_line();
-			rl_replace_line ("$>", 0);
+			rl_replace_line("", 0);
 			rl_redisplay();
 		}	
 		else
 		{
+			// 자식프로세스에 SIGINT? 애초에 자식 프로세스만 구별가능??
+		}
+	}
 
-		}
-	}
-	if (signo == SIGQUIT)
-	{
-		if (pid == -1)
-			printf("zz");
-		else
-		{
-			
-		}
-	}
 }
+
 
 
 int	main(int ac, char *av[], char *envp[])
