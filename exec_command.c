@@ -6,7 +6,7 @@
 /*   By: kanlee <kanlee@student.42seoul.kr>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/11 17:13:43 by kanlee            #+#    #+#             */
-/*   Updated: 2021/12/14 20:13:02 by kanlee           ###   ########.fr       */
+/*   Updated: 2021/12/14 20:56:56 by kanlee           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,30 +17,31 @@
 #include "libft/libft.h"
 #include "parse/tmp_listfunc.h"
 
-void	child_process(char **av, t_rdinfo rd, t_pipefd pipefd, int unused_fd)
+void	child_process(char **av, t_rdinfo rd, t_pipeinfo pipeinfo)
 {
-	if (unused_fd != STDIN_FILENO && pipefd.write_fd != STDOUT_FILENO)
-		close(unused_fd);
-	if (pipefd.read_fd != STDIN_FILENO)
+//////////////  pipe  ///////////
+	if (pipeinfo.write != STDOUT_FILENO)
+		safe_close_readend(pipeinfo.unused);
+	if (pipeinfo.read != STDIN_FILENO)
 	{
-		dup2(pipefd.read_fd, STDIN_FILENO);
-		close(pipefd.read_fd);
+		dup2(pipeinfo.read, STDIN_FILENO);
+		close(pipeinfo.read);
 	}
-	if (pipefd.write_fd != STDOUT_FILENO)
+	if (pipeinfo.write != STDOUT_FILENO)
 	{
-		dup2(pipefd.write_fd, STDOUT_FILENO);
-		close(pipefd.write_fd);
+		dup2(pipeinfo.write, STDOUT_FILENO);
+		close(pipeinfo.write);
 	}
 ////////// redirection /////////
-	if (rd.write_fd != STDOUT_FILENO)
-		dup2(rd.write_fd, STDOUT_FILENO);
-	if (rd.read_fd != STDIN_FILENO)
-		dup2(rd.read_fd, STDIN_FILENO);
-////////////////////////////////
+	if (rd.write != STDOUT_FILENO)
+		dup2(rd.write, STDOUT_FILENO);
+	if (rd.read != STDIN_FILENO)
+		dup2(rd.read, STDIN_FILENO);
+////////////   ready   //////////////
 	if (execvp(av[0], av) == -1) //TODO: make ft_execvpe() using execve  
 	{
-		ft_putstr_fd(av[0], 2);
-		ft_putendl_fd(": command not found", 2);
+		ft_putstr_fd(av[0], STDERR_FILENO);
+		ft_putendl_fd(": command not found", STDERR_FILENO);
 		exit(1);
 	}
 }
@@ -49,7 +50,7 @@ void	child_process(char **av, t_rdinfo rd, t_pipefd pipefd, int unused_fd)
 // 리디렉션이 파이프보다 우선순위가 더 높으므로
 // 파이프를 먼저 적용 후 rdinfo가 지정한 대로 in/out을 overwrite
 // main process는 child가 종료될 때까지 대기
-int	execute_command(t_cmd *node, t_rdinfo rd, t_pipefd pipefd, int unused_fd)
+int	execute_command(t_cmd *node, t_rdinfo rd, t_pipeinfo pipeinfo)
 {
 	char	*cmd;
 	char	**av;
@@ -66,26 +67,26 @@ int	execute_command(t_cmd *node, t_rdinfo rd, t_pipefd pipefd, int unused_fd)
 	if (cmd == NULL)
 		return (0);
 	//TODO: builtin commands without pipes are executed inside main process
-	// if (is_builtin(cmd) && pipefd.read_fd == STDIN_FILENO && pipefd.write_fd == STDOUT_FILENO)
+	// if (is_builtin(cmd) && pipeinfo.read == STDIN_FILENO && pipeinfo.write == STDOUT_FILENO)
 	//		return do_sth();
 	pid = fork();
 	if (pid < 0)
 	{
 		perror("fork failed");
-		exit(-1);
+		exit(1);
 	}
 	else if (pid == 0)
 	{
 #ifdef DEBUG
 	printf("%s: read %d - write %d - tobefree %d\n", av[0], pipefd.read_fd, pipefd.write_fd, unused_fd);
 #endif
-		child_process(av, rd, pipefd, unused_fd);
+		child_process(av, rd, pipeinfo);
 	}
 	// parent
-	if (rd.write_fd != STDOUT_FILENO)
-		close(rd.write_fd);
-	if (rd.read_fd != STDIN_FILENO)
-		close(rd.read_fd);
+	if (rd.write != STDOUT_FILENO)
+		close(rd.write);
+	if (rd.read != STDIN_FILENO)
+		close(rd.read);
 	free(av);
 	return (0);
 }
@@ -105,7 +106,7 @@ int	is_redirection_node(t_cmd *node)
 
 // 리디렉션 토큰이 존재한다면 rdinfo에 어디로 read,write할 것인지 저장 후 execute_command로 전달
 // 왼쪽부터 순차적으로 처리하되, file open 실패하면 중단
-int	command(t_cmd *node, t_pipefd pipefd, int unused_fd)
+int	command(t_cmd *node, t_pipeinfo pipeinfo)
 {
 	t_cmd		*head;
 	t_rdinfo	rd;
@@ -128,6 +129,6 @@ int	command(t_cmd *node, t_pipefd pipefd, int unused_fd)
 			break ;
 		node = node->next;
 	}
-	execute_command(head, rd, pipefd, unused_fd);
+	execute_command(head, rd, pipeinfo);
 	return (0);
 }

@@ -6,7 +6,7 @@
 /*   By: kanlee <kanlee@student.42seoul.kr>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/11 17:02:02 by kanlee            #+#    #+#             */
-/*   Updated: 2021/12/12 19:25:22 by kanlee           ###   ########.fr       */
+/*   Updated: 2021/12/14 20:54:12 by kanlee           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,17 +46,10 @@ void	ft_lstremove(t_list **head, t_list *el)
 	ft_lstdelone(el, free);
 }
 
-// create NULL terminated array of strings based on given list.
-// can be used by execv() family.
-// FIXME: need malloc guard
-char	**listtostrarray(t_cmd *node)
+static int	cnt_cmd_arg(t_cmd *node)
 {
-	char	**str;
-	int		n;
-	int		i;
-	t_cmd	*head;
+	int	n;
 
-	head = node;
 	n = 0;
 	while (node != NULL)
 	{
@@ -66,8 +59,24 @@ char	**listtostrarray(t_cmd *node)
 			break ;
 		node = node->next;
 	}
+	return (n);
+}
+
+// create NULL terminated array of strings based on given list.
+// can be used by execv() family.
+char	**listtostrarray(t_cmd *node)
+{
+	char	**str;
+	int		n;
+	int		i;
+
+	n = cnt_cmd_arg(node);
 	str = malloc(sizeof(char *) * (n + 1));
-	node = head;
+	if (!str)
+	{
+		perror("malloc failed");
+		exit(1);
+	}
 	i = 0;
 	while (node != NULL)
 	{
@@ -79,4 +88,10 @@ char	**listtostrarray(t_cmd *node)
 	}
 	str[i] = NULL;
 	return (str);
+}
+
+void	safe_close_readend(int fd)
+{
+	if (fd != STDIN_FILENO)
+		close(fd);
 }

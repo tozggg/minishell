@@ -6,7 +6,7 @@
 /*   By: kanlee <kanlee@student.42seoul.kr>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/12 20:53:33 by kanlee            #+#    #+#             */
-/*   Updated: 2021/12/14 17:48:11 by kanlee           ###   ########.fr       */
+/*   Updated: 2021/12/14 20:46:48 by kanlee           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -127,16 +127,16 @@ int	store_rdinfo(t_cmd *node, t_rdinfo *rd, int rdtype)
 	if (rdtype == RD_WRITE || rdtype == RD_APPEND)
 	{
 		// if write redirection is already set, ignore former
-		if (rd->write_fd != STDOUT_FILENO)
-			close(rd->write_fd);
-		rd->write_fd = fd;
+		if (rd->write != STDOUT_FILENO)
+			close(rd->write);
+		rd->write = fd;
 	}
 	if (rdtype == RD_READ || rdtype == RD_HEREDOC)
 	{
 		// if read redirection is already set, ignore former
-		if (rd->read_fd != STDIN_FILENO)
-			close(rd->read_fd);
-		rd->read_fd = fd;
+		if (rd->read != STDIN_FILENO)
+			close(rd->read);
+		rd->read = fd;
 	}
 	return (0);
 }

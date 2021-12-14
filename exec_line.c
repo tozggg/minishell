@@ -6,7 +6,7 @@
 /*   By: kanlee <kanlee@student.42seoul.kr>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/11 17:34:32 by kanlee            #+#    #+#             */
-/*   Updated: 2021/12/14 20:03:10 by kanlee           ###   ########.fr       */
+/*   Updated: 2021/12/14 20:44:16 by kanlee           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -64,16 +64,12 @@ int	chk_heredoc(t_cmd *node)
 // pfd[0] should be closed in child process
 void	exec_pipe(t_cmd *node, int read_fd, int *pfd)
 {
-	t_pipefd	pipefd;
+	t_pipeinfo pipeinfo;
 
-	pipefd = (t_pipefd){read_fd, pfd[1]};
-	command(node, pipefd, pfd[0]);
-}
-
-void	safe_close_readend(int fd)
-{
-	if (fd != STDIN_FILENO)
-		close(fd);
+	pipeinfo.read = read_fd;
+	pipeinfo.write = pfd[1];
+	pipeinfo.unused = pfd[0];
+	command(node, pipeinfo);
 }
 
 // node부터 pipe_node까지를 한 단위로 끊어서 실행
