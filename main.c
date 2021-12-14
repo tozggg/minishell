@@ -6,7 +6,7 @@
 /*   By: taejkim <taejkim@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/08 16:59:27 by taejkim           #+#    #+#             */
-/*   Updated: 2021/12/14 05:10:58 by taejkim          ###   ########.fr       */
+/*   Updated: 2021/12/14 17:38:39 by taejkim          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -493,6 +493,45 @@ int	check_cmd(t_cmd *cmd)
 	return (0);
 }
 
+void	err_print(int err_flag)
+{
+	if (err_flag == QUOTE_ERR)
+		printf("Error : the number of quote is odd");
+	if (err_flag == SYNTAX_ERR)
+		printf("Erorr : invalid syntax");
+}
+
+void	sig_handler(int signo)
+{
+	pid_t	pid;
+	int		wstatus;
+
+	pid = waitpid(-1, &wstatus, WNOHANG);
+	if (signo == SIGINT)
+	{
+		if (pid == -1)
+		{
+			printf("kk");
+			rl_on_new_line();
+			rl_replace_line ("$>", 0);
+			rl_redisplay();
+		}	
+		else
+		{
+
+		}
+	}
+	if (signo == SIGQUIT)
+	{
+		if (pid == -1)
+			printf("zz");
+		else
+		{
+			
+		}
+	}
+}
+
 
 int	main(int ac, char *av[], char *envp[])
 {
@@ -502,7 +541,8 @@ int	main(int ac, char *av[], char *envp[])
 
 	(void)ac;
 	(void)av;
-	// 시그널처리 (SIGINT, SIGQUIT)
+	signal(SIGINT, sig_handler);
+	signal(SIGQUIT, sig_handler);
 	line = 0;
 	cmd = 0;
 	while (1)
@@ -512,7 +552,7 @@ int	main(int ac, char *av[], char *envp[])
 		parse(&cmd, line, &err_flag);
 		if (!err_flag)
 			err_flag = check_cmd(cmd);
-		
+		err_print(err_flag);
 
 		
 
