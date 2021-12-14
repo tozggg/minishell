@@ -6,7 +6,7 @@
 /*   By: kanlee <kanlee@student.42seoul.kr>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/11 17:34:32 by kanlee            #+#    #+#             */
-/*   Updated: 2021/12/14 19:20:03 by kanlee           ###   ########.fr       */
+/*   Updated: 2021/12/14 17:40:11 by kanlee           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,12 +45,12 @@ t_cmd	*has_heredoc(t_cmd *node)
 }
 
 // **envp 전달을 위해 arguments 압축
-void exec_pipe(t_cmd *node, int read_fd, int write_fd, t_list **running_procs)
+void exec_pipe(t_cmd *node, int read_fd, int write_fd)
 {
 	t_pipefd	pipefd;
 
 	pipefd = (t_pipefd){read_fd, write_fd};
-	command(node, pipefd, running_procs);
+	command(node, pipefd);
 }
 
 int	chk_heredoc(t_cmd *node)
@@ -71,7 +71,7 @@ int	chk_heredoc(t_cmd *node)
 
 // node부터 pipe_node까지를 한 단위로 끊어서 실행
 // 첫 cmd의 입력은 STDIN, 마지막 cmd의 입력은 STDOUT
-int	exec_line(t_cmd *node, t_list **running_procs)
+int	exec_line(t_cmd *node)
 {
 	t_cmd		*pipe_node;
 	int			pfd[2];
@@ -92,22 +92,15 @@ int	exec_line(t_cmd *node, t_list **running_procs)
 			break ;	//                pipewrite           piperead
 		pipe(pfd);	// data written to pfd[1] is passed to pfd[0]
 		pipewrite = pfd[1];	// when process1 writes data to pipewrite, then process2 will read it from piperead
-		exec_pipe(node, piperead, pipewrite, running_procs);
+		exec_pipe(node, piperead, pipewrite);
 		if (piperead != STDIN_FILENO)
 			close(piperead);
 		close(pipewrite);
 		piperead = pfd[0];
 		node = pipe_node->next;
 	}
-	exec_pipe(node, piperead, STDOUT_FILENO, running_procs);
+	exec_pipe(node, piperead, STDOUT_FILENO);
 	if (piperead != STDIN_FILENO)
 		close(piperead);
-	
-	while (*running_procs != NULL)
-	{
-		waitpid(*(pid_t *)((*running_procs)->content), NULL, 0);
-		*running_procs = (*running_procs)->next;
-	}
-
 	return (0);
 }
