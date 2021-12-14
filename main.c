@@ -6,7 +6,7 @@
 /*   By: kanlee <kanlee@student.42seoul.kr>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/11 16:59:43 by kanlee            #+#    #+#             */
-/*   Updated: 2021/12/14 15:41:19 by kanlee           ###   ########.fr       */
+/*   Updated: 2021/12/14 17:45:55 by kanlee           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,21 +48,8 @@ int	main(void)
 	t_cmd	*node;
 	head = 0;
 	node = init_cmd(); node->token = ft_strdup("cat"); add_cmd(&head, node);
-	node = init_cmd(); node->token = ft_strdup("<<"); add_cmd(&head, node);
-	node = init_cmd(); node->token = ft_strdup("EOF"); add_cmd(&head, node);
-	node = init_cmd(); node->token = ft_strdup(">"); add_cmd(&head, node);
-	node = init_cmd(); node->token = ft_strdup("out1"); add_cmd(&head, node);
 	node = init_cmd(); node->token = ft_strdup("|"); add_cmd(&head, node);
-	node = init_cmd(); node->token = ft_strdup("echo"); add_cmd(&head, node);
-	node = init_cmd(); node->token = ft_strdup("asdf"); add_cmd(&head, node);
-	node = init_cmd(); node->token = ft_strdup(">"); add_cmd(&head, node);
-	node = init_cmd(); node->token = ft_strdup("out2"); add_cmd(&head, node);
-	node = init_cmd(); node->token = ft_strdup("|"); add_cmd(&head, node);
-	node = init_cmd(); node->token = ft_strdup("cat"); add_cmd(&head, node);
-	node = init_cmd(); node->token = ft_strdup("<<"); add_cmd(&head, node);
-	node = init_cmd(); node->token = ft_strdup("EEE"); add_cmd(&head, node);
-	node = init_cmd(); node->token = ft_strdup(">"); add_cmd(&head, node);
-	node = init_cmd(); node->token = ft_strdup("out3"); add_cmd(&head, node);
+	node = init_cmd(); node->token = ft_strdup("ls"); add_cmd(&head, node);
 
 	printf("input: ");
 	node = head;

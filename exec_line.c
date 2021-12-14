@@ -6,16 +6,16 @@
 /*   By: kanlee <kanlee@student.42seoul.kr>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/11 17:34:32 by kanlee            #+#    #+#             */
-/*   Updated: 2021/12/14 17:40:11 by kanlee           ###   ########.fr       */
+/*   Updated: 2021/12/14 17:44:41 by kanlee           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <stdlib.h>
 #include <unistd.h>
+#include <sys/wait.h>
 #include "minishell.h"
 #include "libft/libft.h"
 #include "parse/tmp_listfunc.h"
-#include <stdio.h>
 
 // node 이후에 pipe가 존재하는지 확인
 // pipe 바로 전 또는 list_end까지가 하나의 커맨드
@@ -102,5 +102,7 @@ int	exec_line(t_cmd *node)
 	exec_pipe(node, piperead, STDOUT_FILENO);
 	if (piperead != STDIN_FILENO)
 		close(piperead);
+	while (waitpid(-1, NULL, 0) > 0)
+		;
 	return (0);
 }

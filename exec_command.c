@@ -6,14 +6,13 @@
 /*   By: kanlee <kanlee@student.42seoul.kr>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/11 17:13:43 by kanlee            #+#    #+#             */
-/*   Updated: 2021/12/13 05:56:18 by kanlee           ###   ########.fr       */
+/*   Updated: 2021/12/14 17:49:44 by kanlee           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
-#include <sys/wait.h>
 #include "minishell.h"
 #include "libft/libft.h"
 #include "parse/tmp_listfunc.h"
@@ -70,7 +69,6 @@ int	execute_command(t_cmd *node, t_rdinfo rd, t_pipefd pipefd)
 			}
 		}
 	}
-	waitpid(pid, NULL, 0);
 	if (rd.write_fd != STDOUT_FILENO)
 		close(rd.write_fd);
 	if (rd.read_fd != STDIN_FILENO)
