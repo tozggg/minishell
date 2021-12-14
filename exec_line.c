@@ -6,7 +6,7 @@
 /*   By: kanlee <kanlee@student.42seoul.kr>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/11 17:34:32 by kanlee            #+#    #+#             */
-/*   Updated: 2021/12/13 21:53:57 by kanlee           ###   ########.fr       */
+/*   Updated: 2021/12/14 17:04:26 by kanlee           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -66,20 +66,23 @@ int	exec_line(t_cmd *node)
 	// echo asdf > outfile | cat << HERE
 	// will not run echo or create outfile until heredoc input is successfully completed.
 	// if (node has heredoc)
-	//		if (read_heredoc == -1)
-	//			print warning;
+	//		if (read_heredoc == failed)
+	//			return fail
 	//////////////////////////////////////////
 	t_cmd		*heredoc_node;
+	t_cmd		*head;
 
-	heredoc_node = has_heredoc(node);
-	if (heredoc_node)
+	head = node;
+	while (1)
 	{
+		heredoc_node = has_heredoc(node);
+		if (!heredoc_node)
+			break ;
 		if (read_heredoc(heredoc_node) == -1)
-		{
-//			printf("warning\n");
-//			return (-1);
-		}
+			return (-1);
+		node = heredoc_node->next;
 	}
+	node = head;
 	//////////////////////////////////////////
 	piperead= STDIN_FILENO;
 	pipewrite = STDOUT_FILENO;

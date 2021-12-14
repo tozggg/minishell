@@ -6,7 +6,7 @@
 /*   By: kanlee <kanlee@student.42seoul.kr>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/12 20:53:33 by kanlee            #+#    #+#             */
-/*   Updated: 2021/12/13 21:48:01 by kanlee           ###   ########.fr       */
+/*   Updated: 2021/12/14 17:05:04 by kanlee           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,11 +37,36 @@ int	write_to_tmpfile(int fd, char *limit)
 			else
 				free(input);
 			break ;
+		}
 		ft_putendl_fd(input, fd);
 		free(input);
 	}
 	return (0);
 }
+
+int	open_available(char **tmpfilename)
+{
+	int		fd;
+	int		i;
+	char	*idxstr;
+
+	i = 0;
+	while (i < 1000)
+	{
+		idxstr = ft_itoa(i);
+		*tmpfilename = ft_strjoin("tmp_for_heredoc_", idxstr);
+		free(idxstr);
+		fd = open(*tmpfilename, O_WRONLY | O_CREAT | O_EXCL, 0644);
+		if (fd > 0)
+			return (fd);
+		free(*tmpfilename);
+		i++;
+	}
+	return (-1);
+}
+
+
+
 
 // open tmp file for write
 //   print heredoc prompt
@@ -56,13 +81,19 @@ int	read_heredoc(t_cmd *node)
 {
 	int		fd;
 	char	*limit;
+	char	*tmpfilename;
 
 	limit = node->next->token;
-	fd = open("tmp_for_heredoc", O_WRONLY | O_CREAT | O_TRUNC, 0644);
+	fd = open_available(&tmpfilename);
+	if (fd < 0)
+	{
+		printf("Fatal: can't create tmpfile for heredoc\n");
+		return (-1);
+	}
 	write_to_tmpfile(fd, limit);
 	close(fd);
-	fd = open("tmp_for_heredoc", O_RDONLY);
-	unlink("tmp_for_heredoc");
+	fd = open(tmpfilename, O_RDONLY);
+	unlink(tmpfilename);
 	free(node->next->token);
 	node->next->token = ft_strdup(ft_itoa(fd));
 	return (0);
