@@ -6,7 +6,7 @@
 /*   By: kanlee <kanlee@student.42seoul.kr>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/11 17:00:27 by kanlee            #+#    #+#             */
-/*   Updated: 2021/12/13 19:28:18 by kanlee           ###   ########.fr       */
+/*   Updated: 2021/12/14 18:25:00 by kanlee           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,10 +35,10 @@ enum e_rdtype {
 };
 
 /* exec_line.c */
-int	exec_line(t_cmd *head);
+int	exec_line(t_cmd *head, t_list **running_procs);
 
 /* exec_command.c */
-int	command(t_cmd *node, t_pipefd pipefd);
+int	command(t_cmd *node, t_pipefd pipefd, t_list **running_procs);
 
 /* redirection.c */
 int	store_rdinfo(t_cmd *node, t_rdinfo *rd, int rdtype);
@@ -48,5 +48,6 @@ int	read_heredoc(t_cmd *node);
 void	ft_lstcut(t_list *lst, t_list *el);
 void	ft_lstremove(t_list **head, t_list *el);
 char	**listtostrarray(t_cmd *list);
+void	do_nothing(void *tmp);
 
 #endif

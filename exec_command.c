@@ -6,7 +6,7 @@
 /*   By: kanlee <kanlee@student.42seoul.kr>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/11 17:13:43 by kanlee            #+#    #+#             */
-/*   Updated: 2021/12/13 05:56:18 by kanlee           ###   ########.fr       */
+/*   Updated: 2021/12/14 19:19:53 by kanlee           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,7 +22,7 @@
 // 리디렉션이 파이프보다 우선순위가 더 높으므로
 // 파이프를 먼저 적용 후 rdinfo가 지정한 대로 in/out을 overwrite
 // main process는 child가 종료될 때까지 대기
-int	execute_command(t_cmd *node, t_rdinfo rd, t_pipefd pipefd)
+int	execute_command(t_cmd *node, t_rdinfo rd, t_pipefd pipefd, t_list **running_procs)
 {
 	char	*cmd;
 	char	**av;
@@ -70,7 +70,7 @@ int	execute_command(t_cmd *node, t_rdinfo rd, t_pipefd pipefd)
 			}
 		}
 	}
-	waitpid(pid, NULL, 0);
+	ft_lstadd_back(running_procs, ft_lstnew((pid_t *)&pid));
 	if (rd.write_fd != STDOUT_FILENO)
 		close(rd.write_fd);
 	if (rd.read_fd != STDIN_FILENO)
@@ -94,7 +94,7 @@ int	is_redirection_node(t_cmd *node)
 
 // 리디렉션 토큰이 존재한다면 rdinfo에 어디로 read,write할 것인지 저장 후 execute_command로 전달
 // 왼쪽부터 순차적으로 처리하되, file open 실패하면 중단
-int	command(t_cmd *node, t_pipefd pipefd)
+int	command(t_cmd *node, t_pipefd pipefd, t_list **running_procs)
 {
 	t_cmd		*head;
 	t_rdinfo	rd;
@@ -120,6 +120,6 @@ int	command(t_cmd *node, t_pipefd pipefd)
 #ifdef DEBUG
 	printf("read from %d - write to %d\n", pipefd.read_fd, pipefd.write_fd);
 #endif
-	execute_command(head, rd, pipefd);
+	execute_command(head, rd, pipefd, running_procs);
 	return (0);
 }

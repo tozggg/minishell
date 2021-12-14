@@ -6,7 +6,7 @@
 /*   By: kanlee <kanlee@student.42seoul.kr>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/11 17:02:02 by kanlee            #+#    #+#             */
-/*   Updated: 2021/12/12 19:25:22 by kanlee           ###   ########.fr       */
+/*   Updated: 2021/12/14 18:30:49 by kanlee           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -79,4 +79,11 @@ char	**listtostrarray(t_cmd *node)
 	}
 	str[i] = NULL;
 	return (str);
+}
+
+// used with ft_lstclear when content is not freeable.
+void	do_nothing(void *tmp)
+{
+	tmp = 0;
+	return ;
 }

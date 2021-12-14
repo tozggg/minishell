@@ -6,7 +6,7 @@
 /*   By: kanlee <kanlee@student.42seoul.kr>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/11 16:59:43 by kanlee            #+#    #+#             */
-/*   Updated: 2021/12/14 15:41:19 by kanlee           ###   ########.fr       */
+/*   Updated: 2021/12/14 19:19:41 by kanlee           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,21 +48,10 @@ int	main(void)
 	t_cmd	*node;
 	head = 0;
 	node = init_cmd(); node->token = ft_strdup("cat"); add_cmd(&head, node);
-	node = init_cmd(); node->token = ft_strdup("<<"); add_cmd(&head, node);
-	node = init_cmd(); node->token = ft_strdup("EOF"); add_cmd(&head, node);
 	node = init_cmd(); node->token = ft_strdup(">"); add_cmd(&head, node);
-	node = init_cmd(); node->token = ft_strdup("out1"); add_cmd(&head, node);
+	node = init_cmd(); node->token = ft_strdup("outfile"); add_cmd(&head, node);
 	node = init_cmd(); node->token = ft_strdup("|"); add_cmd(&head, node);
-	node = init_cmd(); node->token = ft_strdup("echo"); add_cmd(&head, node);
-	node = init_cmd(); node->token = ft_strdup("asdf"); add_cmd(&head, node);
-	node = init_cmd(); node->token = ft_strdup(">"); add_cmd(&head, node);
-	node = init_cmd(); node->token = ft_strdup("out2"); add_cmd(&head, node);
-	node = init_cmd(); node->token = ft_strdup("|"); add_cmd(&head, node);
-	node = init_cmd(); node->token = ft_strdup("cat"); add_cmd(&head, node);
-	node = init_cmd(); node->token = ft_strdup("<<"); add_cmd(&head, node);
-	node = init_cmd(); node->token = ft_strdup("EEE"); add_cmd(&head, node);
-	node = init_cmd(); node->token = ft_strdup(">"); add_cmd(&head, node);
-	node = init_cmd(); node->token = ft_strdup("out3"); add_cmd(&head, node);
+	node = init_cmd(); node->token = ft_strdup("ls"); add_cmd(&head, node);
 
 	printf("input: ");
 	node = head;
@@ -73,8 +62,10 @@ int	main(void)
 	}
 #endif
 	printf("\n\n\n");
-	exec_line(head);
+	t_list	*running_procs;
+	exec_line(head, &running_procs);
 	destory_cmd(&head); //FIXME: heap-use-after-free
+	ft_lstclear(&running_procs, do_nothing);
 	printf("\nreturn to prompt\n");
 	return (0);
 }
