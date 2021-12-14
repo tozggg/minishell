@@ -6,7 +6,7 @@
 /*   By: kanlee <kanlee@student.42seoul.kr>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/11 17:34:32 by kanlee            #+#    #+#             */
-/*   Updated: 2021/12/14 17:04:26 by kanlee           ###   ########.fr       */
+/*   Updated: 2021/12/14 17:40:11 by kanlee           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,6 +53,22 @@ void exec_pipe(t_cmd *node, int read_fd, int write_fd)
 	command(node, pipefd);
 }
 
+int	chk_heredoc(t_cmd *node)
+{
+	t_cmd	*heredoc_node;
+
+	while (1)
+	{
+		heredoc_node = has_heredoc(node);
+		if (!heredoc_node)
+			break ;
+		if (read_heredoc(heredoc_node) < 0)
+			return (-1);
+		node = heredoc_node->next;
+	}
+	return (0);
+}
+
 // node부터 pipe_node까지를 한 단위로 끊어서 실행
 // 첫 cmd의 입력은 STDIN, 마지막 cmd의 입력은 STDOUT
 int	exec_line(t_cmd *node)
@@ -64,26 +80,9 @@ int	exec_line(t_cmd *node)
 
 	// before executing, read HEREDOC first as bash does it.
 	// echo asdf > outfile | cat << HERE
-	// will not run echo or create outfile until heredoc input is successfully completed.
-	// if (node has heredoc)
-	//		if (read_heredoc == failed)
-	//			return fail
-	//////////////////////////////////////////
-	t_cmd		*heredoc_node;
-	t_cmd		*head;
-
-	head = node;
-	while (1)
-	{
-		heredoc_node = has_heredoc(node);
-		if (!heredoc_node)
-			break ;
-		if (read_heredoc(heredoc_node) == -1)
-			return (-1);
-		node = heredoc_node->next;
-	}
-	node = head;
-	//////////////////////////////////////////
+	// will not run echo or create outfile until heredoc input is completed.
+	if (chk_heredoc(node) < 0)
+		return (-1);
 	piperead= STDIN_FILENO;
 	pipewrite = STDOUT_FILENO;
 	while (1)

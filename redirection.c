@@ -6,7 +6,7 @@
 /*   By: kanlee <kanlee@student.42seoul.kr>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/12 20:53:33 by kanlee            #+#    #+#             */
-/*   Updated: 2021/12/14 17:05:04 by kanlee           ###   ########.fr       */
+/*   Updated: 2021/12/14 17:48:11 by kanlee           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,10 +51,10 @@ int	open_available(char **tmpfilename)
 	char	*idxstr;
 
 	i = 0;
-	while (i < 1000)
+	while (i < 65535)
 	{
 		idxstr = ft_itoa(i);
-		*tmpfilename = ft_strjoin("tmp_for_heredoc_", idxstr);
+		*tmpfilename = ft_strjoin("/tmp/tmp_for_heredoc_", idxstr);
 		free(idxstr);
 		fd = open(*tmpfilename, O_WRONLY | O_CREAT | O_EXCL, 0644);
 		if (fd > 0)
@@ -65,18 +65,16 @@ int	open_available(char **tmpfilename)
 	return (-1);
 }
 
-
-
-
 // open tmp file for write
+//       return -1 if open failed.
 //   print heredoc prompt
-//   read input from stdin
+//   read input from stdin, write to tmpfile
 // while input==limitstr
+//   print warning when reached EOF before Limitstr found.
 // close tmpfile
 // open it again read-only
 // unlink() --- tmpfile will be deleted after it's closed
-// read input from tmpfile
-// print warning when reached EOF before Limitstr found.
+// change RD_TARGET content to readable fd.
 int	read_heredoc(t_cmd *node)
 {
 	int		fd;
@@ -123,8 +121,7 @@ int	store_rdinfo(t_cmd *node, t_rdinfo *rd, int rdtype)
 	fd = open_target(rdtype, rdtarget);
 	if (fd < 0)
 	{
-		if (errno == EISDIR)
-			perror("ITS DIRECTORY");
+		perror(rdtarget);
 		return (-1);
 	}
 	if (rdtype == RD_WRITE || rdtype == RD_APPEND)
