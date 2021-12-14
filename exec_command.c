@@ -6,7 +6,7 @@
 /*   By: kanlee <kanlee@student.42seoul.kr>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/11 17:13:43 by kanlee            #+#    #+#             */
-/*   Updated: 2021/12/14 17:49:44 by kanlee           ###   ########.fr       */
+/*   Updated: 2021/12/14 20:13:02 by kanlee           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,25 +17,54 @@
 #include "libft/libft.h"
 #include "parse/tmp_listfunc.h"
 
+void	child_process(char **av, t_rdinfo rd, t_pipefd pipefd, int unused_fd)
+{
+	if (unused_fd != STDIN_FILENO && pipefd.write_fd != STDOUT_FILENO)
+		close(unused_fd);
+	if (pipefd.read_fd != STDIN_FILENO)
+	{
+		dup2(pipefd.read_fd, STDIN_FILENO);
+		close(pipefd.read_fd);
+	}
+	if (pipefd.write_fd != STDOUT_FILENO)
+	{
+		dup2(pipefd.write_fd, STDOUT_FILENO);
+		close(pipefd.write_fd);
+	}
+////////// redirection /////////
+	if (rd.write_fd != STDOUT_FILENO)
+		dup2(rd.write_fd, STDOUT_FILENO);
+	if (rd.read_fd != STDIN_FILENO)
+		dup2(rd.read_fd, STDIN_FILENO);
+////////////////////////////////
+	if (execvp(av[0], av) == -1) //TODO: make ft_execvpe() using execve  
+	{
+		ft_putstr_fd(av[0], 2);
+		ft_putendl_fd(": command not found", 2);
+		exit(1);
+	}
+}
+
 // child process에서 cmd 실행
 // 리디렉션이 파이프보다 우선순위가 더 높으므로
 // 파이프를 먼저 적용 후 rdinfo가 지정한 대로 in/out을 overwrite
 // main process는 child가 종료될 때까지 대기
-int	execute_command(t_cmd *node, t_rdinfo rd, t_pipefd pipefd)
+int	execute_command(t_cmd *node, t_rdinfo rd, t_pipefd pipefd, int unused_fd)
 {
 	char	*cmd;
 	char	**av;
 	pid_t	pid;
-	int		stdout_bak;
 
 	av = listtostrarray(node);
-	cmd = av[0];			// FIXME: cmd == NULL
+	cmd = av[0];
 #ifdef DEBUG
 	printf("cmd: %s\n", cmd);
 	int i = 0;
 	while (av[i] != 0)
 		printf("arg[%d]: %s\n", i, av[i++]);
 #endif
+	if (cmd == NULL)
+		return (0);
 	//TODO: builtin commands without pipes are executed inside main process
 	// if (is_builtin(cmd) && pipefd.read_fd == STDIN_FILENO && pipefd.write_fd == STDOUT_FILENO)
 	//		return do_sth();
@@ -47,28 +76,12 @@ int	execute_command(t_cmd *node, t_rdinfo rd, t_pipefd pipefd)
 	}
 	else if (pid == 0)
 	{
-		if (cmd != NULL)
-		{
-			stdout_bak = dup(STDOUT_FILENO);
-			if (pipefd.read_fd != STDIN_FILENO)
-				dup2(pipefd.read_fd, STDIN_FILENO);
-			if (pipefd.write_fd != STDOUT_FILENO)
-				dup2(pipefd.write_fd, STDOUT_FILENO);
-////////// redirection /////////
-			if (rd.write_fd != STDOUT_FILENO)
-				dup2(rd.write_fd, STDOUT_FILENO);
-			if (rd.read_fd != STDIN_FILENO)
-				dup2(rd.read_fd, STDIN_FILENO);
-////////////////////////////////
-
-			if (execvp(cmd, av) == -1) //TODO: make ft_execvpe() using execve  
-			{
-				dup2(stdout_bak, STDOUT_FILENO);
-				printf("%s: command not found\n", cmd);
-				exit(1);
-			}
-		}
+#ifdef DEBUG
+	printf("%s: read %d - write %d - tobefree %d\n", av[0], pipefd.read_fd, pipefd.write_fd, unused_fd);
+#endif
+		child_process(av, rd, pipefd, unused_fd);
 	}
+	// parent
 	if (rd.write_fd != STDOUT_FILENO)
 		close(rd.write_fd);
 	if (rd.read_fd != STDIN_FILENO)
@@ -92,7 +105,7 @@ int	is_redirection_node(t_cmd *node)
 
 // 리디렉션 토큰이 존재한다면 rdinfo에 어디로 read,write할 것인지 저장 후 execute_command로 전달
 // 왼쪽부터 순차적으로 처리하되, file open 실패하면 중단
-int	command(t_cmd *node, t_pipefd pipefd)
+int	command(t_cmd *node, t_pipefd pipefd, int unused_fd)
 {
 	t_cmd		*head;
 	t_rdinfo	rd;
@@ -115,9 +128,6 @@ int	command(t_cmd *node, t_pipefd pipefd)
 			break ;
 		node = node->next;
 	}
-#ifdef DEBUG
-	printf("read from %d - write to %d\n", pipefd.read_fd, pipefd.write_fd);
-#endif
-	execute_command(head, rd, pipefd);
+	execute_command(head, rd, pipefd, unused_fd);
 	return (0);
 }

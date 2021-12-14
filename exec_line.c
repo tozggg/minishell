@@ -6,7 +6,7 @@
 /*   By: kanlee <kanlee@student.42seoul.kr>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/11 17:34:32 by kanlee            #+#    #+#             */
-/*   Updated: 2021/12/14 17:44:41 by kanlee           ###   ########.fr       */
+/*   Updated: 2021/12/14 20:03:10 by kanlee           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,6 +16,7 @@
 #include "minishell.h"
 #include "libft/libft.h"
 #include "parse/tmp_listfunc.h"
+#include <stdio.h>
 
 // node 이후에 pipe가 존재하는지 확인
 // pipe 바로 전 또는 list_end까지가 하나의 커맨드
@@ -44,15 +45,6 @@ t_cmd	*has_heredoc(t_cmd *node)
 	return (NULL);
 }
 
-// **envp 전달을 위해 arguments 압축
-void exec_pipe(t_cmd *node, int read_fd, int write_fd)
-{
-	t_pipefd	pipefd;
-
-	pipefd = (t_pipefd){read_fd, write_fd};
-	command(node, pipefd);
-}
-
 int	chk_heredoc(t_cmd *node)
 {
 	t_cmd	*heredoc_node;
@@ -69,39 +61,51 @@ int	chk_heredoc(t_cmd *node)
 	return (0);
 }
 
+// pfd[0] should be closed in child process
+void	exec_pipe(t_cmd *node, int read_fd, int *pfd)
+{
+	t_pipefd	pipefd;
+
+	pipefd = (t_pipefd){read_fd, pfd[1]};
+	command(node, pipefd, pfd[0]);
+}
+
+void	safe_close_readend(int fd)
+{
+	if (fd != STDIN_FILENO)
+		close(fd);
+}
+
 // node부터 pipe_node까지를 한 단위로 끊어서 실행
 // 첫 cmd의 입력은 STDIN, 마지막 cmd의 입력은 STDOUT
 int	exec_line(t_cmd *node)
 {
 	t_cmd		*pipe_node;
 	int			pfd[2];
-	int			piperead;
-	int			pipewrite;
+	int			read_prev;
 
 	// before executing, read HEREDOC first as bash does it.
 	// echo asdf > outfile | cat << HERE
 	// will not run echo or create outfile until heredoc input is completed.
 	if (chk_heredoc(node) < 0)
 		return (-1);
-	piperead= STDIN_FILENO;
-	pipewrite = STDOUT_FILENO;
+	read_prev = STDIN_FILENO;
 	while (1)
 	{
 		pipe_node = has_pipe(node);
 		if (!pipe_node)
-			break ;	//                pipewrite           piperead
-		pipe(pfd);	// data written to pfd[1] is passed to pfd[0]
-		pipewrite = pfd[1];	// when process1 writes data to pipewrite, then process2 will read it from piperead
-		exec_pipe(node, piperead, pipewrite);
-		if (piperead != STDIN_FILENO)
-			close(piperead);
-		close(pipewrite);
-		piperead = pfd[0];
+			break ;
+		// found pipe. this cmd will write to new pipe's write-end, and read from prev pipe's read-end.
+		pipe(pfd);
+		exec_pipe(node, read_prev, pfd); // new pipe's read-end is not needed in this cmd, so it should be closed in child process
+		safe_close_readend(read_prev);
+		close(pfd[1]);
+		read_prev = pfd[0];
 		node = pipe_node->next;
 	}
-	exec_pipe(node, piperead, STDOUT_FILENO);
-	if (piperead != STDIN_FILENO)
-		close(piperead);
+	pfd[1] = STDOUT_FILENO;
+	exec_pipe(node, read_prev, pfd);
+	safe_close_readend(read_prev);
 	while (waitpid(-1, NULL, 0) > 0)
 		;
 	return (0);
