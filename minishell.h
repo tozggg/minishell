@@ -6,7 +6,7 @@
 /*   By: kanlee <kanlee@student.42seoul.kr>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/11 17:00:27 by kanlee            #+#    #+#             */
-/*   Updated: 2021/12/14 20:44:36 by kanlee           ###   ########.fr       */
+/*   Updated: 2021/12/14 22:44:11 by kanlee           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,6 +34,12 @@ enum e_rdtype {
 	RD_READ,
 	RD_HEREDOC
 };
+
+/* parser */
+void	get_line(char **line);
+void	parse(t_cmd **ptr, char *line, int *err_flag);
+int		check_cmd(t_cmd *cmd);
+
 
 /* exec_line.c */
 int		exec_line(t_cmd *head);

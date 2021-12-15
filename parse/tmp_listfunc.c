@@ -6,7 +6,7 @@
 /*   By: taejkim <taejkim@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/08 16:59:27 by taejkim           #+#    #+#             */
-/*   Updated: 2021/12/12 18:33:08 by kanlee           ###   ########.fr       */
+/*   Updated: 2021/12/14 22:55:21 by kanlee           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,19 +31,17 @@ t_cmd	*init_cmd(void)
 	t_cmd	*cmd;
 
 	cmd = (t_cmd *)malloc(sizeof(t_cmd));
-	if (cmd)
-	{
-		// malloc error
-	}
-//	cmd->token = ft_strdup("");
-	cmd->env_key = NULL;
-	cmd->next = NULL;
+	if (!cmd)
+		error_out("malloc error");
+	cmd->token = ft_strdup("");
 	cmd->cmd_type = 0;
 	cmd->cmd_end = 0;
+	cmd->env_key = NULL;
+	cmd->next = NULL;
 	return (cmd);
 }
 
-void	destory_cmd(t_cmd **ptr)
+void	destroy_cmd(t_cmd **ptr)
 {
 	t_cmd		*cmd;
 	t_cmd		*tmp_c;
@@ -52,17 +50,17 @@ void	destory_cmd(t_cmd **ptr)
 	cmd = *ptr;
 	while (cmd)
 	{
-		tmp_c = cmd;
+		tmp_c = cmd->next;
 		while (cmd->env_key)
 		{
-			tmp_e = cmd->env_key;
+			tmp_e = cmd->env_key->next;
 			free(cmd->env_key->key);
 			free(cmd->env_key);
-			cmd->env_key = tmp_e->next;
+			cmd->env_key = tmp_e;
 		}
 		free(cmd->token);
 		free(cmd);
-		cmd = tmp_c->next;
+		cmd = tmp_c;
 	}
 	*ptr = NULL;
 }
@@ -102,10 +100,8 @@ t_env_key	*init_env_key(void)
 	t_env_key	*env_key;
 
 	env_key = (t_env_key *)malloc(sizeof(t_env_key));
-	if (env_key)
-	{
-		// malloc error
-	}
+	if (!env_key)
+		error_out("malloc error");
 	env_key->is_key = 0;
 	env_key->key = ft_strdup("");
 	env_key->next = NULL;

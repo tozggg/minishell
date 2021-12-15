@@ -6,7 +6,7 @@
 /*   By: taejkim <taejkim@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/08 16:59:27 by taejkim           #+#    #+#             */
-/*   Updated: 2021/12/12 17:19:22 by kanlee           ###   ########.fr       */
+/*   Updated: 2021/12/15 00:54:29 by kanlee           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,11 +23,17 @@
 #include <sys/stat.h>
 #include <termios.h>
 #include <term.h>
-#include "libft/libft.h"
+#include "tmp_listfunc.h"
+#include "../libft/libft.h"
 
 
 //-------------------------------------------------------------------------
 
+void	error_out(char *str)
+{
+	printf("%s\n", str);
+	exit(1);
+}
 char	*append(char *str, char c)
 {
 	char	*res;
@@ -50,13 +56,18 @@ char	*append(char *str, char c)
 
 void	get_line(char **line)
 {
+	extern int rl_catch_signals;
+
+	rl_catch_signals = 0;
 	if (*line)
 	{
 		free(*line);
 		*line = NULL;
 	}
-	*line = readline("$> ");
-	add_history(line);
+	*line = readline("$>");
+	if (*line == NULL)
+		error_out("exit");
+	add_history(*line);
 }
 
 int	is_space(char c)
@@ -82,6 +93,14 @@ int	is_allow_envpname(char c)
 	if ('A' <= c && c <= 'Z')
 		return (1);
 	if (c == '_')
+		return (1);
+	return (0);
+}
+
+int	is_unspecified_char(char c)
+{
+	if (c == '\\' || c == ';' || c == '(' \
+		|| c == ')' || c == '*' || c == '&' || c == '#')
 		return (1);
 	return (0);
 }
@@ -231,7 +250,7 @@ char	*big_quote_envp_decision(t_cmd *cmd, char *line)
 	return (line);
 }
 
-char	*start_quote(t_cmd *cmd, char *line)
+char	*start_quote(t_cmd *cmd, char *line, int *err_flag)
 {
 	char quote;
 
@@ -251,54 +270,122 @@ char	*start_quote(t_cmd *cmd, char *line)
 		else
 			cmd->token = append(cmd->token, *(line++));
 	}
-	//quote error
-	return (NULL);
+	*err_flag = QUOTE_ERR;
+	return (line);
 }
 
-
-
-void	parse(t_cmd **ptr, char *line)
+void	parse(t_cmd **ptr, char *line, int *err_flag)
 {
 	t_cmd	*cmd;
-
+	
 	if (*ptr)
-		destory_cmd(ptr);
-	if (*line)
-		cmd = init_cmd();
+		destroy_cmd(ptr);
+	if (!(*line))
+		*err_flag = EMPTY_LINE;
+	cmd = init_cmd();
 	while (*line && is_space(*line))
 		++line;
 	while (*line)
 	{
+		if (is_unspecified_char(*line))
+			*err_flag = SYNTAX_ERR;
 		if (is_space(*line) || is_separator(*line))
 			line = separate(ptr, &cmd, line);
 		else if (*line == '\"' || *line == '\'')
-			line = start_quote(cmd, line);
+			line = start_quote(cmd, line, err_flag);
 		else if (*line == '$')
 			line = envp_decision(cmd, line);
-	//	else if (*line == ';' || *line == '\\')
-			// syntax error
 		else
 			cmd->token = append(cmd->token, *(line++));
 	}
-	if (cmd)
-		add_cmd(ptr, cmd);
+	add_cmd(ptr, cmd);
 }
+
+int	check_cmd(t_cmd *cmd)
+{
+	int	prev_token_is_pipe;
+	int	prev_token_is_rdr;
+
+	if (ft_strequ(cmd->token, "|"))
+		return (SYNTAX_ERR);
+	prev_token_is_pipe = 0;
+	prev_token_is_rdr = 0;
+	while (cmd)
+	{
+		if ((prev_token_is_pipe || prev_token_is_rdr) && ft_strequ(cmd->token, "|"))
+			return (SYNTAX_ERR);
+		if (ft_strequ(cmd->token, "|"))
+			prev_token_is_pipe = 1;
+		else
+			prev_token_is_pipe = 0;
+		if (ft_strequ(cmd->token, "<") || ft_strequ(cmd->token, ">") ||\
+				ft_strequ(cmd->token, "<<") || ft_strequ(cmd->token, ">>"))
+			prev_token_is_rdr = 1;
+		else
+			prev_token_is_rdr = 0;
+		if (!(cmd->next) && ft_strequ(cmd->token, "|"))
+			return (SYNTAX_ERR);
+		cmd = cmd->next;
+	}
+	return (0);
+}
+/*
+void	err_print(int err_flag)
+{
+	if (err_flag == QUOTE_ERR)
+		printf("Error : the number of quote is odd\n");
+	if (err_flag == SYNTAX_ERR)
+		printf("Erorr : invalid syntax\n");
+}
+
+void	sig_handler(int signo)
+{
+	pid_t	pid;
+	int		wstatus;
+
+	pid = waitpid(-1, &wstatus, WNOHANG);
+	if (signo == SIGINT)
+	{
+		if (pid == -1)
+		{
+			printf("\n");
+			rl_on_new_line();
+			rl_replace_line("", 0);
+			rl_redisplay();
+		}	
+		else
+		{
+			// 자식프로세스에 SIGINT? 애초에 자식 프로세스만 구별가능??
+		}
+	}
+
+}
+
 
 
 int	main(int ac, char *av[], char *envp[])
 {
 	char	*line;
 	t_cmd	*cmd;
+	int		err_flag;
 
 	(void)ac;
 	(void)av;
-	// 시그널처리 (SIGINT, SIGQUIT)
+	signal(SIGINT, sig_handler);
+	signal(SIGQUIT, sig_handler);
 	line = 0;
 	cmd = 0;
 	while (1)
 	{
 		get_line(&line);
-		parse(&cmd, line);
+		err_flag = 0;
+		parse(&cmd, line, &err_flag);
+		if (!err_flag)
+			err_flag = check_cmd(cmd);
+		err_print(err_flag);
+
+		
+
 		printf("===========================\n");
 		t_cmd *tmp = cmd;
 		while (tmp)
@@ -313,7 +400,10 @@ int	main(int ac, char *av[], char *envp[])
 			printf("\n");
 			tmp = tmp->next;
 		}
+		printf("errflag=%d\n", err_flag);
 		printf("===========================\n");
+
 	}
 	return (0);
 }
+*/

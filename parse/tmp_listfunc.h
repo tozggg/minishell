@@ -6,12 +6,16 @@
 /*   By: taejkim <taejkim@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/08 16:59:27 by taejkim           #+#    #+#             */
-/*   Updated: 2021/12/12 18:47:00 by kanlee           ###   ########.fr       */
+/*   Updated: 2021/12/15 00:32:25 by kanlee           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef TMP_LISTFUNC_H
 # define TMP_LISTFUNC_H
+
+# define SYNTAX_ERR 1
+# define QUOTE_ERR 2
+# define EMPTY_LINE 3
 
 enum e_cmdtype {
 	TYPE_GENERAL = 0,
@@ -40,7 +44,7 @@ typedef struct	s_env_key
 
 //-------------------------------------------------------------------------
 t_cmd	*init_cmd(void);
-void	destory_cmd(t_cmd **ptr);
+void	destroy_cmd(t_cmd **ptr);
 void	add_cmd(t_cmd **ptr, t_cmd *cmd);
 void	add_env_key(t_cmd *cmd, t_env_key *env_key);
 t_env_key	*init_env_key(void);
