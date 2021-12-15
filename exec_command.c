@@ -6,7 +6,7 @@
 /*   By: kanlee <kanlee@student.42seoul.kr>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/11 17:13:43 by kanlee            #+#    #+#             */
-/*   Updated: 2021/12/14 20:56:56 by kanlee           ###   ########.fr       */
+/*   Updated: 2021/12/15 02:08:31 by kanlee           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,7 +42,7 @@ void	child_process(char **av, t_rdinfo rd, t_pipeinfo pipeinfo)
 	{
 		ft_putstr_fd(av[0], STDERR_FILENO);
 		ft_putendl_fd(": command not found", STDERR_FILENO);
-		exit(1);
+		exit(127);
 	}
 }
 

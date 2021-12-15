@@ -6,7 +6,7 @@
 /*   By: kanlee <kanlee@student.42seoul.kr>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/11 17:34:32 by kanlee            #+#    #+#             */
-/*   Updated: 2021/12/14 20:44:16 by kanlee           ###   ########.fr       */
+/*   Updated: 2021/12/15 02:16:09 by kanlee           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -69,7 +69,9 @@ void	exec_pipe(t_cmd *node, int read_fd, int *pfd)
 	pipeinfo.read = read_fd;
 	pipeinfo.write = pfd[1];
 	pipeinfo.unused = pfd[0];
-	command(node, pipeinfo);
+	if (command(node, pipeinfo) < 0)
+		printf("FIXME: returned nonzero but not stored\n"); // FIXME
+
 }
 
 // node부터 pipe_node까지를 한 단위로 끊어서 실행
@@ -79,6 +81,7 @@ int	exec_line(t_cmd *node)
 	t_cmd		*pipe_node;
 	int			pfd[2];
 	int			read_prev;
+	int			wstatus;
 
 	// before executing, read HEREDOC first as bash does it.
 	// echo asdf > outfile | cat << HERE
@@ -102,7 +105,7 @@ int	exec_line(t_cmd *node)
 	pfd[1] = STDOUT_FILENO;
 	exec_pipe(node, read_prev, pfd);
 	safe_close_readend(read_prev);
-	while (waitpid(-1, NULL, 0) > 0)
-		;
+	while (waitpid(-1, &wstatus, 0) > 0)
+		printf("exit status=%d\n", WEXITSTATUS(wstatus));
 	return (0);
 }
