@@ -6,7 +6,7 @@
 /*   By: kanlee <kanlee@student.42seoul.kr>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/11 17:00:27 by kanlee            #+#    #+#             */
-/*   Updated: 2021/12/14 22:44:11 by kanlee           ###   ########.fr       */
+/*   Updated: 2021/12/16 06:39:50 by kanlee           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -57,4 +57,8 @@ void	ft_lstremove(t_list **head, t_list *el);
 char	**listtostrarray(t_cmd *list);
 void	safe_close_readend(int fd);
 
+/* builtin/builtin.c */
+int		is_builtin(char *cmd);
+int		exec_builtin_single(char **av, t_rdinfo rd);
+int		exec_builtin(char **av);
 #endif

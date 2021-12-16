@@ -6,13 +6,14 @@
 /*   By: kanlee <kanlee@student.42seoul.kr>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/11 17:13:43 by kanlee            #+#    #+#             */
-/*   Updated: 2021/12/15 02:08:31 by kanlee           ###   ########.fr       */
+/*   Updated: 2021/12/16 06:50:02 by kanlee           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
+#include <errno.h>
 #include "minishell.h"
 #include "libft/libft.h"
 #include "parse/tmp_listfunc.h"
@@ -40,16 +41,20 @@ void	child_process(char **av, t_rdinfo rd, t_pipeinfo pipeinfo)
 ////////////   ready   //////////////
 	if (execvp(av[0], av) == -1) //TODO: make ft_execvpe() using execve  
 	{
-		ft_putstr_fd(av[0], STDERR_FILENO);
-		ft_putendl_fd(": command not found", STDERR_FILENO);
-		exit(127);
+		perror(av[0]);
+		if (errno == ENOENT)
+			exit(127);
+		else if (errno == EACCES || errno == EISDIR)
+			exit(126);
 	}
+	// TODO: should we restore STDIN,STDOUT?
 }
 
 // child process에서 cmd 실행
 // 리디렉션이 파이프보다 우선순위가 더 높으므로
 // 파이프를 먼저 적용 후 rdinfo가 지정한 대로 in/out을 overwrite
 // main process는 child가 종료될 때까지 대기
+// if cmd is builtin without pipe, run it in main process.
 int	execute_command(t_cmd *node, t_rdinfo rd, t_pipeinfo pipeinfo)
 {
 	char	*cmd;
@@ -66,9 +71,8 @@ int	execute_command(t_cmd *node, t_rdinfo rd, t_pipeinfo pipeinfo)
 #endif
 	if (cmd == NULL)
 		return (0);
-	//TODO: builtin commands without pipes are executed inside main process
-	// if (is_builtin(cmd) && pipeinfo.read == STDIN_FILENO && pipeinfo.write == STDOUT_FILENO)
-	//		return do_sth();
+	if (is_builtin(cmd) && pipeinfo.read == 0 && pipeinfo.write == 1)
+		return (exec_builtin_single(av, rd));
 	pid = fork();
 	if (pid < 0)
 	{
@@ -78,7 +82,7 @@ int	execute_command(t_cmd *node, t_rdinfo rd, t_pipeinfo pipeinfo)
 	else if (pid == 0)
 	{
 #ifdef DEBUG
-	printf("%s: read %d - write %d - tobefree %d\n", av[0], pipefd.read_fd, pipefd.write_fd, unused_fd);
+	printf("%s: read %d - write %d - tobefree %d\n", av[0], pipeinfo.read, pipeinfo.write, pipeinfo.unused);
 #endif
 		child_process(av, rd, pipeinfo);
 	}

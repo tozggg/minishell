@@ -1,5 +1,6 @@
 NAME = a.out
 SRCS = exec_line.c main.c utils.c exec_command.c redirection.c \
+	   builtin/builtin.c \
 	   parse/tmp_listfunc.c \
 	   parse/tmp_parser.c
 OBJS = $(SRCS:.c=.o)
