@@ -11,6 +11,7 @@ CFLAGS = -Wall -Wextra
 all: $(NAME)
 
 $(NAME): $(OBJS)
+	@$(MAKE) bonus -C libft
 	gcc $(CFLAGS) $(OBJS) -lreadline -Llibft -lft -o $(NAME)
 
 %.o: %.c minishell.h
