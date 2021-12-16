@@ -1,13 +1,7 @@
 1. remember exit code somewhere (print it by echo $?)
 	how to catch kill signal?
 
-
-2. replace execvp() to execve()
-	expand $PATH
-	check if cmd is absolute of relative path
-		check every (path+cmd) exists AND executable (using fstat st_mode)
-		check current dir first!
-	return 127(command not found) or 126(permission denied)
+2. pass envp to exec part
 
 
 3. char *env_to_str(char *envname)

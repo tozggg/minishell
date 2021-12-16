@@ -6,7 +6,7 @@
 /*   By: kanlee <kanlee@student.42seoul.kr>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/11 17:00:27 by kanlee            #+#    #+#             */
-/*   Updated: 2021/12/16 06:39:50 by kanlee           ###   ########.fr       */
+/*   Updated: 2021/12/16 19:16:03 by kanlee           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,6 +46,9 @@ int		exec_line(t_cmd *head);
 
 /* exec_command.c */
 int		command(t_cmd *node, t_pipeinfo pipeinfo);
+
+/* ft_execvpe.c */
+int		ft_execvpe(char*, char **, char **);
 
 /* redirection.c */
 int		store_rdinfo(t_cmd *node, t_rdinfo *rd, int rdtype);

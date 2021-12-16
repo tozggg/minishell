@@ -6,7 +6,7 @@
 /*   By: kanlee <kanlee@student.42seoul.kr>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/11 17:13:43 by kanlee            #+#    #+#             */
-/*   Updated: 2021/12/16 06:50:02 by kanlee           ###   ########.fr       */
+/*   Updated: 2021/12/16 19:35:43 by kanlee           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,12 +39,14 @@ void	child_process(char **av, t_rdinfo rd, t_pipeinfo pipeinfo)
 	if (rd.read != STDIN_FILENO)
 		dup2(rd.read, STDIN_FILENO);
 ////////////   ready   //////////////
-	if (execvp(av[0], av) == -1) //TODO: make ft_execvpe() using execve  
+	if (ft_execvpe(av[0], av, (char **){NULL}) != 0) //TODO: envp  
 	{
 		perror(av[0]);
 		if (errno == ENOENT)
 			exit(127);
-		else if (errno == EACCES || errno == EISDIR)
+		else if (errno == EACCES || errno == EISDIR || errno == ENOTDIR)
+			exit(126);
+		else
 			exit(126);
 	}
 	// TODO: should we restore STDIN,STDOUT?
