@@ -6,7 +6,7 @@
 /*   By: taejkim <taejkim@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/11 17:00:27 by kanlee            #+#    #+#             */
-/*   Updated: 2021/12/17 03:42:28 by taejkim          ###   ########.fr       */
+/*   Updated: 2021/12/17 07:22:16 by taejkim          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,6 +45,7 @@ int		exec_line(t_cmd *head);
 
 /* exec_command.c */
 int		command(t_cmd *node, t_pipeinfo pipeinfo);
+int		is_redirection_node(t_cmd *node);
 
 /* redirection.c */
 int		store_rdinfo(t_cmd *node, t_rdinfo *rd, int rdtype);

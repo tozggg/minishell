@@ -6,7 +6,7 @@
 /*   By: taejkim <taejkim@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/08 16:59:27 by taejkim           #+#    #+#             */
-/*   Updated: 2021/12/17 03:57:41 by taejkim          ###   ########.fr       */
+/*   Updated: 2021/12/17 09:37:51 by taejkim          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -59,7 +59,7 @@ void	get_line(char **line)
 	}
 	*line = readline("$>");
 	if (*line == NULL)
-		error_out("exit");
+		error_out(" exit");
 	if (ft_strncmp(*line, "", 1))
 		add_history(*line);
 }
@@ -306,14 +306,14 @@ int	check_cmd(t_cmd *cmd)
 	prev_token_is_rdr = 0;
 	while (cmd)
 	{
-		if ((prev_token_is_pipe || prev_token_is_rdr) && ft_strequ(cmd->token, "|"))
+		if ((prev_token_is_pipe && ft_strequ(cmd->token, "|")) || \
+		(prev_token_is_rdr && (ft_strequ(cmd->token, "|") || is_redirection_node(cmd))))
 			return (SYNTAX_ERR);
 		if (ft_strequ(cmd->token, "|"))
 			prev_token_is_pipe = 1;
 		else
 			prev_token_is_pipe = 0;
-		if (ft_strequ(cmd->token, "<") || ft_strequ(cmd->token, ">") ||\
-				ft_strequ(cmd->token, "<<") || ft_strequ(cmd->token, ">>"))
+		if (is_redirection_node(cmd))
 			prev_token_is_rdr = 1;
 		else
 			prev_token_is_rdr = 0;
@@ -324,3 +324,111 @@ int	check_cmd(t_cmd *cmd)
 	return (0);
 }
 
+void	add_env(t_env **ptr, t_env *node)
+{
+	t_env *head;
+
+	head = *ptr;
+	if (head == NULL)
+		*ptr = node;
+	else
+	{
+		while (head->next)
+			head = head->next;
+		head->next = node;
+	}
+}
+
+t_env	*make_env(char **envp)
+{
+	t_env	*head;
+	t_env	*tmp;
+	char	*key;
+	char	*value;
+
+	head = NULL;
+	while (*envp)
+	{
+		key = *envp;
+		while (**envp && **envp != '=')
+			++(*envp);
+		if (**envp)
+			value = *envp + 1;
+		else
+			value = *envp;
+		**envp = 0;
+		tmp = (t_env *)malloc(sizeof(t_env));
+		if (!tmp)
+			error_out("malloc error");
+		tmp->key = ft_strdup(key);
+		tmp->value = ft_strdup(value);
+		add_env(&head, tmp);
+		++envp;
+	}
+	return (head);
+}
+
+char	*sandwich(char *token, char *env_value, int env_len, int flag)
+{
+	char	*res;
+	int		len;
+	int		i;
+	
+	len = ft_strlen(token) + env_len - 1;
+	res = (char *)malloc(sizeof(char) * (len + 1));
+	i = -1;
+	while (++i < len)
+	{
+		if (flag == 1)
+			res[i] = token[i - env_len + 1];
+		else if (token[i] == '$' && flag == 0)
+		{
+			while (*env_value)
+				res[i++] = *(env_value++);
+			flag = 1;
+			--i;
+		}
+		else
+			res[i] = token[i];
+	}
+	res[i] = 0;
+	free(token);
+	return (res);
+}
+
+char	*get_value(t_env *g_env, char *key)
+{
+	while (g_env)
+	{
+		if (ft_strequ(key, g_env->key))
+			return (g_env->value);
+		g_env = g_env->next;
+	}
+	return (NULL);
+}
+
+void	parse_env(t_cmd *cmd, t_env *g_env)
+{
+	t_env_key	*tmp;
+	char		*value;
+
+	while (cmd)
+	{
+		tmp = cmd->env_key;
+		while (tmp)
+		{
+			if (tmp->is_key)
+			{
+				value = get_value(g_env, tmp->key);
+				if (value)
+					cmd->token = sandwich(cmd->token, value, ft_strlen(value), 0);
+				else
+					cmd->token = sandwich(cmd->token, "", 0, 0);
+			}
+			else
+				cmd->token = sandwich(cmd->token, tmp->key, ft_strlen(tmp->key), 0);
+			tmp = tmp->next;
+		}
+		cmd = cmd->next;
+	}
+}
