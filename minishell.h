@@ -6,7 +6,7 @@
 /*   By: kanlee <kanlee@student.42seoul.kr>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/11 17:00:27 by kanlee            #+#    #+#             */
-/*   Updated: 2021/12/16 19:16:03 by kanlee           ###   ########.fr       */
+/*   Updated: 2021/12/17 08:26:42 by kanlee           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,7 +40,6 @@ void	get_line(char **line);
 void	parse(t_cmd **ptr, char *line, int *err_flag);
 int		check_cmd(t_cmd *cmd);
 
-
 /* exec_line.c */
 int		exec_line(t_cmd *head);
 
@@ -48,9 +47,11 @@ int		exec_line(t_cmd *head);
 int		command(t_cmd *node, t_pipeinfo pipeinfo);
 
 /* ft_execvpe.c */
-int		ft_execvpe(char*, char **, char **);
+int		ft_execvpe(char *cmd, char **arg, char **env);
 
 /* redirection.c */
+void	chk_rdtarget(t_cmd *node);
+int		is_redirection_node(t_cmd *node);
 int		store_rdinfo(t_cmd *node, t_rdinfo *rd, int rdtype);
 int		read_heredoc(t_cmd *node);
 

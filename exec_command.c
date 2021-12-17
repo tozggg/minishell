@@ -6,7 +6,7 @@
 /*   By: kanlee <kanlee@student.42seoul.kr>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/11 17:13:43 by kanlee            #+#    #+#             */
-/*   Updated: 2021/12/17 07:15:03 by kanlee           ###   ########.fr       */
+/*   Updated: 2021/12/17 08:05:55 by kanlee           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -100,19 +100,6 @@ int	execute_command(t_cmd *node, t_rdinfo rd, t_pipeinfo pipeinfo)
 	return (0);
 }
 
-int	is_redirection_node(t_cmd *node)
-{
-	if (ft_strequ(node->token, ">"))
-		return (RD_WRITE);
-	if (ft_strequ(node->token, ">>"))
-		return (RD_APPEND);
-	if (ft_strequ(node->token, "<"))
-		return (RD_READ);
-	if (ft_strequ(node->token, "<<"))
-		return (RD_HEREDOC);
-	return (NONE);
-}
-
 // 리디렉션 토큰이 존재한다면 rdinfo에 어디로 read,write할 것인지 저장 후 execute_command로 전달
 // 왼쪽부터 순차적으로 처리하되, file open 실패하면 중단
 int	command(t_cmd *node, t_pipeinfo pipeinfo)
@@ -123,6 +110,8 @@ int	command(t_cmd *node, t_pipeinfo pipeinfo)
 
 	rd = (t_rdinfo){STDIN_FILENO, STDOUT_FILENO};
 	head = node;
+	if (head->cmd_type == TYPE_INVALID)
+		return (-1);
 	while (1)
 	{
 		rdtype = is_redirection_node(node);

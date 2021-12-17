@@ -6,7 +6,7 @@
 /*   By: taejkim <taejkim@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/08 16:59:27 by taejkim           #+#    #+#             */
-/*   Updated: 2021/12/15 00:32:25 by kanlee           ###   ########.fr       */
+/*   Updated: 2021/12/17 07:48:56 by kanlee           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,7 +21,8 @@ enum e_cmdtype {
 	TYPE_GENERAL = 0,
 	TYPE_RDSIGN,
 	TYPE_RDTARGET,
-	TYPE_PIPE
+	TYPE_PIPE,
+	TYPE_INVALID
 };
 
 // 명령어 token으로 나눈 linkedlist 구조체

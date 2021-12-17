@@ -6,7 +6,7 @@
 /*   By: kanlee <kanlee@student.42seoul.kr>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/11 17:34:32 by kanlee            #+#    #+#             */
-/*   Updated: 2021/12/15 02:16:09 by kanlee           ###   ########.fr       */
+/*   Updated: 2021/12/17 08:22:57 by kanlee           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -64,14 +64,13 @@ int	chk_heredoc(t_cmd *node)
 // pfd[0] should be closed in child process
 void	exec_pipe(t_cmd *node, int read_fd, int *pfd)
 {
-	t_pipeinfo pipeinfo;
+	t_pipeinfo	pipeinfo;
 
 	pipeinfo.read = read_fd;
 	pipeinfo.write = pfd[1];
 	pipeinfo.unused = pfd[0];
 	if (command(node, pipeinfo) < 0)
 		printf("FIXME: returned nonzero but not stored\n"); // FIXME
-
 }
 
 // node부터 pipe_node까지를 한 단위로 끊어서 실행
@@ -88,6 +87,7 @@ int	exec_line(t_cmd *node)
 	// will not run echo or create outfile until heredoc input is completed.
 	if (chk_heredoc(node) < 0)
 		return (-1);
+	chk_rdtarget(node);
 	read_prev = STDIN_FILENO;
 	while (1)
 	{
