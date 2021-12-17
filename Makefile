@@ -1,5 +1,6 @@
 NAME = a.out
 SRCS = exec_line.c main.c utils.c exec_command.c redirection.c \
+	   redirection_heredoc.c \
 	   ft_execvpe.c \
 	   builtin/builtin.c \
 	   parse/tmp_listfunc.c \
