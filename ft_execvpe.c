@@ -6,7 +6,7 @@
 /*   By: kanlee <kanlee@student.42seoul.kr>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/16 07:37:04 by kanlee            #+#    #+#             */
-/*   Updated: 2021/12/16 19:33:59 by kanlee           ###   ########.fr       */
+/*   Updated: 2021/12/16 22:25:11 by kanlee           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -84,6 +84,7 @@ static int	exec_path(char *cmd, char **arg, char **env)
 int	ft_execvpe(char *cmd, char **arg, char **env)
 {
 	char	**pathlist;
+	char	**pathlist_bak;
 	char	*tmp;
 
 	if (is_builtin(cmd))
@@ -92,6 +93,7 @@ int	ft_execvpe(char *cmd, char **arg, char **env)
 	if (is_path(cmd))
 		return (exec_path(cmd, arg, env));
 	pathlist = get_pathlist();
+	pathlist_bak = pathlist;
 	while (pathlist && *pathlist)
 	{
 		tmp = ft_strjoin(*pathlist, cmd);
@@ -102,5 +104,6 @@ int	ft_execvpe(char *cmd, char **arg, char **env)
 		if (errno == EACCES)
 			return (-1);
 	}
+	free(pathlist_bak);
 	return (-1);
 }

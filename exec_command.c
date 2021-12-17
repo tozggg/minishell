@@ -6,7 +6,7 @@
 /*   By: kanlee <kanlee@student.42seoul.kr>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/11 17:13:43 by kanlee            #+#    #+#             */
-/*   Updated: 2021/12/16 19:35:43 by kanlee           ###   ########.fr       */
+/*   Updated: 2021/12/17 07:15:03 by kanlee           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -72,7 +72,10 @@ int	execute_command(t_cmd *node, t_rdinfo rd, t_pipeinfo pipeinfo)
 		printf("arg[%d]: %s\n", i, av[i++]);
 #endif
 	if (cmd == NULL)
+	{
+		free(av);
 		return (0);
+	}
 	if (is_builtin(cmd) && pipeinfo.read == 0 && pipeinfo.write == 1)
 		return (exec_builtin_single(av, rd));
 	pid = fork();
