@@ -6,7 +6,7 @@
 /*   By: kanlee <kanlee@student.42seoul.kr>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/11 17:34:32 by kanlee            #+#    #+#             */
-/*   Updated: 2021/12/18 21:09:10 by kanlee           ###   ########.fr       */
+/*   Updated: 2021/12/18 21:59:20 by kanlee           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -89,7 +89,17 @@ int	monitor_child(void)
 	{
 		finished_pid = waitpid(-1, &wstatus, 0);
 		if (finished_pid == g_lastpid)
+		{
 			exit_code = WEXITSTATUS(wstatus);
+			if (WIFSIGNALED(wstatus))
+			{
+				exit_code = WTERMSIG(wstatus) + 128;
+				if (exit_code == 131)
+					printf("Quit\n");
+				else if (exit_code != 130)
+					printf("Terminated by signal %d\n", exit_code - 128);
+			}
+		}
 		if (finished_pid < 0)
 			break ;
 	}
