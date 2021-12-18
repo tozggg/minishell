@@ -6,7 +6,7 @@
 /*   By: kanlee <kanlee@student.42seoul.kr>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/15 11:16:04 by kanlee            #+#    #+#             */
-/*   Updated: 2021/12/16 06:59:59 by kanlee           ###   ########.fr       */
+/*   Updated: 2021/12/18 16:46:59 by kanlee           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,7 +32,7 @@ int	is_builtin(char *cmd)
 int exec_builtin(char **av)
 {
 	if (ft_strequ(av[0], "echo"))
-		return (1);
+		return (do_echo(av));
 	if (ft_strequ(av[0], "cd"))
 		return (1);
 	if (ft_strequ(av[0], "pwd"))
