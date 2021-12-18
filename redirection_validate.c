@@ -6,7 +6,7 @@
 /*   By: kanlee <kanlee@student.42seoul.kr>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/18 17:19:52 by kanlee            #+#    #+#             */
-/*   Updated: 2021/12/18 20:39:02 by kanlee           ###   ########.fr       */
+/*   Updated: 2021/12/18 22:53:15 by kanlee           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -97,12 +97,12 @@ void	validate_redirection(t_cmd *node)
 			if (!is_target_valid(node, &willcreate))
 			{
 				head->cmd_type = TYPE_INVALID;
-				ft_lstclear(&willcreate, free);
 				break ;
 			}
 		}
 		node = node->next;
 	}
+	ft_lstclear(&willcreate, free);
 }
 
 void	chk_rdtarget(t_cmd *node)
