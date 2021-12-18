@@ -7,14 +7,27 @@ SRCS = exec_line.c main.c utils.c exec_command.c redirection.c \
 	   parse/tmp_parser.c
 OBJS = $(SRCS:.c=.o)
 CFLAGS = -Wall -Wextra
+LDLIBS = -lreadline -Llibft -lft
 
+UNAME := $(shell uname)
+ifeq ($(UNAME),Darwin)
+	UNAME_M := $(shell uname -m)
+	ifeq ($(UNAME_M),x86_64)
+		CFLAGS	+= -I${HOME}/.brew/opt/readline/include
+		LDLIBS	+= -L${HOME}/.brew/opt/readline/lib
+	endif
+	ifeq ($(UNAME_M),arm64)
+		CFLAGS	+= -I/opt/homebrew/opt/readline/include
+		LDLIBS	+= -L/opt/homebrew/opt/readline/lib
+	endif
+endif
 .PHONY: all clean fclean re test
 
 all: $(NAME)
 
 $(NAME): $(OBJS)
 	@$(MAKE) bonus -C libft
-	gcc $(CFLAGS) $(OBJS) -lreadline -Llibft -lft -o $(NAME)
+	gcc $(CFLAGS) $(OBJS) $(LDLIBS) -o $(NAME)
 
 %.o: %.c minishell.h
 	gcc $(CFLAGS) -c $< -o $@

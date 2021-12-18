@@ -6,7 +6,7 @@
 /*   By: taejkim <taejkim@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/08 16:59:27 by taejkim           #+#    #+#             */
-/*   Updated: 2021/12/14 22:55:21 by kanlee           ###   ########.fr       */
+/*   Updated: 2021/12/18 15:53:55 by kanlee           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,7 +32,10 @@ t_cmd	*init_cmd(void)
 
 	cmd = (t_cmd *)malloc(sizeof(t_cmd));
 	if (!cmd)
-		error_out("malloc error");
+	{
+		perror("malloc");
+		exit(1);
+	}
 	cmd->token = ft_strdup("");
 	cmd->cmd_type = 0;
 	cmd->cmd_end = 0;
@@ -101,7 +104,10 @@ t_env_key	*init_env_key(void)
 
 	env_key = (t_env_key *)malloc(sizeof(t_env_key));
 	if (!env_key)
-		error_out("malloc error");
+	{
+		perror("malloc");
+		exit(1);
+	}
 	env_key->is_key = 0;
 	env_key->key = ft_strdup("");
 	env_key->next = NULL;
