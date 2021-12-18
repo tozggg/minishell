@@ -6,7 +6,7 @@
 /*   By: kanlee <kanlee@student.42seoul.kr>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/16 07:37:04 by kanlee            #+#    #+#             */
-/*   Updated: 2021/12/16 22:25:11 by kanlee           ###   ########.fr       */
+/*   Updated: 2021/12/18 21:25:20 by kanlee           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,7 +38,7 @@ static char	**get_pathlist(void)
 	char		*tmp;
 	char		**ret;
 
-	pathenv = getenv("PATH");
+	pathenv = getenv("PATH");  //TODO: get value from custom env list
 	pathlist = ft_split(pathenv, ':');
 	ret = pathlist;
 	while (pathlist && *pathlist)
@@ -88,7 +88,7 @@ int	ft_execvpe(char *cmd, char **arg, char **env)
 	char	*tmp;
 
 	if (is_builtin(cmd))
-		return (exec_builtin(arg));
+		exit(exec_builtin(arg));
 	// if absolute or relative path, execute exact target.
 	if (is_path(cmd))
 		return (exec_path(cmd, arg, env));
