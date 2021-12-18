@@ -6,7 +6,7 @@
 /*   By: kanlee <kanlee@student.42seoul.kr>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/11 17:13:43 by kanlee            #+#    #+#             */
-/*   Updated: 2021/12/17 08:05:55 by kanlee           ###   ########.fr       */
+/*   Updated: 2021/12/18 20:32:29 by kanlee           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,6 +17,8 @@
 #include "minishell.h"
 #include "libft/libft.h"
 #include "parse/tmp_listfunc.h"
+
+pid_t	g_lastpid;
 
 void	child_process(char **av, t_rdinfo rd, t_pipeinfo pipeinfo)
 {
@@ -92,6 +94,7 @@ int	execute_command(t_cmd *node, t_rdinfo rd, t_pipeinfo pipeinfo)
 		child_process(av, rd, pipeinfo);
 	}
 	// parent
+	g_lastpid = pid;
 	if (rd.write != STDOUT_FILENO)
 		close(rd.write);
 	if (rd.read != STDIN_FILENO)
@@ -111,14 +114,14 @@ int	command(t_cmd *node, t_pipeinfo pipeinfo)
 	rd = (t_rdinfo){STDIN_FILENO, STDOUT_FILENO};
 	head = node;
 	if (head->cmd_type == TYPE_INVALID)
-		return (-1);
+		return (1);
 	while (1)
 	{
 		rdtype = is_redirection_node(node);
 		if (rdtype != NONE)
 		{
 			if (store_rdinfo(node, &rd, rdtype) < 0)
-				return (-1);
+				return (1);
 			node->cmd_type = TYPE_RDSIGN;
 			node->next->cmd_type = TYPE_RDTARGET;
 			node = node->next;
@@ -127,6 +130,5 @@ int	command(t_cmd *node, t_pipeinfo pipeinfo)
 			break ;
 		node = node->next;
 	}
-	execute_command(head, rd, pipeinfo);
-	return (0);
+	return (execute_command(head, rd, pipeinfo));
 }

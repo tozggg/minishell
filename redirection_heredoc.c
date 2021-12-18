@@ -6,7 +6,7 @@
 /*   By: kanlee <kanlee@student.42seoul.kr>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/17 11:51:31 by kanlee            #+#    #+#             */
-/*   Updated: 2021/12/18 04:25:08 by kanlee           ###   ########.fr       */
+/*   Updated: 2021/12/18 20:53:54 by kanlee           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,7 +37,7 @@ int	cleanup(int stdin_bak)
 	{
 		printf("heredoc interrupted\n");
 		dup2(stdin_bak, STDIN_FILENO);
-		return (-1);
+		return (130);
 	}
 }
 
@@ -47,8 +47,8 @@ int	cleanup(int stdin_bak)
  *   heredoc input is completed.
  * New sighandler will close STDIN to break current readline.
  * if input == NULL && STDIN is not terminal, it means we met SIGINT.
- * in this case, restore STDIN and return -1.
- * In general situation, write input to tmpfile.
+ * in this case, restore STDIN and return 130.
+ * In general situation, write input to tmpfile and return 0.
 */
 int	write_to_tmpfile(int fd, char *limit)
 {
@@ -101,35 +101,34 @@ int	open_available(char **tmpfilename)
 /* open tmp file for write
  *   print heredoc prompt
  *   read input from stdin, write to tmpfile
- *   return -1 if open failed or interrupted.
  * while input==limitstr
  * print warning when reached EOF before Limitstr found.
  * close tmpfile
  * open it again read-only
  * unlink() --- tmpfile will be deleted after it's closed
  * change RD_TARGET content to readable fd.
+ * return 1 if open failed or 130 if interrupted.
 */
-int	read_heredoc(t_cmd *node)
+int	read_heredoc(t_cmd *node, char *limit)
 {
 	int		fd;
-	char	*limit;
 	char	*tmpfilename;
+	int		ret;
 
-	limit = node->next->token;
 	fd = open_available(&tmpfilename);
 	if (fd < 0)
 	{
 		printf("Fatal: can't create tmpfile for heredoc\n");
-		return (-1);
+		return (1);
 	}
-	if (write_to_tmpfile(fd, limit) < 0)
+	ret = write_to_tmpfile(fd, limit);
+	close(fd);
+	if (ret != 0)
 	{
-		close(fd);
 		unlink(tmpfilename);
 		free(tmpfilename);
-		return (-1);
+		return (ret);
 	}
-	close(fd);
 	fd = open(tmpfilename, O_RDONLY);
 	unlink(tmpfilename);
 	free(tmpfilename);

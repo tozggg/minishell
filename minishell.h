@@ -6,7 +6,7 @@
 /*   By: kanlee <kanlee@student.42seoul.kr>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/11 17:00:27 by kanlee            #+#    #+#             */
-/*   Updated: 2021/12/18 16:47:36 by kanlee           ###   ########.fr       */
+/*   Updated: 2021/12/18 20:51:54 by kanlee           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -55,7 +55,7 @@ int		ft_execvpe(char *cmd, char **arg, char **env);
 void	chk_rdtarget(t_cmd *node);
 int		is_redirection_node(t_cmd *node);
 int		store_rdinfo(t_cmd *node, t_rdinfo *rd, int rdtype);
-int		read_heredoc(t_cmd *node);
+int		read_heredoc(t_cmd *node, char *limit);
 
 /* utils.c */
 void	ft_lstcut(t_list *lst, t_list *el);
