@@ -6,7 +6,7 @@
 /*   By: taejkim <taejkim@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/08 16:59:27 by taejkim           #+#    #+#             */
-/*   Updated: 2021/12/17 09:37:51 by taejkim          ###   ########.fr       */
+/*   Updated: 2021/12/19 14:03:31 by taejkim          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -193,13 +193,18 @@ char	*envp_decision(t_cmd *cmd, char *line)
 	
 	env_key = init_env_key();
 	++line;
-	if (!(*line) || *line == ' ' || *line == '\"')
+	if (!is_allow_envpname(*line))
 	{
-		env_key->key = append(env_key->key, '$');
+		// FIXME =====================================
+		if (*line == '?')
+		{
+			env_key->key = append(env_key->key, '?');
+			++line;
+		}
+		else if (*line != '\'')
+			env_key->key = append(env_key->key, '$');
 		add_env_key(cmd, env_key);
 	}
-	else if (*line == '\'')
-		add_env_key(cmd, env_key);
 	else
 	{
 		env_key->is_key = 1;
@@ -228,9 +233,16 @@ char	*big_quote_envp_decision(t_cmd *cmd, char *line)
 	
 	env_key = init_env_key();
 	++line;
-	if (!(*line) || *line == ' ' || *line == '\'' || *line == '\"')
+	if (!is_allow_envpname(*line))
 	{
-		env_key->key = append(env_key->key, '$');
+		// FIXME =====================================
+		if (*line == '?')
+		{
+			env_key->key = append(env_key->key, '?');
+			++line;
+		}	
+		else
+			env_key->key = append(env_key->key, '$');
 		add_env_key(cmd, env_key);
 	}
 	else
@@ -324,6 +336,8 @@ int	check_cmd(t_cmd *cmd)
 	return (0);
 }
 
+
+// make_env ---------------------------------
 void	add_env(t_env **ptr, t_env *node)
 {
 	t_env *head;
@@ -339,12 +353,10 @@ void	add_env(t_env **ptr, t_env *node)
 	}
 }
 
-t_env	*make_env(char **envp)
+t_env	*make_env(char **envp, char *key, char *value)
 {
 	t_env	*head;
 	t_env	*tmp;
-	char	*key;
-	char	*value;
 
 	head = NULL;
 	while (*envp)
@@ -360,6 +372,7 @@ t_env	*make_env(char **envp)
 		tmp = (t_env *)malloc(sizeof(t_env));
 		if (!tmp)
 			error_out("malloc error");
+		tmp->is_env = 1;
 		tmp->key = ft_strdup(key);
 		tmp->value = ft_strdup(value);
 		add_env(&head, tmp);
@@ -368,6 +381,8 @@ t_env	*make_env(char **envp)
 	return (head);
 }
 
+
+// parse_env ---------------------------------------------------------------
 char	*sandwich(char *token, char *env_value, int env_len, int flag)
 {
 	char	*res;
@@ -396,18 +411,34 @@ char	*sandwich(char *token, char *env_value, int env_len, int flag)
 	return (res);
 }
 
-char	*get_value(t_env *g_env, char *key)
+char	*get_value(t_env *env, char *key)
 {
-	while (g_env)
+	while (env)
 	{
-		if (ft_strequ(key, g_env->key))
-			return (g_env->value);
-		g_env = g_env->next;
+		if (ft_strequ(key, env->key))
+			return (env->value);
+		env = env->next;
 	}
 	return (NULL);
 }
 
-void	parse_env(t_cmd *cmd, t_env *g_env)
+char	*parse_env_not_key(char *token, char *key)
+{
+	char	*res;
+	char	*tmp;
+
+	if (ft_strequ(key, "?"))
+	{
+		tmp = ft_itoa(g_exit_status);
+		res = sandwich(token, tmp, ft_strlen(tmp), 0);
+		free(tmp);
+	}
+	else
+		res = sandwich(token, key, ft_strlen(key), 0);
+	return (res);
+}
+
+void	parse_env(t_cmd *cmd, t_env *env)
 {
 	t_env_key	*tmp;
 	char		*value;
@@ -419,14 +450,14 @@ void	parse_env(t_cmd *cmd, t_env *g_env)
 		{
 			if (tmp->is_key)
 			{
-				value = get_value(g_env, tmp->key);
+				value = get_value(env, tmp->key);
 				if (value)
 					cmd->token = sandwich(cmd->token, value, ft_strlen(value), 0);
 				else
 					cmd->token = sandwich(cmd->token, "", 0, 0);
 			}
 			else
-				cmd->token = sandwich(cmd->token, tmp->key, ft_strlen(tmp->key), 0);
+				cmd->token = parse_env_not_key(cmd->token, tmp->key);
 			tmp = tmp->next;
 		}
 		cmd = cmd->next;

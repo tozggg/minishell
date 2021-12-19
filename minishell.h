@@ -6,7 +6,7 @@
 /*   By: taejkim <taejkim@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/11 17:00:27 by kanlee            #+#    #+#             */
-/*   Updated: 2021/12/17 07:22:16 by taejkim          ###   ########.fr       */
+/*   Updated: 2021/12/17 17:40:41 by taejkim          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,6 +15,8 @@
 
 # include "libft/libft.h"
 # include "parse/tmp_listfunc.h"
+
+extern int	g_exit_status;
 
 typedef struct s_pipeinfo {
 	int	read;
@@ -60,6 +62,8 @@ void	safe_close_readend(int fd);
 /* error.c */
 void	error_out(char *str);
 void	err_print(int err_flag);
+void	errno_print(int errno);
+void	identifier_err_print(void);
 
 /* builtin/builtin.c */
 int		is_builtin(char *cmd);

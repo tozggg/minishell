@@ -6,7 +6,7 @@
 /*   By: taejkim <taejkim@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/11 16:59:43 by kanlee            #+#    #+#             */
-/*   Updated: 2021/12/17 09:20:28 by taejkim          ###   ########.fr       */
+/*   Updated: 2021/12/17 16:52:44 by taejkim          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,7 +19,7 @@
 #include "libft/libft.h"
 #include "parse/tmp_listfunc.h"
 
-int		exit_status = 0;
+int		g_exit_status = 0;
 
 
 
@@ -48,7 +48,7 @@ void	sig_handler(int signo)
 
 int	main(int ac, char **av, char **envp)
 {
-	t_env	*g_env;
+	t_env	*env;
 	char	*line;
 	t_cmd	*cmd;
 	int		err_flag;
@@ -57,7 +57,7 @@ int	main(int ac, char **av, char **envp)
 	(void)av;
 	signal(SIGINT, sig_handler);
 	signal(SIGQUIT, sig_handler);
-	g_env = make_env(envp);
+	env = make_env(envp, NULL, NULL);
 	line = 0;
 	cmd = 0;
 	while (1)
@@ -69,7 +69,7 @@ int	main(int ac, char **av, char **envp)
 			err_flag = check_cmd(cmd);
 		err_print(err_flag);
 
-		parse_env(cmd, g_env);
+		parse_env(cmd, env);
 
 		printf("===========================\n");
 		t_cmd *tmp = cmd;
