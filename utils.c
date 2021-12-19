@@ -6,45 +6,14 @@
 /*   By: kanlee <kanlee@student.42seoul.kr>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/11 17:02:02 by kanlee            #+#    #+#             */
-/*   Updated: 2021/12/14 20:54:12 by kanlee           ###   ########.fr       */
+/*   Updated: 2021/12/19 18:21:48 by kanlee           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
+#include <stdio.h>
 #include <stdlib.h>
 #include "minishell.h"
 #include "libft/libft.h"
-#include <stdio.h>
-
-// terminate list at specified element
-// remainders should be saved befor function call
-void	ft_lstcut(t_list *lst, t_list *el)
-{
-	if (!lst || !el)
-		return ;
-	while (lst != NULL && lst->next != el)
-		lst = lst->next;
-	ft_lstdelone(lst->next, free);
-	lst->next = NULL;
-}
-
-// remove specifed element and connect prev/next nodes
-// edge cases NOT thoroughly checked !!!
-void	ft_lstremove(t_list **head, t_list *el)
-{
-	t_list	*node;
-
-	node = *head;
-	if (*head == el)
-	{
-		*head = (*head)->next;
-		ft_lstdelone(el, free);
-		return ;
-	}
-	while (node != NULL && node->next != el)
-		node = node->next;
-	node->next = node->next->next;
-	ft_lstdelone(el, free);
-}
 
 static int	cnt_cmd_arg(t_cmd *node)
 {
@@ -88,6 +57,33 @@ char	**listtostrarray(t_cmd *node)
 	}
 	str[i] = NULL;
 	return (str);
+}
+
+// node 이후에 pipe가 존재하는지 확인
+// pipe 바로 전 또는 list_end까지가 하나의 커맨드
+t_cmd	*has_pipe(t_cmd *node)
+{
+	while (node != NULL)
+	{
+		if (node->next == NULL || ft_strequ(node->next->token, "|"))
+		{
+			node->cmd_end = 1;
+			return (node->next);
+		}
+		node = node->next;
+	}
+	return (NULL);
+}
+
+t_cmd	*has_heredoc(t_cmd *node)
+{
+	while (node != NULL)
+	{
+		if (node->next != NULL && ft_strequ(node->next->token, "<<"))
+			return (node->next);
+		node = node->next;
+	}
+	return (NULL);
 }
 
 void	safe_close_readend(int fd)

@@ -6,7 +6,7 @@
 /*   By: taejkim <taejkim@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/11 16:59:43 by kanlee            #+#    #+#             */
-/*   Updated: 2021/12/19 16:50:35 by kanlee           ###   ########.fr       */
+/*   Updated: 2021/12/19 18:11:57 by kanlee           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -87,7 +87,7 @@ int	main(int ac, char **av, char **envp)
 		if (err_flag)
 			continue;
 		parse_env(cmd, env);
-		g_exit_status = exec_line(cmd, &env);
+		g_exit_status = exec_line(cmd, &env, g_exit_status);
 	}
 	return (0);
 }

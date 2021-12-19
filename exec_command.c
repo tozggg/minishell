@@ -6,7 +6,7 @@
 /*   By: kanlee <kanlee@student.42seoul.kr>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/11 17:13:43 by kanlee            #+#    #+#             */
-/*   Updated: 2021/12/19 16:41:15 by kanlee           ###   ########.fr       */
+/*   Updated: 2021/12/19 18:24:49 by kanlee           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,7 +23,6 @@ void	child_process(char **av, t_rdinfo rd, t_pipeinfo pipeinfo, t_env **env)
 	printf("%s: read %d - write %d - tobefree %d\n", av[0],
 		pipeinfo.read, pipeinfo.write, pipeinfo.unused);
 #endif
-//////////////  pipe  ///////////
 	if (pipeinfo.write != STDOUT_FILENO)
 		safe_close_readend(pipeinfo.unused);
 	dup2(pipeinfo.read, STDIN_FILENO);
@@ -32,11 +31,9 @@ void	child_process(char **av, t_rdinfo rd, t_pipeinfo pipeinfo, t_env **env)
 	dup2(pipeinfo.write, STDOUT_FILENO);
 	if (pipeinfo.write != STDOUT_FILENO)
 		close(pipeinfo.write);
-////////// redirection /////////
 	dup2(rd.write, STDOUT_FILENO);
 	dup2(rd.read, STDIN_FILENO);
-////////////   ready   //////////////
-	if (ft_execvpe(av[0], av, env) != 0)  
+	if (ft_execvpe(av[0], av, env) != 0)
 	{
 		perror(av[0]);
 		if (errno == ENOENT)
@@ -46,34 +43,33 @@ void	child_process(char **av, t_rdinfo rd, t_pipeinfo pipeinfo, t_env **env)
 	}
 }
 
-// child process에서 cmd 실행
-// 리디렉션이 파이프보다 우선순위가 더 높으므로
-// 파이프를 먼저 적용 후 rdinfo가 지정한 대로 in/out을 overwrite
-// main process는 child가 종료될 때까지 대기
-// if cmd is builtin without pipe, run it in main process.
-// return exit_code * (-1) to distingish with other case.
-// if child process is created, return pid.
-// this pid's exit status will be real exit code of entire command.
+/* child process에서 cmd 실행
+ * 리디렉션이 파이프보다 우선순위가 더 높으므로
+ * 파이프를 먼저 적용 후 rdinfo가 지정한 대로 in/out을 overwrite
+ * main process는 child가 종료될 때까지 대기
+ * if cmd is builtin without pipe, run it in main process.
+ * return exit_code * (-1) to distingish with other case.
+ * if child process is created, return pid.
+ * this pid's exit status will be real exit code of entire command.
+*/
 int	execute_command(t_cmd *node, t_rdinfo rd, t_pipeinfo pipeinfo, t_env **env)
 {
-	char	*cmd;
 	char	**av;
 	pid_t	pid;
 
 	av = listtostrarray(node);
-	cmd = av[0];
 #ifdef DEBUG
-	printf("cmd: %s\n", cmd);
-	int i = 0;
-	while (av[i] != 0)
-		printf("arg[%d]: %s\n", i, av[i++]);
+	int i = -1;
+	while (av[++i] != 0)
+		printf("arg[%d]:%s ", i, av[i]);
+	printf("\n");
 #endif
-	if (cmd == NULL)
+	if (av[0] == NULL)
 	{
 		free(av);
 		return (0);
 	}
-	if (is_builtin(cmd) && pipeinfo.read == 0 && pipeinfo.write == 1)
+	if (is_builtin(av[0]) && pipeinfo.read == 0 && pipeinfo.write == 1)
 		return (exec_builtin_single(av, rd, env) * -1);
 	pid = fork();
 	if (pid < 0)
@@ -92,8 +88,10 @@ int	execute_command(t_cmd *node, t_rdinfo rd, t_pipeinfo pipeinfo, t_env **env)
 	return (pid);
 }
 
-// 리디렉션 토큰이 존재한다면 rdinfo에 어디로 read,write할 것인지 저장 후 execute_command로 전달
-// 왼쪽부터 순차적으로 처리하되, file open 실패하면 중단
+/* 리디렉션 토큰이 존재한다면 rdinfo에 어디로 read,write할 것인지 저장 후
+ * execute_command로 전달
+ * 왼쪽부터 순차적으로 처리하되, file open 실패하면 중단
+*/
 int	command(t_cmd *node, t_pipeinfo pipeinfo, t_env **env)
 {
 	t_cmd		*head;

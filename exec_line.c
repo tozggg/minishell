@@ -6,43 +6,16 @@
 /*   By: kanlee <kanlee@student.42seoul.kr>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/11 17:34:32 by kanlee            #+#    #+#             */
-/*   Updated: 2021/12/19 16:40:34 by kanlee           ###   ########.fr       */
+/*   Updated: 2021/12/19 19:48:02 by kanlee           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
+#include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
 #include <sys/wait.h>
 #include "minishell.h"
 #include "libft/libft.h"
-#include <stdio.h>
-
-// node 이후에 pipe가 존재하는지 확인
-// pipe 바로 전 또는 list_end까지가 하나의 커맨드
-t_cmd	*has_pipe(t_cmd *node)
-{
-	while (node != NULL)
-	{
-		if (node->next == NULL || ft_strequ(node->next->token, "|"))
-		{
-			node->cmd_end = 1;
-			return (node->next);
-		}
-		node = node->next;
-	}
-	return (NULL);
-}
-
-t_cmd	*has_heredoc(t_cmd *node)
-{
-	while (node != NULL)
-	{
-		if (node->next != NULL && ft_strequ(node->next->token, "<<"))
-			return (node->next);
-		node = node->next;
-	}
-	return (NULL);
-}
 
 /* read_heredoc returns 0 if success, 1 if tmpfile creation failed,
  * 130 if interrupted by SIGINT
@@ -65,7 +38,8 @@ int	chk_heredoc(t_cmd *node)
 	return (0);
 }
 
-// pfd[0] should be closed in child process
+/* pfd[0] should be closed in child process
+*/
 int	exec_pipe(t_cmd *node, int read_fd, int *pfd, t_env **env)
 {
 	t_pipeinfo	pipeinfo;
@@ -103,16 +77,28 @@ int	monitor_child(pid_t lastpid)
 	return (exit_code);
 }
 
-// node부터 pipe_node까지를 한 단위로 끊어서 실행
-// 첫 cmd의 입력은 STDIN, 마지막 cmd의 입력은 STDOUT
-// exec_command will return nonzero if child process is created.
-// if not, return value is -1 * real exit_code.
-int	exec_line(t_cmd *node, t_env **env)
+int	refine(int exit_code)
+{
+	if (exit_code > 0)
+		exit_code = monitor_child(exit_code);
+	else
+		exit_code *= -1;
+#ifdef DEBUG
+	printf("exit code:[%d]\n", exit_code);
+#endif
+	return (exit_code);
+}
+
+/* node부터 pipe_node까지를 한 단위로 끊어서 실행
+ * 첫 cmd의 입력은 STDIN, 마지막 cmd의 입력은 STDOUT
+ * exec_command will return nonzero if child process is created.
+ * if not, return value is -1 * real exit_code.
+*/
+int	exec_line(t_cmd *node, t_env **env, int exit_code)
 {
 	t_cmd		*pipe_node;
 	int			pfd[2];
 	int			read_prev;
-	int			exit_code;
 
 	// before executing, read HEREDOC first as bash does it.
 	// echo asdf > outfile | cat << HERE
@@ -120,6 +106,7 @@ int	exec_line(t_cmd *node, t_env **env)
 	exit_code = chk_heredoc(node);
 	if (exit_code != 0)
 		return (exit_code);
+	// this mimics bash 4.4.20 behavior. Needs more tests on 3.2.57 of Cluster Mac.
 	chk_rdtarget(node);
 	read_prev = STDIN_FILENO;
 	while (1)
@@ -138,10 +125,5 @@ int	exec_line(t_cmd *node, t_env **env)
 	pfd[1] = STDOUT_FILENO;
 	exit_code = exec_pipe(node, read_prev, pfd, env);
 	safe_close_readend(read_prev);
-	if (exit_code > 0)
-		exit_code = monitor_child(exit_code);
-	else
-		exit_code *= -1;
-	printf("exit code = %d\n", exit_code);
-	return (exit_code);
+	return (refine(exit_code));
 }

@@ -6,7 +6,7 @@
 /*   By: kanlee <kanlee@student.42seoul.kr>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/18 17:19:52 by kanlee            #+#    #+#             */
-/*   Updated: 2021/12/19 16:41:55 by kanlee           ###   ########.fr       */
+/*   Updated: 2021/12/19 17:39:09 by kanlee           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,20 +18,6 @@
 #include <errno.h>
 #include "minishell.h"
 #include "libft/libft.h"
-
-static t_cmd	*has_pipe(t_cmd *node)
-{
-	while (node != NULL)
-	{
-		if (node->next == NULL || ft_strequ(node->next->token, "|"))
-		{
-			node->cmd_end = 1;
-			return (node->next);
-		}
-		node = node->next;
-	}
-	return (NULL);
-}
 
 int	fileexists(char *target)
 {

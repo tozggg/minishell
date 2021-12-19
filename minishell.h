@@ -6,7 +6,7 @@
 /*   By: taejkim <taejkim@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/11 17:00:27 by kanlee            #+#    #+#             */
-/*   Updated: 2021/12/19 17:11:57 by kanlee           ###   ########.fr       */
+/*   Updated: 2021/12/19 18:22:02 by kanlee           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -109,7 +109,7 @@ int		is_allow_envpname(char c);
 int		is_unspecified_char(char c);
 
 /* exec_line.c */
-int		exec_line(t_cmd *head, t_env **env);
+int		exec_line(t_cmd *head, t_env **env, int exitcode);
 
 /* exec_command.c */
 int		command(t_cmd *node, t_pipeinfo pipeinfo, t_env **env);
@@ -124,9 +124,9 @@ int		store_rdinfo(t_cmd *node, t_rdinfo *rd, int rdtype);
 int		read_heredoc(t_cmd *node, char *limit);
 
 /* utils.c */
-void	ft_lstcut(t_list *lst, t_list *el);
-void	ft_lstremove(t_list **head, t_list *el);
 char	**listtostrarray(t_cmd *list);
+t_cmd	*has_pipe(t_cmd *node);
+t_cmd	*has_heredoc(t_cmd *node);
 void	safe_close_readend(int fd);
 
 /* error.c */
