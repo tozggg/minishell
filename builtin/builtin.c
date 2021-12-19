@@ -6,7 +6,7 @@
 /*   By: taejkim <taejkim@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/15 11:16:04 by kanlee            #+#    #+#             */
-/*   Updated: 2021/12/19 17:16:52 by taejkim          ###   ########.fr       */
+/*   Updated: 2021/12/19 19:29:01 by taejkim          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,7 +29,7 @@ int	is_builtin(char *cmd)
  * TODO: if caller is child process, should we? what about return value?
  * 		NOTE: execve is not called in this case
 */
-int	exec_builtin(char **av)
+int	exec_builtin(char **av, t_env **env)
 {
 	int	ac;
 
@@ -43,11 +43,11 @@ int	exec_builtin(char **av)
 	if (ft_strequ(av[0], "pwd"))
 		return (1);
 	if (ft_strequ(av[0], "export"))
-		return (do_export(av, &g_env));
+		return (do_export(av, env));
 	if (ft_strequ(av[0], "unset"))
-		return (do_unset(av, &g_env));
+		return (do_unset(av, env));
 	if (ft_strequ(av[0], "env"))
-		return (do_env(av, &g_env));
+		return (do_env(av, env));
 	if (ft_strequ(av[0], "exit"))
 		return (do_exit(ac, av));
 	return (0);
@@ -58,7 +58,7 @@ int	exec_builtin(char **av)
  * execute builtin command
  * restore STDIN/STDOUT
 */
-int	exec_builtin_single(char **av, t_rdinfo rd)
+int	exec_builtin_single(char **av, t_rdinfo rd, t_env **env)
 {
 	int	stdin_bak;
 	int	stdout_bak;
@@ -69,7 +69,7 @@ int	exec_builtin_single(char **av, t_rdinfo rd)
 	dup2(rd.write, STDOUT_FILENO);
 	stdin_bak = dup(STDIN_FILENO);
 	dup2(rd.read, STDIN_FILENO);
-	ret = exec_builtin(av);
+	ret = exec_builtin(av, env);
 	if (rd.write != STDOUT_FILENO)
 	{
 		close(rd.write);

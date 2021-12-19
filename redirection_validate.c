@@ -3,22 +3,14 @@
 /*                                                        :::      ::::::::   */
 /*   redirection_validate.c                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: kanlee <kanlee@student.42seoul.kr>         +#+  +:+       +#+        */
+/*   By: taejkim <taejkim@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/18 17:19:52 by kanlee            #+#    #+#             */
-/*   Updated: 2021/12/18 22:53:15 by kanlee           ###   ########.fr       */
+/*   Updated: 2021/12/19 20:40:25 by taejkim          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <unistd.h>
-#include <sys/stat.h>
-#include <fcntl.h>
-#include <errno.h>
 #include "minishell.h"
-#include "libft/libft.h"
-#include "parse/tmp_listfunc.h"
 
 static t_cmd	*has_pipe(t_cmd *node)
 {

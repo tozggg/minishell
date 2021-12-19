@@ -6,18 +6,11 @@
 /*   By: taejkim <taejkim@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/17 03:40:42 by taejkim           #+#    #+#             */
-/*   Updated: 2021/12/19 17:10:06 by taejkim          ###   ########.fr       */
+/*   Updated: 2021/12/19 20:40:50 by taejkim          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include <stdlib.h>
-#include <unistd.h>
-#include <sys/wait.h>
 #include "minishell.h"
-#include "libft/libft.h"
-#include "parse/tmp_listfunc.h"
-#include <stdio.h>
-#include <string.h>
 
 void	error_out(char *str)
 {

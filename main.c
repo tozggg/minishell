@@ -6,21 +6,13 @@
 /*   By: taejkim <taejkim@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/11 16:59:43 by kanlee            #+#    #+#             */
-/*   Updated: 2021/12/19 17:35:14 by taejkim          ###   ########.fr       */
+/*   Updated: 2021/12/19 20:19:15 by taejkim          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <unistd.h>
-#include <sys/wait.h>
-#include <readline/readline.h>
 #include "minishell.h"
-#include "libft/libft.h"
-#include "parse/tmp_listfunc.h"
 
 int		g_exit_status = 0;
-t_env	*g_env = NULL;
 
 void	sig_handler(int signo)
 {
@@ -44,10 +36,26 @@ void	sig_handler(int signo)
 	}
 }
 
+void	get_line(char **line)
+{
+	extern int rl_catch_signals;
+
+	rl_catch_signals = 0;
+	if (*line)
+	{
+		free(*line);
+		*line = NULL;
+	}
+	*line = readline("$>");
+	if (*line == NULL)
+		error_out(" exit");
+	if (ft_strncmp(*line, "", 1))
+		add_history(*line);
+}
 
 int	main(int ac, char **av, char **envp)
 {
-	//t_env	*env;
+	t_env	*env;
 	char	*line;
 	t_cmd	*cmd;
 	int		err_flag;
@@ -56,8 +64,7 @@ int	main(int ac, char **av, char **envp)
 	(void)av;
 	signal(SIGINT, sig_handler);
 	signal(SIGQUIT, sig_handler);
-	//env = make_env(envp, NULL, NULL);
-	g_env = make_env(envp, NULL, NULL);
+	env = make_env(envp, NULL, NULL);
 	line = 0;
 	cmd = 0;
 	while (1)
@@ -68,13 +75,10 @@ int	main(int ac, char **av, char **envp)
 		if (!err_flag)
 			err_flag = check_cmd(cmd);
 		err_print(err_flag);
-
 		if (err_flag)
 			continue;
-		
-		parse_env(cmd, g_env);
-		g_exit_status = exec_line(cmd);
-
+		parse_env(cmd, env);
+		g_exit_status = exec_line(cmd, &env);
 	}
 	return (0);
 }

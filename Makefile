@@ -10,8 +10,13 @@ SRCS = exec_line.c main.c utils.c exec_command.c redirection.c \
 	   builtin/env.c \
 	   builtin/export.c \
 	   builtin/unset.c \
-	   parse/tmp_listfunc.c \
-	   parse/tmp_parser.c
+	   parse/cmd.c \
+	   parse/env_key.c \
+	   parse/env.c \
+	   parse/separate.c \
+	   parse/parse_env.c \
+	   parse/parse.c \
+	   parse/parse_utils.c
 
 OBJS = $(SRCS:.c=.o)
 CFLAGS = -Wall -Wextra

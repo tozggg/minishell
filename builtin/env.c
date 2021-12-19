@@ -6,19 +6,13 @@
 /*   By: taejkim <taejkim@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/17 16:55:20 by taejkim           #+#    #+#             */
-/*   Updated: 2021/12/19 14:05:46 by taejkim          ###   ########.fr       */
+/*   Updated: 2021/12/19 20:20:10 by taejkim          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <unistd.h>
-#include <string.h>
-#include <errno.h>
 #include "../minishell.h"
-#include "../libft/libft.h"
 
-void	print_env(t_env *env)
+static void	print_env(t_env *env)
 {
 	while (env)
 	{

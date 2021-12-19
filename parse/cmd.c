@@ -1,30 +1,15 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   tmp_listfunc.c                                     :+:      :+:    :+:   */
+/*   cmd.c                                              :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: taejkim <taejkim@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2021/12/08 16:59:27 by taejkim           #+#    #+#             */
-/*   Updated: 2021/12/17 03:43:47 by taejkim          ###   ########.fr       */
+/*   Created: 2021/12/19 19:59:29 by taejkim           #+#    #+#             */
+/*   Updated: 2021/12/19 20:49:57 by taejkim          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include <unistd.h>
-#include <stdlib.h>
-#include <fcntl.h>
-#include <stdio.h>
-#include <string.h>
-#include <errno.h>
-#include <readline/readline.h>
-#include <readline/history.h>
-#include <sys/wait.h>
-#include <dirent.h>
-#include <sys/stat.h>
-#include <termios.h>
-#include <term.h>
-#include "tmp_listfunc.h"
-#include "../libft/libft.h"
 #include "../minishell.h"
 
 t_cmd	*init_cmd(void)
@@ -40,6 +25,21 @@ t_cmd	*init_cmd(void)
 	cmd->env_key = NULL;
 	cmd->next = NULL;
 	return (cmd);
+}
+
+void	add_cmd(t_cmd **ptr, t_cmd *cmd)
+{
+	t_cmd	*tmp;
+
+	if (*ptr == NULL)
+		*ptr = cmd;
+	else
+	{
+		tmp = *ptr;
+		while (tmp->next)
+			tmp = tmp->next;
+		tmp->next = cmd;
+	}
 }
 
 void	destroy_cmd(t_cmd **ptr)
@@ -66,46 +66,31 @@ void	destroy_cmd(t_cmd **ptr)
 	*ptr = NULL;
 }
 
-void	add_cmd(t_cmd **ptr, t_cmd *cmd)
+int	check_cmd(t_cmd *cmd)
 {
-	t_cmd	*tmp;
+	int	prev_is_pipe;
+	int	prev_is_rdr;
 
-	if (*ptr == NULL)
-		*ptr = cmd;
-	else
+	if (ft_strequ(cmd->token, "|"))
+		return (SYNTAX_ERR);
+	prev_is_pipe = 0;
+	prev_is_rdr = 0;
+	while (cmd)
 	{
-		tmp = *ptr;
-		while (tmp->next)
-			tmp = tmp->next;
-		tmp->next = cmd;
+		if ((prev_is_pipe && ft_strequ(cmd->token, "|")) || \
+	(prev_is_rdr && (ft_strequ(cmd->token, "|") || is_redirection_node(cmd))))
+			return (SYNTAX_ERR);
+		if (ft_strequ(cmd->token, "|"))
+			prev_is_pipe = 1;
+		else
+			prev_is_pipe = 0;
+		if (is_redirection_node(cmd))
+			prev_is_rdr = 1;
+		else
+			prev_is_rdr = 0;
+		if (!(cmd->next) && ft_strequ(cmd->token, "|"))
+			return (SYNTAX_ERR);
+		cmd = cmd->next;
 	}
+	return (0);
 }
-
-void	add_env_key(t_cmd *cmd, t_env_key *env_key)
-{
-	t_env_key	*tmp;
-
-	if (cmd->env_key == NULL)
-		cmd->env_key = env_key;
-	else
-	{
-		tmp = cmd->env_key;
-		while (tmp->next)
-			tmp = tmp->next;
-		tmp->next = env_key;
-	}
-}
-
-t_env_key	*init_env_key(void)
-{
-	t_env_key	*env_key;
-
-	env_key = (t_env_key *)malloc(sizeof(t_env_key));
-	if (!env_key)
-		error_out("malloc error");
-	env_key->is_key = 0;
-	env_key->key = ft_strdup("");
-	env_key->next = NULL;
-	return (env_key);
-}
-
