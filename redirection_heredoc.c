@@ -6,7 +6,7 @@
 /*   By: kanlee <kanlee@student.42seoul.kr>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/17 11:51:31 by kanlee            #+#    #+#             */
-/*   Updated: 2021/12/18 20:53:54 by kanlee           ###   ########.fr       */
+/*   Updated: 2021/12/19 16:42:40 by kanlee           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,7 +17,6 @@
 #include <readline/readline.h>
 #include "minishell.h"
 #include "libft/libft.h"
-#include "parse/tmp_listfunc.h"
 
 void	sigint_in_heredoc_handler(int sig)
 {

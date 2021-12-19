@@ -6,7 +6,7 @@
 /*   By: kanlee <kanlee@student.42seoul.kr>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/12 20:53:33 by kanlee            #+#    #+#             */
-/*   Updated: 2021/12/18 19:43:34 by kanlee           ###   ########.fr       */
+/*   Updated: 2021/12/19 16:41:36 by kanlee           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,7 +16,6 @@
 #include <unistd.h>
 #include "minishell.h"
 #include "libft/libft.h"
-#include "parse/tmp_listfunc.h"
 
 int	is_redirection_node(t_cmd *node)
 {

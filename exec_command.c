@@ -6,7 +6,7 @@
 /*   By: kanlee <kanlee@student.42seoul.kr>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/11 17:13:43 by kanlee            #+#    #+#             */
-/*   Updated: 2021/12/19 17:13:55 by kanlee           ###   ########.fr       */
+/*   Updated: 2021/12/19 16:41:15 by kanlee           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,7 +16,6 @@
 #include <errno.h>
 #include "minishell.h"
 #include "libft/libft.h"
-#include "parse/tmp_listfunc.h"
 
 void	child_process(char **av, t_rdinfo rd, t_pipeinfo pipeinfo, t_env **env)
 {

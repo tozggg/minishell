@@ -6,7 +6,7 @@
 /*   By: taejkim <taejkim@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/11 16:59:43 by kanlee            #+#    #+#             */
-/*   Updated: 2021/12/19 18:52:35 by kanlee           ###   ########.fr       */
+/*   Updated: 2021/12/19 16:50:35 by kanlee           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,9 +15,9 @@
 #include <unistd.h>
 #include <sys/wait.h>
 #include <readline/readline.h>
+#include <readline/history.h>
 #include "minishell.h"
 #include "libft/libft.h"
-#include "parse/tmp_listfunc.h"
 
 int		g_exit_status = 0;
 
@@ -45,6 +45,22 @@ void	sig_handler(int signo)
 	}
 }
 
+void	get_line(char **line)
+{
+	extern int rl_catch_signals;
+
+	rl_catch_signals = 0;
+	if (*line)
+	{
+		free(*line);
+		*line = NULL;
+	}
+	*line = readline("$>");
+	if (*line == NULL)
+		error_out(" exit");
+	if (ft_strncmp(*line, "", 1))
+		add_history(*line);
+}
 
 int	main(int ac, char **av, char **envp)
 {
@@ -68,34 +84,10 @@ int	main(int ac, char **av, char **envp)
 		if (!err_flag)
 			err_flag = check_cmd(cmd);
 		err_print(err_flag);
-
-		parse_env(cmd, env);
-#if 0
-		printf("===========================\n");
-		t_cmd *tmp = cmd;
-		while (tmp)
-		{
-			printf("%s\t", tmp->token);
-			t_env_key *tmp_key = tmp->env_key;
-			while (tmp_key)
-			{
-				printf("%d:%s\t", tmp_key->is_key, tmp_key->key);
-				tmp_key = tmp_key->next;
-			}
-			printf("\n");
-			tmp = tmp->next;
-		}
-		printf("errflag=%d\n", err_flag);
-		printf("===========================\n");
-#endif
-		
-
 		if (err_flag)
 			continue;
-		
-
-		exec_line(cmd, &env);
-
+		parse_env(cmd, env);
+		g_exit_status = exec_line(cmd, &env);
 	}
 	return (0);
 }

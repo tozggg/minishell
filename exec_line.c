@@ -6,7 +6,7 @@
 /*   By: kanlee <kanlee@student.42seoul.kr>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/11 17:34:32 by kanlee            #+#    #+#             */
-/*   Updated: 2021/12/19 17:11:05 by kanlee           ###   ########.fr       */
+/*   Updated: 2021/12/19 16:40:34 by kanlee           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,7 +15,6 @@
 #include <sys/wait.h>
 #include "minishell.h"
 #include "libft/libft.h"
-#include "parse/tmp_listfunc.h"
 #include <stdio.h>
 
 // node 이후에 pipe가 존재하는지 확인

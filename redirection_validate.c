@@ -6,7 +6,7 @@
 /*   By: kanlee <kanlee@student.42seoul.kr>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/18 17:19:52 by kanlee            #+#    #+#             */
-/*   Updated: 2021/12/18 22:53:15 by kanlee           ###   ########.fr       */
+/*   Updated: 2021/12/19 16:41:55 by kanlee           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,7 +18,6 @@
 #include <errno.h>
 #include "minishell.h"
 #include "libft/libft.h"
-#include "parse/tmp_listfunc.h"
 
 static t_cmd	*has_pipe(t_cmd *node)
 {

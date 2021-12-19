@@ -6,23 +6,17 @@
 /*   By: taejkim <taejkim@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/19 14:50:58 by taejkim           #+#    #+#             */
-/*   Updated: 2021/12/19 15:34:02 by taejkim          ###   ########.fr       */
+/*   Updated: 2021/12/19 17:20:06 by kanlee           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include <stdio.h>
 #include <stdlib.h>
-#include <unistd.h>
-#include <string.h>
-#include <errno.h>
 #include "../minishell.h"
-#include "../libft/libft.h"
-#include "../parse/tmp_listfunc.h"
 
-int	is_valid_unset_str(char *str)
+static int	is_valid_unset_str(char *str)
 {
-	int start_not_number;
-	int i;
+	int	start_not_number;
+	int	i;
 
 	start_not_number = 0;
 	i = 0;
@@ -39,17 +33,17 @@ int	is_valid_unset_str(char *str)
 	return (1);
 }
 
-void	free_env(char *key, char *value, t_env *env)
+static void	free_env(char *key, char *value, t_env *env)
 {
 	if (key)
 		free(key);
 	if (value)
 		free(value);
 	if (env)
-		free(env);	
+		free(env);
 }
 
-void	del_env(char *key, t_env **ptr, t_env *prev, t_env *curr)
+static void	del_env(char *key, t_env **ptr, t_env *prev, t_env *curr)
 {
 	while (curr)
 	{
@@ -74,7 +68,7 @@ void	del_env(char *key, t_env **ptr, t_env *prev, t_env *curr)
 	}
 }
 
-int	unset_str(char *str, t_env **env)
+static int	unset_str(char *str, t_env **env)
 {
 	if (!is_valid_unset_str(str))
 		return (-1);
@@ -90,7 +84,7 @@ int	do_unset(char **av, t_env **env)
 	++av;
 	while (*av)
 	{
-		error_flag = unset_str(av, env);
+		error_flag = unset_str(*av, env);
 		++av;
 	}
 	if (error_flag)

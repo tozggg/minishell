@@ -6,7 +6,7 @@
 /*   By: taejkim <taejkim@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/17 03:40:42 by taejkim           #+#    #+#             */
-/*   Updated: 2021/12/17 17:40:13 by taejkim          ###   ########.fr       */
+/*   Updated: 2021/12/19 17:14:50 by kanlee           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,7 +15,6 @@
 #include <sys/wait.h>
 #include "minishell.h"
 #include "libft/libft.h"
-#include "parse/tmp_listfunc.h"
 #include <stdio.h>
 #include <string.h>
 
@@ -33,10 +32,10 @@ void	err_print(int err_flag)
 		ft_putendl_fd("minishell: invalid syntax", STDERR_FILENO);
 }
 
-void	errno_print(int errno)
+void	errno_print(int errnum)
 {
 	ft_putstr_fd("minishell: ", STDERR_FILENO);
-	ft_putendl_fd(strerror(errno), STDERR_FILENO);
+	ft_putendl_fd(strerror(errnum), STDERR_FILENO);
 }
 
 void	identifier_err_print(void)
