@@ -6,14 +6,14 @@
 /*   By: kanlee <kanlee@student.42seoul.kr>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/18 16:41:09 by kanlee            #+#    #+#             */
-/*   Updated: 2021/12/18 16:54:43 by kanlee           ###   ########.fr       */
+/*   Updated: 2021/12/18 23:07:03 by kanlee           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <stdio.h>
 #include "../libft/libft.h"
 
-int	do_echo(char **av)
+int	do_echo(int ac, char **av)
 {
 	int	nonl;
 

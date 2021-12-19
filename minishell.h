@@ -6,7 +6,7 @@
 /*   By: kanlee <kanlee@student.42seoul.kr>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/11 17:00:27 by kanlee            #+#    #+#             */
-/*   Updated: 2021/12/18 20:51:54 by kanlee           ###   ########.fr       */
+/*   Updated: 2021/12/18 23:07:38 by kanlee           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -67,5 +67,6 @@ void	safe_close_readend(int fd);
 int		is_builtin(char *cmd);
 int		exec_builtin_single(char **av, t_rdinfo rd);
 int		exec_builtin(char **av);
-int		do_echo(char **av);
+int		do_echo(int ac, char **av);
+int		do_exit(int ac, char **av);
 #endif
