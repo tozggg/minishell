@@ -6,7 +6,7 @@
 /*   By: taejkim <taejkim@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/17 17:17:27 by taejkim           #+#    #+#             */
-/*   Updated: 2021/12/19 14:53:53 by taejkim          ###   ########.fr       */
+/*   Updated: 2021/12/19 20:26:24 by kanlee           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,15 +39,15 @@ int		is_valid_export_str(char *str)
 	start_not_number = 0;
 	i = 0;
 	while (str[i])
-	{	
+	{
+		if (str[i] == '=' && i > 0)
+			return (1);
 		if (!is_allow_envpname(str[i]))
 			return (0);
 		if (!ft_isdigit(str[i]))
 			start_not_number = 1;
 		else if (!start_not_number)
 			return (0);
-		if (str[i] == '=' && i > 0)
-			return (1);
 		++i;
 	}
 	return (1);

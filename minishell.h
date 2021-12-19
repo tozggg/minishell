@@ -6,7 +6,7 @@
 /*   By: kanlee <kanlee@student.42seoul.kr>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/11 17:00:27 by kanlee            #+#    #+#             */
-/*   Updated: 2021/12/19 18:05:17 by kanlee           ###   ########.fr       */
+/*   Updated: 2021/12/19 20:27:38 by kanlee           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -77,5 +77,8 @@ int		is_builtin(char *cmd);
 int		exec_builtin_single(char **av, t_rdinfo rd, t_env **env);
 int		exec_builtin(char **av, t_env **env);
 int		do_echo(int ac, char **av);
+int		do_export(char **av, t_env **env);
+int		do_unset(char **av, t_env **env);
+int		do_env(char **av, t_env **env);
 int		do_exit(int ac, char **av);
 #endif

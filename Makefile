@@ -6,8 +6,8 @@ SRCS = exec_line.c main.c utils.c exec_command.c redirection.c \
 	   builtin/builtin.c \
 	   builtin/echo.c \
 	   builtin/export.c \
-	   builtin/env.c \
 	   builtin/unset.c \
+	   builtin/env.c \
 	   builtin/exit.c \
 	   error.c \
 	   parse/tmp_listfunc.c \
