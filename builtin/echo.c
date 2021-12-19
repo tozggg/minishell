@@ -6,7 +6,7 @@
 /*   By: kanlee <kanlee@student.42seoul.kr>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/18 16:41:09 by kanlee            #+#    #+#             */
-/*   Updated: 2021/12/18 23:07:03 by kanlee           ###   ########.fr       */
+/*   Updated: 2021/12/19 20:34:02 by kanlee           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,18 +18,18 @@ int	do_echo(int ac, char **av)
 	int	nonl;
 
 	nonl = 0;
-	if (av[1] && ft_strequ(av[1], "-n"))
+	if (ac > 1 && ft_strequ(av[1], "-n"))
 	{
 		av++;
 		nonl = 1;
 	}
 	while (*(++av))
 	{
-		printf("%s", *av);
+		ft_putstr_fd(*av, STDOUT_FILENO);
 		if (av[1] != NULL)
-			printf(" ");
+			ft_putchar_fd(' ', STDOUT_FILENO);
 	}
 	if (!nonl)
-		printf("\n");
+		ft_putendl_fd("", STDOUT_FILENO);
 	return (0);
 }

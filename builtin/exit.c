@@ -6,7 +6,7 @@
 /*   By: kanlee <kanlee@student.42seoul.kr>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/18 23:01:42 by kanlee            #+#    #+#             */
-/*   Updated: 2021/12/19 01:02:20 by kanlee           ###   ########.fr       */
+/*   Updated: 2021/12/19 20:57:17 by kanlee           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,6 +44,7 @@ static long	ft_atol(const char *nptr, int *err)
 }
 
 /* test cases
+ * exit		--								exit,		ret = 0
  * exit 3   -- 								exit,		ret = 3
  * exit 256 --								exit,		ret = 0
  * exit 3 a -- too many arguments,			no exit,	ret = 1
@@ -56,9 +57,10 @@ int	do_exit(int ac, char **av)
 	int	arg;
 	int	err;
 
-	ft_putendl_fd("exit", STDERR_FILENO);
+	if (isatty(STDIN_FILENO))
+		ft_putendl_fd("exit", STDERR_FILENO);
 	if (ac == 1)
-		exit(1);
+		exit(0);
 	arg = ft_atol(av[1], &err);
 	if (err)
 	{

@@ -6,7 +6,7 @@
 /*   By: kanlee <kanlee@student.42seoul.kr>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/15 11:16:04 by kanlee            #+#    #+#             */
-/*   Updated: 2021/12/19 20:28:17 by kanlee           ###   ########.fr       */
+/*   Updated: 2021/12/19 20:54:22 by kanlee           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,7 +45,6 @@ int	exec_builtin(char **av, t_env **env)
 		return (1);
 	if (ft_strequ(av[0], "export"))
 		return (do_export(av, env));
-		return (1);
 	if (ft_strequ(av[0], "unset"))
 		return (do_unset(av, env));
 	if (ft_strequ(av[0], "env"))
