@@ -6,7 +6,7 @@
 /*   By: kanlee <kanlee@student.42seoul.kr>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/16 07:37:04 by kanlee            #+#    #+#             */
-/*   Updated: 2021/12/18 21:25:20 by kanlee           ###   ########.fr       */
+/*   Updated: 2021/12/19 18:53:59 by kanlee           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,14 +31,14 @@ static int	is_dir(char *str)
 /* split $PATH to string array.
  * append '/' to every items
 */
-static char	**get_pathlist(void)
+static char	**get_pathlist(t_env *env)
 {
 	char		*pathenv;
 	char		**pathlist;
 	char		*tmp;
 	char		**ret;
 
-	pathenv = getenv("PATH");  //TODO: get value from custom env list
+	pathenv = get_value(env, "PATH");
 	pathlist = ft_split(pathenv, ':');
 	ret = pathlist;
 	while (pathlist && *pathlist)
@@ -81,23 +81,23 @@ static int	exec_path(char *cmd, char **arg, char **env)
  * if $PATH_2/cmd exists and executable, execute it
  * if anyting exists or executable, return FILE_NOT_FOUND or PERMISSION_DENIED
 */
-int	ft_execvpe(char *cmd, char **arg, char **env)
+int	ft_execvpe(char *cmd, char **arg, t_env **env)
 {
 	char	**pathlist;
 	char	**pathlist_bak;
 	char	*tmp;
 
 	if (is_builtin(cmd))
-		exit(exec_builtin(arg));
+		exit(exec_builtin(arg, env));
 	// if absolute or relative path, execute exact target.
 	if (is_path(cmd))
-		return (exec_path(cmd, arg, env));
-	pathlist = get_pathlist();
+		return (exec_path(cmd, arg, (char **){NULL})); // TODO: t_env to char**
+	pathlist = get_pathlist(*env);
 	pathlist_bak = pathlist;
 	while (pathlist && *pathlist)
 	{
 		tmp = ft_strjoin(*pathlist, cmd);
-		execve(tmp, arg, env);
+		execve(tmp, arg, (char **){NULL});    // TODO: t_env to NULL terminated char**
 		free(tmp);
 		free(*pathlist);
 		pathlist++;

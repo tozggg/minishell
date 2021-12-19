@@ -6,7 +6,7 @@
 /*   By: kanlee <kanlee@student.42seoul.kr>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/11 17:34:32 by kanlee            #+#    #+#             */
-/*   Updated: 2021/12/19 15:53:49 by kanlee           ###   ########.fr       */
+/*   Updated: 2021/12/19 17:11:05 by kanlee           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -67,14 +67,14 @@ int	chk_heredoc(t_cmd *node)
 }
 
 // pfd[0] should be closed in child process
-int	exec_pipe(t_cmd *node, int read_fd, int *pfd)
+int	exec_pipe(t_cmd *node, int read_fd, int *pfd, t_env **env)
 {
 	t_pipeinfo	pipeinfo;
 
 	pipeinfo.read = read_fd;
 	pipeinfo.write = pfd[1];
 	pipeinfo.unused = pfd[0];
-	return (command(node, pipeinfo));
+	return (command(node, pipeinfo, env));
 }
 
 int	monitor_child(pid_t lastpid)
@@ -108,7 +108,7 @@ int	monitor_child(pid_t lastpid)
 // 첫 cmd의 입력은 STDIN, 마지막 cmd의 입력은 STDOUT
 // exec_command will return nonzero if child process is created.
 // if not, return value is -1 * real exit_code.
-int	exec_line(t_cmd *node)
+int	exec_line(t_cmd *node, t_env **env)
 {
 	t_cmd		*pipe_node;
 	int			pfd[2];
@@ -130,14 +130,14 @@ int	exec_line(t_cmd *node)
 			break ;
 		// found pipe. this cmd will write to new pipe's write-end, and read from prev pipe's read-end.
 		pipe(pfd);
-		exec_pipe(node, read_prev, pfd); // new pipe's read-end is not needed in this cmd, so it should be closed in child process
+		exec_pipe(node, read_prev, pfd, env); // new pipe's read-end is not needed in this cmd, so it should be closed in child process
 		safe_close_readend(read_prev);
 		close(pfd[1]);
 		read_prev = pfd[0];
 		node = pipe_node->next;
 	}
 	pfd[1] = STDOUT_FILENO;
-	exit_code = exec_pipe(node, read_prev, pfd);
+	exit_code = exec_pipe(node, read_prev, pfd, env);
 	safe_close_readend(read_prev);
 	if (exit_code > 0)
 		exit_code = monitor_child(exit_code);

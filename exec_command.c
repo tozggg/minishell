@@ -6,7 +6,7 @@
 /*   By: kanlee <kanlee@student.42seoul.kr>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/11 17:13:43 by kanlee            #+#    #+#             */
-/*   Updated: 2021/12/19 16:08:59 by kanlee           ###   ########.fr       */
+/*   Updated: 2021/12/19 17:13:55 by kanlee           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,7 +18,7 @@
 #include "libft/libft.h"
 #include "parse/tmp_listfunc.h"
 
-void	child_process(char **av, t_rdinfo rd, t_pipeinfo pipeinfo)
+void	child_process(char **av, t_rdinfo rd, t_pipeinfo pipeinfo, t_env **env)
 {
 #ifdef DEBUG
 	printf("%s: read %d - write %d - tobefree %d\n", av[0],
@@ -37,13 +37,11 @@ void	child_process(char **av, t_rdinfo rd, t_pipeinfo pipeinfo)
 	dup2(rd.write, STDOUT_FILENO);
 	dup2(rd.read, STDIN_FILENO);
 ////////////   ready   //////////////
-	if (ft_execvpe(av[0], av, (char **){NULL}) != 0) //TODO: envp  
+	if (ft_execvpe(av[0], av, env) != 0)  
 	{
 		perror(av[0]);
 		if (errno == ENOENT)
 			exit(127);
-		else if (errno == EACCES || errno == EISDIR || errno == ENOTDIR)
-			exit(126);
 		else
 			exit(126);
 	}
@@ -57,7 +55,7 @@ void	child_process(char **av, t_rdinfo rd, t_pipeinfo pipeinfo)
 // return exit_code * (-1) to distingish with other case.
 // if child process is created, return pid.
 // this pid's exit status will be real exit code of entire command.
-int	execute_command(t_cmd *node, t_rdinfo rd, t_pipeinfo pipeinfo)
+int	execute_command(t_cmd *node, t_rdinfo rd, t_pipeinfo pipeinfo, t_env **env)
 {
 	char	*cmd;
 	char	**av;
@@ -77,7 +75,7 @@ int	execute_command(t_cmd *node, t_rdinfo rd, t_pipeinfo pipeinfo)
 		return (0);
 	}
 	if (is_builtin(cmd) && pipeinfo.read == 0 && pipeinfo.write == 1)
-		return (exec_builtin_single(av, rd) * -1);
+		return (exec_builtin_single(av, rd, env) * -1);
 	pid = fork();
 	if (pid < 0)
 	{
@@ -85,7 +83,7 @@ int	execute_command(t_cmd *node, t_rdinfo rd, t_pipeinfo pipeinfo)
 		exit(1);
 	}
 	else if (pid == 0)
-		child_process(av, rd, pipeinfo);
+		child_process(av, rd, pipeinfo, env);
 	// parent
 	if (rd.write != STDOUT_FILENO)
 		close(rd.write);
@@ -97,7 +95,7 @@ int	execute_command(t_cmd *node, t_rdinfo rd, t_pipeinfo pipeinfo)
 
 // 리디렉션 토큰이 존재한다면 rdinfo에 어디로 read,write할 것인지 저장 후 execute_command로 전달
 // 왼쪽부터 순차적으로 처리하되, file open 실패하면 중단
-int	command(t_cmd *node, t_pipeinfo pipeinfo)
+int	command(t_cmd *node, t_pipeinfo pipeinfo, t_env **env)
 {
 	t_cmd		*head;
 	t_rdinfo	rd;
@@ -122,5 +120,5 @@ int	command(t_cmd *node, t_pipeinfo pipeinfo)
 			break ;
 		node = node->next;
 	}
-	return (execute_command(head, rd, pipeinfo));
+	return (execute_command(head, rd, pipeinfo, env));
 }

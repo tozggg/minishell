@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   main.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: kanlee <kanlee@student.42seoul.kr>         +#+  +:+       +#+        */
+/*   By: taejkim <taejkim@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/11 16:59:43 by kanlee            #+#    #+#             */
-/*   Updated: 2021/12/15 00:54:55 by kanlee           ###   ########.fr       */
+/*   Updated: 2021/12/19 18:52:35 by kanlee           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,13 +19,9 @@
 #include "libft/libft.h"
 #include "parse/tmp_listfunc.h"
 
-void	err_print(int err_flag)
-{
-	if (err_flag == QUOTE_ERR)
-		printf("Error : the number of quote is odd\n");
-	if (err_flag == SYNTAX_ERR)
-		printf("Erorr : invalid syntax\n");
-}
+int		g_exit_status = 0;
+
+
 
 void	sig_handler(int signo)
 {
@@ -49,15 +45,19 @@ void	sig_handler(int signo)
 	}
 }
 
-int	main(int ac, char **av, char **env)
+
+int	main(int ac, char **av, char **envp)
 {
+	t_env	*env;
 	char	*line;
 	t_cmd	*cmd;
 	int		err_flag;
 
-	av=env=0;
+	(void)ac;
+	(void)av;
 	signal(SIGINT, sig_handler);
 	signal(SIGQUIT, sig_handler);
+	env = make_env(envp, NULL, NULL);
 	line = 0;
 	cmd = 0;
 	while (1)
@@ -68,6 +68,8 @@ int	main(int ac, char **av, char **env)
 		if (!err_flag)
 			err_flag = check_cmd(cmd);
 		err_print(err_flag);
+
+		parse_env(cmd, env);
 #if 0
 		printf("===========================\n");
 		t_cmd *tmp = cmd;
@@ -85,11 +87,15 @@ int	main(int ac, char **av, char **env)
 		}
 		printf("errflag=%d\n", err_flag);
 		printf("===========================\n");
-#else
+#endif
+		
+
 		if (err_flag)
 			continue;
-		exec_line(cmd);
-#endif
+		
+
+		exec_line(cmd, &env);
+
 	}
 	return (0);
 }

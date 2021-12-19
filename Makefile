@@ -5,7 +5,11 @@ SRCS = exec_line.c main.c utils.c exec_command.c redirection.c \
 	   ft_execvpe.c \
 	   builtin/builtin.c \
 	   builtin/echo.c \
+	   builtin/export.c \
+	   builtin/env.c \
+	   builtin/unset.c \
 	   builtin/exit.c \
+	   error.c \
 	   parse/tmp_listfunc.c \
 	   parse/tmp_parser.c
 OBJS = $(SRCS:.c=.o)

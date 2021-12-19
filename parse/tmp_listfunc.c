@@ -6,7 +6,7 @@
 /*   By: taejkim <taejkim@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/08 16:59:27 by taejkim           #+#    #+#             */
-/*   Updated: 2021/12/18 15:53:55 by kanlee           ###   ########.fr       */
+/*   Updated: 2021/12/17 03:43:47 by taejkim          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,6 +25,7 @@
 #include <term.h>
 #include "tmp_listfunc.h"
 #include "../libft/libft.h"
+#include "../minishell.h"
 
 t_cmd	*init_cmd(void)
 {
@@ -32,10 +33,7 @@ t_cmd	*init_cmd(void)
 
 	cmd = (t_cmd *)malloc(sizeof(t_cmd));
 	if (!cmd)
-	{
-		perror("malloc");
-		exit(1);
-	}
+		error_out("malloc error");
 	cmd->token = ft_strdup("");
 	cmd->cmd_type = 0;
 	cmd->cmd_end = 0;
@@ -104,10 +102,7 @@ t_env_key	*init_env_key(void)
 
 	env_key = (t_env_key *)malloc(sizeof(t_env_key));
 	if (!env_key)
-	{
-		perror("malloc");
-		exit(1);
-	}
+		error_out("malloc error");
 	env_key->is_key = 0;
 	env_key->key = ft_strdup("");
 	env_key->next = NULL;

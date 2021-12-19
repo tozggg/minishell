@@ -6,7 +6,7 @@
 /*   By: kanlee <kanlee@student.42seoul.kr>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/15 11:16:04 by kanlee            #+#    #+#             */
-/*   Updated: 2021/12/19 16:46:53 by kanlee           ###   ########.fr       */
+/*   Updated: 2021/12/19 17:15:09 by kanlee           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,7 +30,7 @@ int	is_builtin(char *cmd)
  * since exec_command will change it to negative to distingish with child pid.
  * if caller is child process, caller will exit with returned value.
 */
-int	exec_builtin(char **av)
+int	exec_builtin(char **av, t_env **env)
 {
 	int	ac;
 
@@ -59,7 +59,7 @@ int	exec_builtin(char **av)
  * execute builtin command
  * restore STDIN/STDOUT
 */
-int	exec_builtin_single(char **av, t_rdinfo rd)
+int	exec_builtin_single(char **av, t_rdinfo rd, t_env **env)
 {
 	int	stdin_bak;
 	int	stdout_bak;
@@ -70,7 +70,7 @@ int	exec_builtin_single(char **av, t_rdinfo rd)
 	dup2(rd.write, STDOUT_FILENO);
 	stdin_bak = dup(STDIN_FILENO);
 	dup2(rd.read, STDIN_FILENO);
-	ret = exec_builtin(av);
+	ret = exec_builtin(av, env);
 	if (rd.write != STDOUT_FILENO)
 	{
 		close(rd.write);

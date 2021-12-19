@@ -6,7 +6,7 @@
 /*   By: taejkim <taejkim@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/08 16:59:27 by taejkim           #+#    #+#             */
-/*   Updated: 2021/12/15 00:54:29 by kanlee           ###   ########.fr       */
+/*   Updated: 2021/12/19 14:03:31 by taejkim          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,15 +25,8 @@
 #include <term.h>
 #include "tmp_listfunc.h"
 #include "../libft/libft.h"
+#include "../minishell.h"
 
-
-//-------------------------------------------------------------------------
-
-void	error_out(char *str)
-{
-	printf("%s\n", str);
-	exit(1);
-}
 char	*append(char *str, char c)
 {
 	char	*res;
@@ -66,8 +59,9 @@ void	get_line(char **line)
 	}
 	*line = readline("$>");
 	if (*line == NULL)
-		error_out("exit");
-	add_history(*line);
+		error_out(" exit");
+	if (ft_strncmp(*line, "", 1))
+		add_history(*line);
 }
 
 int	is_space(char c)
@@ -199,13 +193,18 @@ char	*envp_decision(t_cmd *cmd, char *line)
 	
 	env_key = init_env_key();
 	++line;
-	if (!(*line) || *line == ' ' || *line == '\"')
+	if (!is_allow_envpname(*line))
 	{
-		env_key->key = append(env_key->key, '$');
+		// FIXME =====================================
+		if (*line == '?')
+		{
+			env_key->key = append(env_key->key, '?');
+			++line;
+		}
+		else if (*line != '\'')
+			env_key->key = append(env_key->key, '$');
 		add_env_key(cmd, env_key);
 	}
-	else if (*line == '\'')
-		add_env_key(cmd, env_key);
 	else
 	{
 		env_key->is_key = 1;
@@ -234,9 +233,16 @@ char	*big_quote_envp_decision(t_cmd *cmd, char *line)
 	
 	env_key = init_env_key();
 	++line;
-	if (!(*line) || *line == ' ' || *line == '\'' || *line == '\"')
+	if (!is_allow_envpname(*line))
 	{
-		env_key->key = append(env_key->key, '$');
+		// FIXME =====================================
+		if (*line == '?')
+		{
+			env_key->key = append(env_key->key, '?');
+			++line;
+		}	
+		else
+			env_key->key = append(env_key->key, '$');
 		add_env_key(cmd, env_key);
 	}
 	else
@@ -312,14 +318,14 @@ int	check_cmd(t_cmd *cmd)
 	prev_token_is_rdr = 0;
 	while (cmd)
 	{
-		if ((prev_token_is_pipe || prev_token_is_rdr) && ft_strequ(cmd->token, "|"))
+		if ((prev_token_is_pipe && ft_strequ(cmd->token, "|")) || \
+		(prev_token_is_rdr && (ft_strequ(cmd->token, "|") || is_redirection_node(cmd))))
 			return (SYNTAX_ERR);
 		if (ft_strequ(cmd->token, "|"))
 			prev_token_is_pipe = 1;
 		else
 			prev_token_is_pipe = 0;
-		if (ft_strequ(cmd->token, "<") || ft_strequ(cmd->token, ">") ||\
-				ft_strequ(cmd->token, "<<") || ft_strequ(cmd->token, ">>"))
+		if (is_redirection_node(cmd))
 			prev_token_is_rdr = 1;
 		else
 			prev_token_is_rdr = 0;
@@ -329,81 +335,131 @@ int	check_cmd(t_cmd *cmd)
 	}
 	return (0);
 }
-/*
-void	err_print(int err_flag)
-{
-	if (err_flag == QUOTE_ERR)
-		printf("Error : the number of quote is odd\n");
-	if (err_flag == SYNTAX_ERR)
-		printf("Erorr : invalid syntax\n");
-}
 
-void	sig_handler(int signo)
-{
-	pid_t	pid;
-	int		wstatus;
 
-	pid = waitpid(-1, &wstatus, WNOHANG);
-	if (signo == SIGINT)
+// make_env ---------------------------------
+void	add_env(t_env **ptr, t_env *node)
+{
+	t_env *head;
+
+	head = *ptr;
+	if (head == NULL)
+		*ptr = node;
+	else
 	{
-		if (pid == -1)
-		{
-			printf("\n");
-			rl_on_new_line();
-			rl_replace_line("", 0);
-			rl_redisplay();
-		}	
-		else
-		{
-			// 자식프로세스에 SIGINT? 애초에 자식 프로세스만 구별가능??
-		}
+		while (head->next)
+			head = head->next;
+		head->next = node;
 	}
+}
 
+t_env	*make_env(char **envp, char *key, char *value)
+{
+	t_env	*head;
+	t_env	*tmp;
+
+	head = NULL;
+	while (*envp)
+	{
+		key = *envp;
+		while (**envp && **envp != '=')
+			++(*envp);
+		if (**envp)
+			value = *envp + 1;
+		else
+			value = *envp;
+		**envp = 0;
+		tmp = (t_env *)malloc(sizeof(t_env));
+		if (!tmp)
+			error_out("malloc error");
+		tmp->is_env = 1;
+		tmp->key = ft_strdup(key);
+		tmp->value = ft_strdup(value);
+		add_env(&head, tmp);
+		++envp;
+	}
+	return (head);
 }
 
 
-
-int	main(int ac, char *av[], char *envp[])
+// parse_env ---------------------------------------------------------------
+char	*sandwich(char *token, char *env_value, int env_len, int flag)
 {
-	char	*line;
-	t_cmd	*cmd;
-	int		err_flag;
-
-	(void)ac;
-	(void)av;
-	signal(SIGINT, sig_handler);
-	signal(SIGQUIT, sig_handler);
-	line = 0;
-	cmd = 0;
-	while (1)
+	char	*res;
+	int		len;
+	int		i;
+	
+	len = ft_strlen(token) + env_len - 1;
+	res = (char *)malloc(sizeof(char) * (len + 1));
+	i = -1;
+	while (++i < len)
 	{
-		get_line(&line);
-		err_flag = 0;
-		parse(&cmd, line, &err_flag);
-		if (!err_flag)
-			err_flag = check_cmd(cmd);
-		err_print(err_flag);
+		if (flag == 1)
+			res[i] = token[i - env_len + 1];
+		else if (token[i] == '$' && flag == 0)
+		{
+			while (*env_value)
+				res[i++] = *(env_value++);
+			flag = 1;
+			--i;
+		}
+		else
+			res[i] = token[i];
+	}
+	res[i] = 0;
+	free(token);
+	return (res);
+}
 
-		
+char	*get_value(t_env *env, char *key)
+{
+	while (env)
+	{
+		if (ft_strequ(key, env->key))
+			return (env->value);
+		env = env->next;
+	}
+	return (NULL);
+}
 
-		printf("===========================\n");
-		t_cmd *tmp = cmd;
+char	*parse_env_not_key(char *token, char *key)
+{
+	char	*res;
+	char	*tmp;
+
+	if (ft_strequ(key, "?"))
+	{
+		tmp = ft_itoa(g_exit_status);
+		res = sandwich(token, tmp, ft_strlen(tmp), 0);
+		free(tmp);
+	}
+	else
+		res = sandwich(token, key, ft_strlen(key), 0);
+	return (res);
+}
+
+void	parse_env(t_cmd *cmd, t_env *env)
+{
+	t_env_key	*tmp;
+	char		*value;
+
+	while (cmd)
+	{
+		tmp = cmd->env_key;
 		while (tmp)
 		{
-			printf("%s\t", tmp->token);
-			t_env_key *tmp_key = tmp->env_key;
-			while (tmp_key)
+			if (tmp->is_key)
 			{
-				printf("%d:%s\t", tmp_key->is_key, tmp_key->key);
-				tmp_key = tmp_key->next;
+				value = get_value(env, tmp->key);
+				if (value)
+					cmd->token = sandwich(cmd->token, value, ft_strlen(value), 0);
+				else
+					cmd->token = sandwich(cmd->token, "", 0, 0);
 			}
-			printf("\n");
+			else
+				cmd->token = parse_env_not_key(cmd->token, tmp->key);
 			tmp = tmp->next;
 		}
-		printf("errflag=%d\n", err_flag);
-		printf("===========================\n");
-
+		cmd = cmd->next;
 	}
-	return (0);
 }
-*/
