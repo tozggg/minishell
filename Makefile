@@ -1,25 +1,30 @@
-NAME = a.out
-SRCS = exec_line.c main.c utils.c exec_command.c redirection.c \
-	   redirection_validate.c \
-	   redirection_heredoc.c \
-	   ft_execvpe.c \
-	   builtin/builtin.c \
-	   builtin/echo.c \
-	   builtin/export.c \
-	   builtin/unset.c \
-	   builtin/env.c \
-	   builtin/exit.c \
-	   error.c \
-	   parse/cmd.c \
-	   parse/env_key.c \
-	   parse/env.c \
-	   parse/separate.c \
-	   parse/parse_env.c \
-	   parse/parse.c \
-	   parse/parse_utils.c
-OBJS = $(SRCS:.c=.o)
-CFLAGS = -Wall -Wextra
-LDLIBS = -lreadline -Llibft -lft
+NAME	= a.out
+SRCS	= main.c \
+		  exec_line.c \
+		  exec_command.c \
+		  parse/cmd.c \
+		  parse/env_key.c \
+		  parse/env.c \
+		  parse/separate.c \
+		  parse/parse_env.c \
+		  parse/parse.c \
+		  parse/parse_utils.c \
+		  redirection.c \
+		  redirection_validate.c \
+		  redirection_heredoc.c \
+		  ft_execvpe.c \
+		  builtin/builtin.c \
+		  builtin/echo.c \
+		  builtin/export.c \
+		  builtin/unset.c \
+		  builtin/env.c \
+		  builtin/exit.c \
+		  error.c \
+		  utils.c
+HEADERS = minishell.h
+OBJS 	= $(SRCS:.c=.o)
+CFLAGS	= -Wall -Wextra
+LDLIBS	= -lreadline -Llibft -lft
 
 UNAME := $(shell uname)
 ifeq ($(UNAME),Darwin)
@@ -33,7 +38,8 @@ ifeq ($(UNAME),Darwin)
 		LDLIBS	+= -L/opt/homebrew/opt/readline/lib
 	endif
 endif
-.PHONY: all clean fclean re test
+
+.PHONY: all clean fclean re test cleanlib
 
 all: $(NAME)
 
@@ -41,16 +47,19 @@ $(NAME): $(OBJS)
 	@$(MAKE) bonus -C libft
 	gcc $(CFLAGS) $(OBJS) $(LDLIBS) -o $(NAME)
 
-%.o: %.c minishell.h
+%.o: %.c $(HEADERS)
 	gcc $(CFLAGS) -c $< -o $@
 
 clean:
 	rm -rf $(OBJS)
 
-fclean: clean
+cleanlib:
+	$(MAKE) -C libft fclean
+
+fclean: cleanlib clean
 	rm -rf $(NAME)
 
-re: clean all
+re: fclean all
 
 test: CFLAGS += -g3 -fsanitize=address -D DEBUG
 test: clean all
