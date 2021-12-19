@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   exec_command.c                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: taejkim <taejkim@student.42seoul.kr>       +#+  +:+       +#+        */
+/*   By: kanlee <kanlee@student.42seoul.kr>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/11 17:13:43 by kanlee            #+#    #+#             */
-/*   Updated: 2021/12/17 05:39:02 by taejkim          ###   ########.fr       */
+/*   Updated: 2021/12/18 20:32:29 by kanlee           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,6 +17,8 @@
 #include "minishell.h"
 #include "libft/libft.h"
 #include "parse/tmp_listfunc.h"
+
+pid_t	g_lastpid;
 
 void	child_process(char **av, t_rdinfo rd, t_pipeinfo pipeinfo)
 {
@@ -39,12 +41,14 @@ void	child_process(char **av, t_rdinfo rd, t_pipeinfo pipeinfo)
 	if (rd.read != STDIN_FILENO)
 		dup2(rd.read, STDIN_FILENO);
 ////////////   ready   //////////////
-	if (execvp(av[0], av) == -1) //TODO: make ft_execvpe() using execve  
+	if (ft_execvpe(av[0], av, (char **){NULL}) != 0) //TODO: envp  
 	{
 		perror(av[0]);
 		if (errno == ENOENT)
 			exit(127);
-		else if (errno == EACCES || errno == EISDIR)
+		else if (errno == EACCES || errno == EISDIR || errno == ENOTDIR)
+			exit(126);
+		else
 			exit(126);
 	}
 	// TODO: should we restore STDIN,STDOUT?
@@ -70,7 +74,10 @@ int	execute_command(t_cmd *node, t_rdinfo rd, t_pipeinfo pipeinfo)
 		printf("arg[%d]: %s\n", i, av[i++]);
 #endif
 	if (cmd == NULL)
+	{
+		free(av);
 		return (0);
+	}
 	if (is_builtin(cmd) && pipeinfo.read == 0 && pipeinfo.write == 1)
 		return (exec_builtin_single(av, rd));
 	pid = fork();
@@ -87,25 +94,13 @@ int	execute_command(t_cmd *node, t_rdinfo rd, t_pipeinfo pipeinfo)
 		child_process(av, rd, pipeinfo);
 	}
 	// parent
+	g_lastpid = pid;
 	if (rd.write != STDOUT_FILENO)
 		close(rd.write);
 	if (rd.read != STDIN_FILENO)
 		close(rd.read);
 	free(av);
 	return (0);
-}
-
-int	is_redirection_node(t_cmd *node)
-{
-	if (ft_strequ(node->token, ">"))
-		return (RD_WRITE);
-	if (ft_strequ(node->token, ">>"))
-		return (RD_APPEND);
-	if (ft_strequ(node->token, "<"))
-		return (RD_READ);
-	if (ft_strequ(node->token, "<<"))
-		return (RD_HEREDOC);
-	return (NONE);
 }
 
 // 리디렉션 토큰이 존재한다면 rdinfo에 어디로 read,write할 것인지 저장 후 execute_command로 전달
@@ -118,13 +113,15 @@ int	command(t_cmd *node, t_pipeinfo pipeinfo)
 
 	rd = (t_rdinfo){STDIN_FILENO, STDOUT_FILENO};
 	head = node;
+	if (head->cmd_type == TYPE_INVALID)
+		return (1);
 	while (1)
 	{
 		rdtype = is_redirection_node(node);
 		if (rdtype != NONE)
 		{
 			if (store_rdinfo(node, &rd, rdtype) < 0)
-				return (-1);
+				return (1);
 			node->cmd_type = TYPE_RDSIGN;
 			node->next->cmd_type = TYPE_RDTARGET;
 			node = node->next;
@@ -133,6 +130,5 @@ int	command(t_cmd *node, t_pipeinfo pipeinfo)
 			break ;
 		node = node->next;
 	}
-	execute_command(head, rd, pipeinfo);
-	return (0);
+	return (execute_command(head, rd, pipeinfo));
 }

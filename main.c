@@ -6,7 +6,7 @@
 /*   By: taejkim <taejkim@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/11 16:59:43 by kanlee            #+#    #+#             */
-/*   Updated: 2021/12/17 16:52:44 by taejkim          ###   ########.fr       */
+/*   Updated: 2021/12/19 17:35:14 by taejkim          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,8 +20,7 @@
 #include "parse/tmp_listfunc.h"
 
 int		g_exit_status = 0;
-
-
+t_env	*g_env = NULL;
 
 void	sig_handler(int signo)
 {
@@ -48,7 +47,7 @@ void	sig_handler(int signo)
 
 int	main(int ac, char **av, char **envp)
 {
-	t_env	*env;
+	//t_env	*env;
 	char	*line;
 	t_cmd	*cmd;
 	int		err_flag;
@@ -57,7 +56,8 @@ int	main(int ac, char **av, char **envp)
 	(void)av;
 	signal(SIGINT, sig_handler);
 	signal(SIGQUIT, sig_handler);
-	env = make_env(envp, NULL, NULL);
+	//env = make_env(envp, NULL, NULL);
+	g_env = make_env(envp, NULL, NULL);
 	line = 0;
 	cmd = 0;
 	while (1)
@@ -69,32 +69,11 @@ int	main(int ac, char **av, char **envp)
 			err_flag = check_cmd(cmd);
 		err_print(err_flag);
 
-		parse_env(cmd, env);
-
-		printf("===========================\n");
-		t_cmd *tmp = cmd;
-		while (tmp)
-		{
-			printf("%s\t", tmp->token);
-			t_env_key *tmp_key = tmp->env_key;
-			while (tmp_key)
-			{
-				printf("%d:%s\t", tmp_key->is_key, tmp_key->key);
-				tmp_key = tmp_key->next;
-			}
-			printf("\n");
-			tmp = tmp->next;
-		}
-		printf("errflag=%d\n", err_flag);
-		printf("===========================\n");
-
-		
-
 		if (err_flag)
 			continue;
 		
-
-		//exec_line(cmd);
+		parse_env(cmd, g_env);
+		g_exit_status = exec_line(cmd);
 
 	}
 	return (0);

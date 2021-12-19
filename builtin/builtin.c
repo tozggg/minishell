@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   builtin.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: kanlee <kanlee@student.42seoul.kr>         +#+  +:+       +#+        */
+/*   By: taejkim <taejkim@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/15 11:16:04 by kanlee            #+#    #+#             */
-/*   Updated: 2021/12/16 06:59:59 by kanlee           ###   ########.fr       */
+/*   Updated: 2021/12/19 17:16:52 by taejkim          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,22 +29,27 @@ int	is_builtin(char *cmd)
  * TODO: if caller is child process, should we? what about return value?
  * 		NOTE: execve is not called in this case
 */
-int exec_builtin(char **av)
+int	exec_builtin(char **av)
 {
+	int	ac;
+
+	ac = -1;
+	while (av[++ac])
+		;
 	if (ft_strequ(av[0], "echo"))
-		return (1);
+		return (do_echo(ac, av));
 	if (ft_strequ(av[0], "cd"))
 		return (1);
 	if (ft_strequ(av[0], "pwd"))
 		return (1);
 	if (ft_strequ(av[0], "export"))
-		return (1);
+		return (do_export(av, &g_env));
 	if (ft_strequ(av[0], "unset"))
-		return (1);
+		return (do_unset(av, &g_env));
 	if (ft_strequ(av[0], "env"))
-		return (1);
+		return (do_env(av, &g_env));
 	if (ft_strequ(av[0], "exit"))
-		return (1);
+		return (do_exit(ac, av));
 	return (0);
 }
 
@@ -53,23 +58,17 @@ int exec_builtin(char **av)
  * execute builtin command
  * restore STDIN/STDOUT
 */
-int exec_builtin_single(char **av, t_rdinfo rd)
+int	exec_builtin_single(char **av, t_rdinfo rd)
 {
-	int stdin_bak;
-	int stdout_bak;
-	int ret;
+	int	stdin_bak;
+	int	stdout_bak;
+	int	ret;
 
 	ret = 0;
-	if (rd.write != STDOUT_FILENO)
-	{
-		stdout_bak = dup(STDOUT_FILENO);
-		dup2(rd.write, STDOUT_FILENO);
-	}
-	if (rd.read != STDIN_FILENO)
-	{
-		stdin_bak = dup(STDIN_FILENO);
-		dup2(rd.read, STDIN_FILENO);
-	}
+	stdout_bak = dup(STDOUT_FILENO);
+	dup2(rd.write, STDOUT_FILENO);
+	stdin_bak = dup(STDIN_FILENO);
+	dup2(rd.read, STDIN_FILENO);
 	ret = exec_builtin(av);
 	if (rd.write != STDOUT_FILENO)
 	{

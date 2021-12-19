@@ -6,7 +6,7 @@
 /*   By: taejkim <taejkim@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/19 14:50:58 by taejkim           #+#    #+#             */
-/*   Updated: 2021/12/19 15:34:02 by taejkim          ###   ########.fr       */
+/*   Updated: 2021/12/19 17:11:36 by taejkim          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -90,7 +90,7 @@ int	do_unset(char **av, t_env **env)
 	++av;
 	while (*av)
 	{
-		error_flag = unset_str(av, env);
+		error_flag = unset_str(*av, env);
 		++av;
 	}
 	if (error_flag)

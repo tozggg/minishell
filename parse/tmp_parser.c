@@ -6,7 +6,7 @@
 /*   By: taejkim <taejkim@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/08 16:59:27 by taejkim           #+#    #+#             */
-/*   Updated: 2021/12/19 14:03:31 by taejkim          ###   ########.fr       */
+/*   Updated: 2021/12/19 19:10:41 by taejkim          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -235,7 +235,6 @@ char	*big_quote_envp_decision(t_cmd *cmd, char *line)
 	++line;
 	if (!is_allow_envpname(*line))
 	{
-		// FIXME =====================================
 		if (*line == '?')
 		{
 			env_key->key = append(env_key->key, '?');
