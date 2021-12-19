@@ -6,7 +6,7 @@
 /*   By: kanlee <kanlee@student.42seoul.kr>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/15 11:16:04 by kanlee            #+#    #+#             */
-/*   Updated: 2021/12/19 00:11:19 by kanlee           ###   ########.fr       */
+/*   Updated: 2021/12/19 16:46:53 by kanlee           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,8 +26,9 @@ int	is_builtin(char *cmd)
 }
 
 /* if caller is main process, caller should restore redirection
- * TODO: if caller is child process, should we? what about return value?
- * 		NOTE: execve is not called in this case
+ * return value should be greater than or equal to zero
+ * since exec_command will change it to negative to distingish with child pid.
+ * if caller is child process, caller will exit with returned value.
 */
 int	exec_builtin(char **av)
 {

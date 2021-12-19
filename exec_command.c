@@ -6,7 +6,7 @@
 /*   By: kanlee <kanlee@student.42seoul.kr>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/11 17:13:43 by kanlee            #+#    #+#             */
-/*   Updated: 2021/12/18 20:32:29 by kanlee           ###   ########.fr       */
+/*   Updated: 2021/12/19 16:08:59 by kanlee           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,28 +18,24 @@
 #include "libft/libft.h"
 #include "parse/tmp_listfunc.h"
 
-pid_t	g_lastpid;
-
 void	child_process(char **av, t_rdinfo rd, t_pipeinfo pipeinfo)
 {
+#ifdef DEBUG
+	printf("%s: read %d - write %d - tobefree %d\n", av[0],
+		pipeinfo.read, pipeinfo.write, pipeinfo.unused);
+#endif
 //////////////  pipe  ///////////
 	if (pipeinfo.write != STDOUT_FILENO)
 		safe_close_readend(pipeinfo.unused);
+	dup2(pipeinfo.read, STDIN_FILENO);
 	if (pipeinfo.read != STDIN_FILENO)
-	{
-		dup2(pipeinfo.read, STDIN_FILENO);
 		close(pipeinfo.read);
-	}
+	dup2(pipeinfo.write, STDOUT_FILENO);
 	if (pipeinfo.write != STDOUT_FILENO)
-	{
-		dup2(pipeinfo.write, STDOUT_FILENO);
 		close(pipeinfo.write);
-	}
 ////////// redirection /////////
-	if (rd.write != STDOUT_FILENO)
-		dup2(rd.write, STDOUT_FILENO);
-	if (rd.read != STDIN_FILENO)
-		dup2(rd.read, STDIN_FILENO);
+	dup2(rd.write, STDOUT_FILENO);
+	dup2(rd.read, STDIN_FILENO);
 ////////////   ready   //////////////
 	if (ft_execvpe(av[0], av, (char **){NULL}) != 0) //TODO: envp  
 	{
@@ -51,7 +47,6 @@ void	child_process(char **av, t_rdinfo rd, t_pipeinfo pipeinfo)
 		else
 			exit(126);
 	}
-	// TODO: should we restore STDIN,STDOUT?
 }
 
 // child process에서 cmd 실행
@@ -59,6 +54,9 @@ void	child_process(char **av, t_rdinfo rd, t_pipeinfo pipeinfo)
 // 파이프를 먼저 적용 후 rdinfo가 지정한 대로 in/out을 overwrite
 // main process는 child가 종료될 때까지 대기
 // if cmd is builtin without pipe, run it in main process.
+// return exit_code * (-1) to distingish with other case.
+// if child process is created, return pid.
+// this pid's exit status will be real exit code of entire command.
 int	execute_command(t_cmd *node, t_rdinfo rd, t_pipeinfo pipeinfo)
 {
 	char	*cmd;
@@ -79,7 +77,7 @@ int	execute_command(t_cmd *node, t_rdinfo rd, t_pipeinfo pipeinfo)
 		return (0);
 	}
 	if (is_builtin(cmd) && pipeinfo.read == 0 && pipeinfo.write == 1)
-		return (exec_builtin_single(av, rd));
+		return (exec_builtin_single(av, rd) * -1);
 	pid = fork();
 	if (pid < 0)
 	{
@@ -87,20 +85,14 @@ int	execute_command(t_cmd *node, t_rdinfo rd, t_pipeinfo pipeinfo)
 		exit(1);
 	}
 	else if (pid == 0)
-	{
-#ifdef DEBUG
-	printf("%s: read %d - write %d - tobefree %d\n", av[0], pipeinfo.read, pipeinfo.write, pipeinfo.unused);
-#endif
 		child_process(av, rd, pipeinfo);
-	}
 	// parent
-	g_lastpid = pid;
 	if (rd.write != STDOUT_FILENO)
 		close(rd.write);
 	if (rd.read != STDIN_FILENO)
 		close(rd.read);
 	free(av);
-	return (0);
+	return (pid);
 }
 
 // 리디렉션 토큰이 존재한다면 rdinfo에 어디로 read,write할 것인지 저장 후 execute_command로 전달
@@ -114,14 +106,14 @@ int	command(t_cmd *node, t_pipeinfo pipeinfo)
 	rd = (t_rdinfo){STDIN_FILENO, STDOUT_FILENO};
 	head = node;
 	if (head->cmd_type == TYPE_INVALID)
-		return (1);
+		return (1 * -1);
 	while (1)
 	{
 		rdtype = is_redirection_node(node);
 		if (rdtype != NONE)
 		{
 			if (store_rdinfo(node, &rd, rdtype) < 0)
-				return (1);
+				return (1 * -1);
 			node->cmd_type = TYPE_RDSIGN;
 			node->next->cmd_type = TYPE_RDTARGET;
 			node = node->next;

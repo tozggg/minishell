@@ -1,14 +1,12 @@
-1. remember exit code somewhere (print it by echo $?)
-	how to catch kill signal?
 
-2. pass envp to exec part
+1. pass envp to exec part
 
 
-3. char *env_to_str(char *envname)
+2. char *env_to_str(char *envname)
 	expands $STR to string
 
 
-4. Built-in commands
+3. Built-in commands
 	echo with -n
 	cd with absolute or relative path
 	pwd

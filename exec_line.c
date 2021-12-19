@@ -6,7 +6,7 @@
 /*   By: kanlee <kanlee@student.42seoul.kr>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/11 17:34:32 by kanlee            #+#    #+#             */
-/*   Updated: 2021/12/18 21:59:20 by kanlee           ###   ########.fr       */
+/*   Updated: 2021/12/19 15:53:49 by kanlee           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,8 +17,6 @@
 #include "libft/libft.h"
 #include "parse/tmp_listfunc.h"
 #include <stdio.h>
-
-extern pid_t	g_lastpid;
 
 // node 이후에 pipe가 존재하는지 확인
 // pipe 바로 전 또는 list_end까지가 하나의 커맨드
@@ -79,7 +77,7 @@ int	exec_pipe(t_cmd *node, int read_fd, int *pfd)
 	return (command(node, pipeinfo));
 }
 
-int	monitor_child(void)
+int	monitor_child(pid_t lastpid)
 {
 	int	exit_code;
 	int	wstatus;
@@ -88,7 +86,7 @@ int	monitor_child(void)
 	while (1)
 	{
 		finished_pid = waitpid(-1, &wstatus, 0);
-		if (finished_pid == g_lastpid)
+		if (finished_pid == lastpid)
 		{
 			exit_code = WEXITSTATUS(wstatus);
 			if (WIFSIGNALED(wstatus))
@@ -108,6 +106,8 @@ int	monitor_child(void)
 
 // node부터 pipe_node까지를 한 단위로 끊어서 실행
 // 첫 cmd의 입력은 STDIN, 마지막 cmd의 입력은 STDOUT
+// exec_command will return nonzero if child process is created.
+// if not, return value is -1 * real exit_code.
 int	exec_line(t_cmd *node)
 {
 	t_cmd		*pipe_node;
@@ -115,7 +115,6 @@ int	exec_line(t_cmd *node)
 	int			read_prev;
 	int			exit_code;
 
-	g_lastpid = 0;
 	// before executing, read HEREDOC first as bash does it.
 	// echo asdf > outfile | cat << HERE
 	// will not run echo or create outfile until heredoc input is completed.
@@ -140,8 +139,10 @@ int	exec_line(t_cmd *node)
 	pfd[1] = STDOUT_FILENO;
 	exit_code = exec_pipe(node, read_prev, pfd);
 	safe_close_readend(read_prev);
-	if (g_lastpid != 0)
-		exit_code = monitor_child();
+	if (exit_code > 0)
+		exit_code = monitor_child(exit_code);
+	else
+		exit_code *= -1;
 	printf("exit code = %d\n", exit_code);
 	return (exit_code);
 }
