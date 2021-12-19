@@ -6,7 +6,7 @@
 /*   By: kanlee <kanlee@student.42seoul.kr>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/12 20:53:33 by kanlee            #+#    #+#             */
-/*   Updated: 2021/12/19 16:41:36 by kanlee           ###   ########.fr       */
+/*   Updated: 2021/12/19 19:52:00 by kanlee           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,7 +30,7 @@ int	is_redirection_node(t_cmd *node)
 	return (NONE);
 }
 
-int	open_target(int rdtype, char *rdtarget)
+static int	open_target(int rdtype, char *rdtarget)
 {
 	int	fd;
 

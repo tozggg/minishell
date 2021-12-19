@@ -6,7 +6,7 @@
 /*   By: kanlee <kanlee@student.42seoul.kr>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/17 11:51:31 by kanlee            #+#    #+#             */
-/*   Updated: 2021/12/19 17:48:06 by kanlee           ###   ########.fr       */
+/*   Updated: 2021/12/19 19:52:35 by kanlee           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,13 +18,13 @@
 #include "minishell.h"
 #include "libft/libft.h"
 
-void	sigint_in_heredoc_handler(int sig)
+static void	sigint_in_heredoc_handler(int sig)
 {
 	if (sig == SIGINT)
 		close(STDIN_FILENO);
 }
 
-int	cleanup(int stdin_bak)
+static int	cleanup(int stdin_bak)
 {
 	signal(SIGINT, sig_handler);
 	if (isatty(STDIN_FILENO))
@@ -53,7 +53,7 @@ int	cleanup(int stdin_bak)
  * in this case, restore STDIN and return 130.
  * In general situation, write input to tmpfile and return 0.
 */
-int	write_to_tmpfile(int fd, char *limit)
+static int	write_to_tmpfile(int fd, char *limit)
 {
 	char	*input;
 	int		stdin_bak;
@@ -80,7 +80,7 @@ int	write_to_tmpfile(int fd, char *limit)
 	return (cleanup(stdin_bak));
 }
 
-int	open_available(char **tmpfilename)
+static int	open_available(char **tmpfilename)
 {
 	int		fd;
 	int		i;

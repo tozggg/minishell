@@ -6,7 +6,7 @@
 /*   By: kanlee <kanlee@student.42seoul.kr>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/11 17:13:43 by kanlee            #+#    #+#             */
-/*   Updated: 2021/12/19 18:24:49 by kanlee           ###   ########.fr       */
+/*   Updated: 2021/12/19 19:50:50 by kanlee           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,7 +17,8 @@
 #include "minishell.h"
 #include "libft/libft.h"
 
-void	child_process(char **av, t_rdinfo rd, t_pipeinfo pipeinfo, t_env **env)
+static void	child_process(char **av, t_rdinfo rd, t_pipeinfo pipeinfo,
+		t_env **env)
 {
 #ifdef DEBUG
 	printf("%s: read %d - write %d - tobefree %d\n", av[0],
@@ -52,7 +53,8 @@ void	child_process(char **av, t_rdinfo rd, t_pipeinfo pipeinfo, t_env **env)
  * if child process is created, return pid.
  * this pid's exit status will be real exit code of entire command.
 */
-int	execute_command(t_cmd *node, t_rdinfo rd, t_pipeinfo pipeinfo, t_env **env)
+static int	execute_command(t_cmd *node, t_rdinfo rd, t_pipeinfo pipeinfo,
+		t_env **env)
 {
 	char	**av;
 	pid_t	pid;

@@ -6,7 +6,7 @@
 /*   By: kanlee <kanlee@student.42seoul.kr>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/18 17:19:52 by kanlee            #+#    #+#             */
-/*   Updated: 2021/12/19 17:39:09 by kanlee           ###   ########.fr       */
+/*   Updated: 2021/12/19 19:53:09 by kanlee           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,7 +19,7 @@
 #include "minishell.h"
 #include "libft/libft.h"
 
-int	fileexists(char *target)
+static int	fileexists(char *target)
 {
 	struct stat	buf;
 
@@ -28,7 +28,7 @@ int	fileexists(char *target)
 	return (1);
 }
 
-int	is_in_list(char *str, t_list *list)
+static int	is_in_list(char *str, t_list *list)
 {
 	while (list != NULL)
 	{
@@ -39,7 +39,7 @@ int	is_in_list(char *str, t_list *list)
 	return (0);
 }
 
-int	is_target_valid(t_cmd *node, t_list **willcreate)
+static int	is_target_valid(t_cmd *node, t_list **willcreate)
 {
 	int		fd;
 	char	*rdtarget;
@@ -66,7 +66,7 @@ int	is_target_valid(t_cmd *node, t_list **willcreate)
 	return (1);
 }
 
-void	validate_redirection(t_cmd *node)
+static void	validate_redirection(t_cmd *node)
 {
 	int		rdtype;
 	t_cmd	*head;

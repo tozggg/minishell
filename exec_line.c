@@ -6,7 +6,7 @@
 /*   By: kanlee <kanlee@student.42seoul.kr>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/11 17:34:32 by kanlee            #+#    #+#             */
-/*   Updated: 2021/12/19 19:48:02 by kanlee           ###   ########.fr       */
+/*   Updated: 2021/12/19 19:51:36 by kanlee           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,7 +20,7 @@
 /* read_heredoc returns 0 if success, 1 if tmpfile creation failed,
  * 130 if interrupted by SIGINT
 */
-int	chk_heredoc(t_cmd *node)
+static int	chk_heredoc(t_cmd *node)
 {
 	t_cmd	*heredoc_node;
 	int		ret;
@@ -40,7 +40,7 @@ int	chk_heredoc(t_cmd *node)
 
 /* pfd[0] should be closed in child process
 */
-int	exec_pipe(t_cmd *node, int read_fd, int *pfd, t_env **env)
+static int	exec_pipe(t_cmd *node, int read_fd, int *pfd, t_env **env)
 {
 	t_pipeinfo	pipeinfo;
 
@@ -50,7 +50,7 @@ int	exec_pipe(t_cmd *node, int read_fd, int *pfd, t_env **env)
 	return (command(node, pipeinfo, env));
 }
 
-int	monitor_child(pid_t lastpid)
+static int	monitor_child(pid_t lastpid)
 {
 	int	exit_code;
 	int	wstatus;
@@ -77,7 +77,7 @@ int	monitor_child(pid_t lastpid)
 	return (exit_code);
 }
 
-int	refine(int exit_code)
+static int	refine(int exit_code)
 {
 	if (exit_code > 0)
 		exit_code = monitor_child(exit_code);
