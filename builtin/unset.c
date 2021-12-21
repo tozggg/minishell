@@ -6,7 +6,7 @@
 /*   By: taejkim <taejkim@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/19 14:50:58 by taejkim           #+#    #+#             */
-/*   Updated: 2021/12/19 20:51:01 by taejkim          ###   ########.fr       */
+/*   Updated: 2021/12/20 01:36:06 by taejkim          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -70,26 +70,27 @@ static void	del_env(char *key, t_env **ptr, t_env *prev, t_env *curr)
 static int	unset_str(char *str, t_env **env)
 {
 	if (!is_valid_unset_str(str))
-		return (-1);
+		return (1);
 	del_env(str, env, NULL, *env);
 	return (0);
 }
 
 int	do_unset(char **av, t_env **env)
 {
-	int	error_flag;
+	int	err;
 
-	error_flag = 0;
+	err = 0;
 	++av;
 	while (*av)
 	{
-		error_flag = unset_str(*av, env);
+		if (unset_str(*av, env))
+		{
+			identifier_err_print(*av);
+			err = 1;
+		}
 		++av;
 	}
-	if (error_flag)
-	{
-		identifier_err_print();
+	if (err)
 		return (1);
-	}
 	return (0);
 }

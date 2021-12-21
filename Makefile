@@ -10,6 +10,8 @@ SRCS = exec_line.c main.c utils.c exec_command.c redirection.c \
 	   builtin/env.c \
 	   builtin/export.c \
 	   builtin/unset.c \
+	   builtin/pwd.c \
+	   builtin/cd.c \
 	   parse/cmd.c \
 	   parse/env_key.c \
 	   parse/env.c \

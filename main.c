@@ -6,7 +6,7 @@
 /*   By: taejkim <taejkim@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/11 16:59:43 by kanlee            #+#    #+#             */
-/*   Updated: 2021/12/19 20:19:15 by taejkim          ###   ########.fr       */
+/*   Updated: 2021/12/20 01:45:59 by taejkim          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -64,7 +64,7 @@ int	main(int ac, char **av, char **envp)
 	(void)av;
 	signal(SIGINT, sig_handler);
 	signal(SIGQUIT, sig_handler);
-	env = make_env(envp, NULL, NULL);
+	env = make_env(envp);
 	line = 0;
 	cmd = 0;
 	while (1)

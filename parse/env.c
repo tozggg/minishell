@@ -6,7 +6,7 @@
 /*   By: taejkim <taejkim@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/19 20:07:55 by taejkim           #+#    #+#             */
-/*   Updated: 2021/12/19 20:45:30 by taejkim          ###   ########.fr       */
+/*   Updated: 2021/12/20 01:42:57 by taejkim          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -75,11 +75,14 @@ void	modify_env(char *key, char *value, t_env *env)
 	}
 }
 
-t_env	*make_env(char **envp, char *key, char *value)
+t_env	*make_env(char **envp)
 {
 	t_env	*head;
-	t_env	*tmp;
+	char	*key;
+	char	*value;
 
+	key = NULL;
+	value = NULL;
 	head = NULL;
 	while (*envp)
 	{
@@ -94,5 +97,7 @@ t_env	*make_env(char **envp, char *key, char *value)
 		add_env(key, value, &head, 1);
 		++envp;
 	}
+	if (has_env("HOME", head))
+		add_env("$HOME", get_value(head, "HOME"), &head, -1);
 	return (head);
 }

@@ -1,34 +1,24 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   env.c                                              :+:      :+:    :+:   */
+/*   pwd.c                                              :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: taejkim <taejkim@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2021/12/17 16:55:20 by taejkim           #+#    #+#             */
-/*   Updated: 2021/12/20 00:23:48 by taejkim          ###   ########.fr       */
+/*   Created: 2021/12/19 23:30:49 by taejkim           #+#    #+#             */
+/*   Updated: 2021/12/19 23:36:47 by taejkim          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../minishell.h"
 
-static void	print_env(t_env *env)
+int	do_pwd(void)
 {
-	while (env)
-	{
-		if (env->is_env == 1)
-			printf("%s=%s\n", env->key, env->value);
-		env = env->next;
-	}
-}
+	char	*buf;
 
-int	do_env(char **av, t_env **env)
-{
-	if (av[1])
-	{
-		errno_print(2, av[1]);
-		return (127);
-	}
-	print_env(*env);
+	buf = 0;
+	buf = getcwd(NULL, 0);
+	printf("%s\n", buf);
+	free(buf);
 	return (0);
 }
