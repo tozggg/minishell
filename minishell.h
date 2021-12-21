@@ -6,7 +6,7 @@
 /*   By: taejkim <taejkim@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/11 17:00:27 by kanlee            #+#    #+#             */
-/*   Updated: 2021/12/21 15:40:21 by taejkim          ###   ########.fr       */
+/*   Updated: 2021/12/22 01:23:35 by taejkim          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,9 +17,17 @@
 
 extern int	g_exit_status;
 
-# define SYNTAX_ERR 1
-# define QUOTE_ERR 2
-# define EMPTY_LINE 3
+enum e_errflag {
+	EMPTY_LINE = 1,
+	UNSPEC_CHAR_ERR,
+	QUOTE_ERR,
+	NEAR_PIPE_ERR,
+	NEAR_WRITE_ERR,
+	NEAR_READ_ERR,
+	NEAR_APPEND_ERR,
+	NEAR_HEREDOC_ERR,
+	NEAR_NEWRINE_ERR
+};
 
 enum e_cmdtype {
 	TYPE_GENERAL = 0,

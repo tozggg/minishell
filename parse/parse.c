@@ -6,7 +6,7 @@
 /*   By: taejkim <taejkim@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/19 20:07:32 by taejkim           #+#    #+#             */
-/*   Updated: 2021/12/19 20:46:17 by taejkim          ###   ########.fr       */
+/*   Updated: 2021/12/22 00:31:46 by taejkim          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -117,7 +117,7 @@ void	parse(t_cmd **ptr, char *line, int *err_flag)
 	while (*line)
 	{
 		if (is_unspecified_char(*line))
-			*err_flag = SYNTAX_ERR;
+			*err_flag = UNSPEC_CHAR_ERR;
 		if (is_space(*line) || is_separator(*line))
 			line = separate(ptr, &cmd, line);
 		else if (*line == '\"' || *line == '\'')

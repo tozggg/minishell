@@ -6,7 +6,7 @@
 /*   By: taejkim <taejkim@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/19 19:59:29 by taejkim           #+#    #+#             */
-/*   Updated: 2021/12/21 15:33:08 by taejkim          ###   ########.fr       */
+/*   Updated: 2021/12/22 01:27:37 by taejkim          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -67,31 +67,41 @@ void	destroy_cmd(t_cmd **ptr)
 	*ptr = NULL;
 }
 
-int	check_cmd(t_cmd *cmd)
+static int	get_near_errflag(char *str)
 {
-	int	prev_is_pipe;
-	int	prev_is_rdr;
+	if (ft_strequ(str, ">"))
+		return (NEAR_WRITE_ERR);
+	else if (ft_strequ(str, "<"))
+		return (NEAR_READ_ERR);
+	else if (ft_strequ(str, ">>"))
+		return (NEAR_APPEND_ERR);
+	else if (ft_strequ(str, "<<"))
+		return (NEAR_HEREDOC_ERR);
+	return (0);
+}
 
-	if (ft_strequ(cmd->token, "|"))
-		return (SYNTAX_ERR);
-	prev_is_pipe = 0;
-	prev_is_rdr = 0;
-	while (cmd)
+int	check_cmd(t_cmd *curr)
+{
+	t_cmd	*prev;
+	
+	if (ft_strequ(curr->token, "|"))
+		return (NEAR_PIPE_ERR);
+	prev = NULL;
+	while (curr)
 	{
-		if ((prev_is_pipe && ft_strequ(cmd->token, "|")) || \
-	(prev_is_rdr && (ft_strequ(cmd->token, "|") || is_redirection_node(cmd))))
-			return (SYNTAX_ERR);
-		if (ft_strequ(cmd->token, "|"))
-			prev_is_pipe = 1;
-		else
-			prev_is_pipe = 0;
-		if (is_redirection_node(cmd))
-			prev_is_rdr = 1;
-		else
-			prev_is_rdr = 0;
-		if (!(cmd->next) && ft_strequ(cmd->token, "|"))
-			return (SYNTAX_ERR);
-		cmd = cmd->next;
+		if (ft_strequ(curr->token, "|") && prev && ft_strequ(prev->token, "|"))
+			return (NEAR_PIPE_ERR);
+		if (is_redirection_node(curr))
+		{
+			if (prev && is_redirection_node(prev))
+				return (get_near_errflag(curr->token));
+			if (!(curr->next) || ft_strequ(curr->next->token, "|"))
+				return (NEAR_NEWRINE_ERR);
+		}
+		if (!(curr->next) && ft_strequ(curr->token, "|"))
+			return (NEAR_PIPE_ERR);
+		prev = curr;
+		curr = curr->next;
 	}
 	return (0);
 }
