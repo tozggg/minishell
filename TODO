@@ -1,0 +1,16 @@
+
+1. pass envp to exec part
+
+
+2. char *env_to_str(char *envname)
+	expands $STR to string
+
+
+3. Built-in commands
+	echo with -n
+	cd with absolute or relative path
+	pwd
+	export
+	unset
+	env
+	exit
