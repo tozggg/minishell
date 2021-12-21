@@ -6,7 +6,7 @@
 /*   By: taejkim <taejkim@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/19 23:48:09 by taejkim           #+#    #+#             */
-/*   Updated: 2021/12/20 02:08:10 by taejkim          ###   ########.fr       */
+/*   Updated: 2021/12/21 15:07:50 by taejkim          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -71,14 +71,13 @@ static int	cd_relative_path(char *str, t_env *env)
 		}
 		free(tmp1);
 		free(tmp2);
-		return (res);
 	}
-	if (chdir(str))
+	else if (chdir(str))
 	{
 		errno_print(2, str);
 		res = 127;
 	}
-	return res;
+	return (res);
 }
 
 int	do_cd(char **av, t_env **env)
