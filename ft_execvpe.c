@@ -6,10 +6,11 @@
 /*   By: kanlee <kanlee@student.42seoul.kr>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/16 07:37:04 by kanlee            #+#    #+#             */
-/*   Updated: 2021/12/19 18:53:59 by kanlee           ###   ########.fr       */
+/*   Updated: 2021/12/21 05:34:51 by kanlee           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
+#include <stdio.h>
 #include <unistd.h>
 #include <stdlib.h>
 #include <errno.h>
@@ -54,25 +55,45 @@ static char	**get_pathlist(t_env *env)
 	return (ret);
 }
 
-static int	is_path(char *str)
-{
-	while (*str)
-	{
-		if (*str == '/')
-			return (1);
-		str++;
-	}
-	return (0);
-}
-
-static int	exec_path(char *cmd, char **arg, char **env)
+static void	exec_path(char *cmd, char **arg, char **env)
 {
 	if (is_dir(cmd))
 	{
 		errno = EISDIR;
-		return (-1);
+		perror(cmd);
+		exit(126);
 	}
-	return (execve(cmd, arg, env));
+	execve(cmd, arg, env);
+	perror(cmd);
+	if (errno == ENOENT)
+		exit(127);
+	if (errno == EACCES)
+		exit(126);
+	exit(126);
+}
+
+static void	try_in_path(char **pathlist, char *cmd, char **arg, t_env **env)
+{
+	char	*target;
+
+	while (pathlist && *pathlist)
+	{
+		target = ft_strjoin(*pathlist, cmd);
+		free(*pathlist);
+		pathlist++;
+		if (is_dir(target))
+		{
+			free(target);
+			continue ;
+		}
+		execve(target, arg, (char **){NULL});    // TODO: t_env to NULL terminated char**
+		if (errno != ENOENT)
+		{
+			perror(target);
+			exit(126);
+		}
+		free(target);
+	}
 }
 
 /* if cmd if builtin, execute exec_builtin()
@@ -84,26 +105,16 @@ static int	exec_path(char *cmd, char **arg, char **env)
 int	ft_execvpe(char *cmd, char **arg, t_env **env)
 {
 	char	**pathlist;
-	char	**pathlist_bak;
-	char	*tmp;
 
 	if (is_builtin(cmd))
 		exit(exec_builtin(arg, env));
-	// if absolute or relative path, execute exact target.
-	if (is_path(cmd))
-		return (exec_path(cmd, arg, (char **){NULL})); // TODO: t_env to char**
+	// if cmd has path sign, execute exat target.
+	if (ft_strchr(cmd, '/') != NULL)
+		exec_path(cmd, arg, (char **){NULL}); // TODO: t_env to char**
 	pathlist = get_pathlist(*env);
-	pathlist_bak = pathlist;
-	while (pathlist && *pathlist)
-	{
-		tmp = ft_strjoin(*pathlist, cmd);
-		execve(tmp, arg, (char **){NULL});    // TODO: t_env to NULL terminated char**
-		free(tmp);
-		free(*pathlist);
-		pathlist++;
-		if (errno == EACCES)
-			return (-1);
-	}
-	free(pathlist_bak);
-	return (-1);
+	try_in_path(pathlist, cmd, arg, env);
+	free(pathlist);
+	ft_putstr_fd(cmd, STDERR_FILENO);
+	ft_putendl_fd(": command not found", STDERR_FILENO);
+	exit(127);
 }

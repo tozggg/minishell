@@ -6,7 +6,7 @@
 /*   By: kanlee <kanlee@student.42seoul.kr>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/11 17:13:43 by kanlee            #+#    #+#             */
-/*   Updated: 2021/12/19 19:50:50 by kanlee           ###   ########.fr       */
+/*   Updated: 2021/12/21 05:31:26 by kanlee           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,14 +34,8 @@ static void	child_process(char **av, t_rdinfo rd, t_pipeinfo pipeinfo,
 		close(pipeinfo.write);
 	dup2(rd.write, STDOUT_FILENO);
 	dup2(rd.read, STDIN_FILENO);
-	if (ft_execvpe(av[0], av, env) != 0)
-	{
-		perror(av[0]);
-		if (errno == ENOENT)
-			exit(127);
-		else
-			exit(126);
-	}
+	ft_execvpe(av[0], av, env);
+	exit(1);
 }
 
 /* child process에서 cmd 실행
