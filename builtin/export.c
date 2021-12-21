@@ -6,7 +6,7 @@
 /*   By: taejkim <taejkim@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/17 17:17:27 by taejkim           #+#    #+#             */
-/*   Updated: 2021/12/19 17:20:16 by kanlee           ###   ########.fr       */
+/*   Updated: 2021/12/21 15:31:25 by taejkim          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,9 +17,9 @@ static void	print_export(t_env *env)
 {
 	while (env)
 	{
-		if (env->is_env)
+		if (env->is_env == 1)
 			printf("declare -x %s=\"%s\"\n", env->key, env->value);
-		else
+		else if (env->is_env == 0)
 			printf("declare -x %s\n", env->key);
 		env = env->next;
 	}
@@ -63,7 +63,7 @@ static int	export_str(char *str, t_env **env)
 	char	*equal;
 
 	if (!is_valid_export_str(str))
-		return (-1);
+		return (1);
 	equal = has_equal_sign(str);
 	if (equal)
 	{
@@ -84,9 +84,9 @@ static int	export_str(char *str, t_env **env)
 
 int	do_export(char **av, t_env **env)
 {
-	int	error_flag;
+	int	err;
 
-	error_flag = 0;
+	err = 0;
 	++av;
 	if (!*av)
 	{
@@ -95,13 +95,14 @@ int	do_export(char **av, t_env **env)
 	}
 	while (*av)
 	{
-		error_flag = export_str(*av, env);
+		if (export_str(*av, env))
+		{
+			identifier_err_print(*av);
+			err = 1;
+		}
 		++av;
 	}
-	if (error_flag)
-	{
-		identifier_err_print();
+	if (err)
 		return (1);
-	}
 	return (0);
 }

@@ -19,6 +19,8 @@ SRCS	= main.c \
 		  builtin/unset.c \
 		  builtin/env.c \
 		  builtin/exit.c \
+		  builtin/pwd.c \
+		  builtin/cd.c \
 		  error.c \
 		  utils.c
 HEADERS = minishell.h

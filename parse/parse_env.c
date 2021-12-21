@@ -6,7 +6,7 @@
 /*   By: taejkim <taejkim@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/19 20:08:55 by taejkim           #+#    #+#             */
-/*   Updated: 2021/12/19 16:44:44 by kanlee           ###   ########.fr       */
+/*   Updated: 2021/12/21 15:34:10 by taejkim          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -67,7 +67,7 @@ void	parse_env(t_cmd *cmd, t_env *env)
 		tmp = cmd->env_key;
 		while (tmp)
 		{
-			if (tmp->is_key)
+			if (tmp->is_key == 1)
 			{
 				value = get_value(env, tmp->key);
 				if (value)
@@ -76,7 +76,7 @@ void	parse_env(t_cmd *cmd, t_env *env)
 				else
 					cmd->token = sandwich(cmd->token, "", 0, 0);
 			}
-			else
+			else if (tmp->is_key == 0)
 				cmd->token = parse_env_not_key(cmd->token, tmp->key);
 			tmp = tmp->next;
 		}

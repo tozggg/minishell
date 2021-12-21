@@ -6,7 +6,7 @@
 /*   By: taejkim <taejkim@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/11 17:00:27 by kanlee            #+#    #+#             */
-/*   Updated: 2021/12/19 18:22:02 by kanlee           ###   ########.fr       */
+/*   Updated: 2021/12/21 15:40:21 by taejkim          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -90,7 +90,7 @@ char	*get_value(t_env *env, char *key);
 int		has_env(char *key, t_env *env);
 void	add_env(char *key, char *value, t_env **env, int is_env);
 void	modify_env(char *key, char *value, t_env *env);
-t_env	*make_env(char **envp, char *key, char *value);
+t_env	*make_env(char **envp);
 
 /* separate.c */
 char	*separate(t_cmd **ptr, t_cmd **cmd, char *line);
@@ -132,8 +132,9 @@ void	safe_close_readend(int fd);
 /* error.c */
 void	error_out(char *str);
 void	err_print(int err_flag);
-void	errno_print(int errnum);
-void	identifier_err_print(void);
+void	errno_print(int errnum, char *place);
+void	identifier_err_print(char *place);
+int		home_error_print(void);
 
 /* builtin/builtin.c */
 int		is_builtin(char *cmd);
@@ -146,5 +147,7 @@ int		do_export(char **av, t_env **env);
 int		do_unset(char **av, t_env **env);
 int		do_env(char **av, t_env **env);
 int		do_exit(int ac, char **av);
+int		do_pwd(void);
+int		do_cd(char **av, t_env **env);
 
 #endif

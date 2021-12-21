@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   builtin.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: kanlee <kanlee@student.42seoul.kr>         +#+  +:+       +#+        */
+/*   By: taejkim <taejkim@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/15 11:16:04 by kanlee            #+#    #+#             */
-/*   Updated: 2021/12/19 20:54:22 by kanlee           ###   ########.fr       */
+/*   Updated: 2021/12/21 15:27:08 by taejkim          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,9 +40,9 @@ int	exec_builtin(char **av, t_env **env)
 	if (ft_strequ(av[0], "echo"))
 		return (do_echo(ac, av));
 	if (ft_strequ(av[0], "cd"))
-		return (1);
+		return (do_cd(av, env));
 	if (ft_strequ(av[0], "pwd"))
-		return (1);
+		return (do_pwd());
 	if (ft_strequ(av[0], "export"))
 		return (do_export(av, env));
 	if (ft_strequ(av[0], "unset"))
