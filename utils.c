@@ -6,12 +6,12 @@
 /*   By: taejkim <taejkim@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/11 17:02:02 by kanlee            #+#    #+#             */
-/*   Updated: 2021/12/21 15:41:07 by taejkim          ###   ########.fr       */
+/*   Updated: 2021/12/22 09:28:45 by kanlee           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include <stdio.h>
 #include <stdlib.h>
+#include <errno.h>
 #include "minishell.h"
 #include "libft/libft.h"
 
@@ -43,7 +43,7 @@ char	**listtostrarray(t_cmd *node)
 	str = malloc(sizeof(char *) * (n + 1));
 	if (!str)
 	{
-		perror("malloc failed");
+		errno_print(errno, "malloc failed");
 		exit(1);
 	}
 	i = 0;

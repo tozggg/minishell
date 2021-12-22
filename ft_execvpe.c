@@ -6,11 +6,10 @@
 /*   By: taejkim <taejkim@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/16 07:37:04 by kanlee            #+#    #+#             */
-/*   Updated: 2021/12/21 15:36:11 by taejkim          ###   ########.fr       */
+/*   Updated: 2021/12/22 09:41:12 by kanlee           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include <stdio.h>
 #include <unistd.h>
 #include <stdlib.h>
 #include <errno.h>
@@ -59,12 +58,11 @@ static void	exec_path(char *cmd, char **arg, char **env)
 {
 	if (is_dir(cmd))
 	{
-		errno = EISDIR;
-		perror(cmd);
+		errno_print(EISDIR, cmd);
 		exit(126);
 	}
 	execve(cmd, arg, env);
-	perror(cmd);
+	errno_print(errno, cmd);
 	if (errno == ENOENT)
 		exit(127);
 	if (errno == EACCES)
@@ -72,7 +70,7 @@ static void	exec_path(char *cmd, char **arg, char **env)
 	exit(126);
 }
 
-static void	try_in_path(char **pathlist, char *cmd, char **arg, t_env **env)
+static void	try_in_path(char **pathlist, char *cmd, char **arg, char **envp)
 {
 	char	*target;
 
@@ -86,10 +84,10 @@ static void	try_in_path(char **pathlist, char *cmd, char **arg, t_env **env)
 			free(target);
 			continue ;
 		}
-		execve(target, arg, (char **){NULL});    // TODO: t_env to NULL terminated char**
+		execve(target, arg, envp);
 		if (errno != ENOENT)
 		{
-			perror(target);
+			errno_print(errno, target);
 			exit(126);
 		}
 		free(target);
@@ -105,15 +103,17 @@ static void	try_in_path(char **pathlist, char *cmd, char **arg, t_env **env)
 int	ft_execvpe(char *cmd, char **arg, t_env **env)
 {
 	char	**pathlist;
+	char	**envp;
 
 	if (is_builtin(cmd))
 		exit(exec_builtin(arg, env));
-	// if cmd has path sign, execute exat target.
+	envp = envtostrarray(*env);
 	if (ft_strchr(cmd, '/') != NULL)
-		exec_path(cmd, arg, (char **){NULL}); // TODO: t_env to char**
+		exec_path(cmd, arg, envp);
 	pathlist = get_pathlist(*env);
-	try_in_path(pathlist, cmd, arg, env);
+	try_in_path(pathlist, cmd, arg, envp);
 	free(pathlist);
+	free_envp(envp);
 	ft_putstr_fd(cmd, STDERR_FILENO);
 	ft_putendl_fd(": command not found", STDERR_FILENO);
 	exit(127);

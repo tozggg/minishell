@@ -6,7 +6,7 @@
 /*   By: taejkim <taejkim@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/17 16:55:20 by taejkim           #+#    #+#             */
-/*   Updated: 2021/12/21 15:29:20 by taejkim          ###   ########.fr       */
+/*   Updated: 2021/12/23 01:12:27 by taejkim          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,8 +27,8 @@ int	do_env(char **av, t_env **env)
 {
 	if (av[1])
 	{
-		errno_print(2, av[1]);
-		return (127);
+		ft_putendl_fd("env: too many arguments", STDERR_FILENO);
+		return (1);
 	}
 	print_env(*env);
 	return (0);

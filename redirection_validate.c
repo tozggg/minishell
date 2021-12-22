@@ -6,11 +6,10 @@
 /*   By: taejkim <taejkim@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/18 17:19:52 by kanlee            #+#    #+#             */
-/*   Updated: 2021/12/21 15:40:53 by taejkim          ###   ########.fr       */
+/*   Updated: 2021/12/22 09:29:48 by kanlee           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
 #include <sys/stat.h>
@@ -52,7 +51,7 @@ static int	is_target_valid(t_cmd *node, t_list **willcreate)
 		fd = open(rdtarget, O_RDONLY);
 		if (fd < 0)
 		{
-			perror(rdtarget);
+			errno_print(errno, rdtarget);
 			return (0);
 		}
 		close(fd);
