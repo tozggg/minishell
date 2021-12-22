@@ -6,7 +6,7 @@
 /*   By: taejkim <taejkim@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/11 16:59:43 by kanlee            #+#    #+#             */
-/*   Updated: 2021/12/22 01:49:40 by taejkim          ###   ########.fr       */
+/*   Updated: 2021/12/22 17:37:24 by kanlee           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -60,6 +60,17 @@ void	get_line(char **line)
 		add_history(*line);
 }
 
+static void	inc_shlvl(t_env *env)
+{
+	int		oldlvl;
+	char	*newlvl;
+
+	oldlvl = ft_atoi(get_value(env, "SHLVL"));
+	newlvl = ft_itoa(oldlvl + 1);
+	modify_env("SHLVL", newlvl, 1, env);
+	free(newlvl);
+}
+
 int	main(int ac, char **av, char **envp)
 {
 	t_env	*env;
@@ -72,6 +83,7 @@ int	main(int ac, char **av, char **envp)
 	signal(SIGINT, sig_handler);
 	signal(SIGQUIT, sig_handler);
 	env = make_env(envp);
+	inc_shlvl(env);
 	line = 0;
 	cmd = 0;
 	while (1)

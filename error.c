@@ -6,7 +6,7 @@
 /*   By: taejkim <taejkim@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/17 03:40:42 by taejkim           #+#    #+#             */
-/*   Updated: 2021/12/23 01:12:38 by taejkim          ###   ########.fr       */
+/*   Updated: 2021/12/22 17:40:52 by kanlee           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,7 +21,7 @@
 void	error_out(char *str)
 {
 	ft_putendl_fd(str, STDERR_FILENO);
-	exit(1);
+	exit(0);
 }
 
 void	err_print(int err_flag)
