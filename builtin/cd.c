@@ -6,7 +6,7 @@
 /*   By: taejkim <taejkim@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/19 23:48:09 by taejkim           #+#    #+#             */
-/*   Updated: 2021/12/21 16:38:45 by kanlee           ###   ########.fr       */
+/*   Updated: 2021/12/22 05:35:04 by kanlee           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -57,22 +57,22 @@ static int	cd_relative_path(char *str, t_env *env)
 {
 	int		res;
 	char	*tmp1;
-	char	*tmp2;
 
 	res = 0;
 	if (*str == '~')
 	{
 		if (!has_env("$HOME", env))
 			return (home_error_print());
-		tmp1 = ft_strjoin(get_value(env, "$HOME"), "/");
-		tmp2 = ft_strjoin(tmp1, str);
-		if (chdir(tmp2) < 0)
+		if (str[1] == '/')
+			tmp1 = ft_strjoin(get_value(env, "$HOME"), str + 1);
+		else
+			tmp1 = ft_strdup(str);
+		if (chdir(tmp1) < 0)
 		{
-			perror(tmp2);
-			return (1);
+			perror(tmp1);
+			res = 1;
 		}
 		free(tmp1);
-		free(tmp2);
 	}
 	else if (chdir(str) < 0)
 	{
