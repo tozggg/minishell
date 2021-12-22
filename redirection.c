@@ -6,14 +6,14 @@
 /*   By: taejkim <taejkim@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/12 20:53:33 by kanlee            #+#    #+#             */
-/*   Updated: 2021/12/21 15:40:59 by taejkim          ###   ########.fr       */
+/*   Updated: 2021/12/22 09:29:30 by kanlee           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <fcntl.h>
-#include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
+#include <errno.h>
 #include "minishell.h"
 #include "libft/libft.h"
 
@@ -54,7 +54,7 @@ int	store_rdinfo(t_cmd *node, t_rdinfo *rd, int rdtype)
 	fd = open_target(rdtype, rdtarget);
 	if (fd < 0)
 	{
-		perror(rdtarget);
+		errno_print(errno, rdtarget);
 		return (-1);
 	}
 	if (rdtype == RD_WRITE || rdtype == RD_APPEND)

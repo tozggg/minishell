@@ -6,7 +6,7 @@
 /*   By: taejkim <taejkim@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/11 17:13:43 by kanlee            #+#    #+#             */
-/*   Updated: 2021/12/21 15:35:34 by taejkim          ###   ########.fr       */
+/*   Updated: 2021/12/22 09:22:49 by kanlee           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -70,7 +70,7 @@ static int	execute_command(t_cmd *node, t_rdinfo rd, t_pipeinfo pipeinfo,
 	pid = fork();
 	if (pid < 0)
 	{
-		perror("fork failed");
+		errno_print(errno, "fork failed");
 		exit(1);
 	}
 	else if (pid == 0)

@@ -6,11 +6,10 @@
 /*   By: taejkim <taejkim@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/16 07:37:04 by kanlee            #+#    #+#             */
-/*   Updated: 2021/12/21 15:36:11 by taejkim          ###   ########.fr       */
+/*   Updated: 2021/12/22 09:29:10 by kanlee           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include <stdio.h>
 #include <unistd.h>
 #include <stdlib.h>
 #include <errno.h>
@@ -59,12 +58,11 @@ static void	exec_path(char *cmd, char **arg, char **env)
 {
 	if (is_dir(cmd))
 	{
-		errno = EISDIR;
-		perror(cmd);
+		errno_print(EISDIR, cmd);
 		exit(126);
 	}
 	execve(cmd, arg, env);
-	perror(cmd);
+	errno_print(errno, cmd);
 	if (errno == ENOENT)
 		exit(127);
 	if (errno == EACCES)
@@ -89,7 +87,7 @@ static void	try_in_path(char **pathlist, char *cmd, char **arg, t_env **env)
 		execve(target, arg, (char **){NULL});    // TODO: t_env to NULL terminated char**
 		if (errno != ENOENT)
 		{
-			perror(target);
+			errno_print(errno, target);
 			exit(126);
 		}
 		free(target);
