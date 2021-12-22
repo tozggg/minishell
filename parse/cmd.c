@@ -6,7 +6,7 @@
 /*   By: taejkim <taejkim@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/19 19:59:29 by taejkim           #+#    #+#             */
-/*   Updated: 2021/12/22 01:27:37 by taejkim          ###   ########.fr       */
+/*   Updated: 2021/12/23 00:40:55 by taejkim          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -83,7 +83,7 @@ static int	get_near_errflag(char *str)
 int	check_cmd(t_cmd *curr)
 {
 	t_cmd	*prev;
-	
+
 	if (ft_strequ(curr->token, "|"))
 		return (NEAR_PIPE_ERR);
 	prev = NULL;
