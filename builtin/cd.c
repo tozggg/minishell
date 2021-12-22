@@ -6,11 +6,12 @@
 /*   By: taejkim <taejkim@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/19 23:48:09 by taejkim           #+#    #+#             */
-/*   Updated: 2021/12/22 19:40:19 by taejkim          ###   ########.fr       */
+/*   Updated: 2021/12/23 01:09:53 by taejkim          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <stdlib.h>
+#include <errno.h>
 #include "../minishell.h"
 
 static int	go_home(char *str, t_env *env)
@@ -19,7 +20,7 @@ static int	go_home(char *str, t_env *env)
 	{
 		if (chdir(get_value(env, "HOME")))
 		{
-			errno_print(2, str);
+			errno_print(errno, str);
 			return (1);
 		}
 	}
@@ -31,7 +32,7 @@ static int	go_home(char *str, t_env *env)
 			{
 				if (chdir(get_value(env, "$HOME")))
 				{
-					errno_print(2, str);
+					errno_print(errno, str);
 					return (1);
 				}
 				return (0);
@@ -46,7 +47,7 @@ static int	cd_absolute_path(char *str)
 {
 	if (chdir(str))
 	{
-		errno_print(2, str);
+		errno_print(errno, str);
 		return (1);
 	}
 	return (0);
@@ -68,14 +69,14 @@ static int	cd_relative_path(char *str, t_env *env)
 			tmp = ft_strdup(str);
 		if (chdir(tmp) < 0)
 		{
-			errno_print(2, str);
+			errno_print(errno, str);
 			res = 1;
 		}
 		free(tmp);
 	}
 	else if (chdir(str) < 0)
 	{
-		errno_print(2, str);
+		errno_print(errno, str);
 		res = 1;
 	}
 	return (res);

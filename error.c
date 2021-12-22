@@ -6,7 +6,7 @@
 /*   By: taejkim <taejkim@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/17 03:40:42 by taejkim           #+#    #+#             */
-/*   Updated: 2021/12/22 19:41:24 by taejkim          ###   ########.fr       */
+/*   Updated: 2021/12/23 01:12:38 by taejkim          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -69,7 +69,7 @@ int	home_error_print(void)
 {
 	int	exit_status;
 
-	ft_putendl_fd("minishell: HOME not set", STDERR_FILENO);
+	ft_putendl_fd("cd: HOME not set", STDERR_FILENO);
 	exit_status = 1;
 	return (exit_status);
 }
