@@ -6,7 +6,7 @@
 /*   By: taejkim <taejkim@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/19 14:50:58 by taejkim           #+#    #+#             */
-/*   Updated: 2021/12/21 15:32:40 by taejkim          ###   ########.fr       */
+/*   Updated: 2021/12/22 19:29:15 by taejkim          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -72,7 +72,10 @@ static int	unset_str(char *str, t_env **env)
 {
 	if (!is_valid_unset_str(str))
 		return (1);
-	del_env(str, env, NULL, *env);
+	if (ft_strequ(str, "PWD") || ft_strequ(str, "OLDPWD"))
+		modify_env(str, NULL, -1, *env);
+	else
+		del_env(str, env, NULL, *env);
 	return (0);
 }
 

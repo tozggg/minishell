@@ -6,7 +6,7 @@
 /*   By: taejkim <taejkim@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/11 17:00:27 by kanlee            #+#    #+#             */
-/*   Updated: 2021/12/22 01:23:35 by taejkim          ###   ########.fr       */
+/*   Updated: 2021/12/22 19:24:48 by taejkim          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -97,7 +97,7 @@ void	add_env_key(t_cmd *cmd, t_env_key *env_key);
 char	*get_value(t_env *env, char *key);
 int		has_env(char *key, t_env *env);
 void	add_env(char *key, char *value, t_env **env, int is_env);
-void	modify_env(char *key, char *value, t_env *env);
+void	modify_env(char *key, char *value, int is_env, t_env *env);
 t_env	*make_env(char **envp);
 
 /* separate.c */

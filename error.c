@@ -6,7 +6,7 @@
 /*   By: taejkim <taejkim@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/17 03:40:42 by taejkim           #+#    #+#             */
-/*   Updated: 2021/12/22 01:48:48 by taejkim          ###   ########.fr       */
+/*   Updated: 2021/12/22 19:41:24 by taejkim          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,7 +29,8 @@ void	err_print(int err_flag)
 	if (!err_flag || err_flag == EMPTY_LINE)
 		return ;
 	else if (err_flag == UNSPEC_CHAR_ERR)
-		ft_putendl_fd("syntax error: unspecified special characters", STDERR_FILENO);
+		ft_putendl_fd("syntax error: unspecified special characters", \
+			STDERR_FILENO);
 	else if (err_flag == QUOTE_ERR)
 		ft_putendl_fd("syntax error: unclosed quotes", STDERR_FILENO);
 	else if (err_flag == NEAR_PIPE_ERR)
@@ -39,11 +40,14 @@ void	err_print(int err_flag)
 	else if (err_flag == NEAR_READ_ERR)
 		ft_putendl_fd("syntax error: near unexpected token `<'", STDERR_FILENO);
 	else if (err_flag == NEAR_APPEND_ERR)
-		ft_putendl_fd("syntax error: near unexpected token `>>'", STDERR_FILENO);
+		ft_putendl_fd("syntax error: near unexpected token `>>'", \
+			STDERR_FILENO);
 	else if (err_flag == NEAR_HEREDOC_ERR)
-		ft_putendl_fd("syntax error: near unexpected token `<<'", STDERR_FILENO);
+		ft_putendl_fd("syntax error: near unexpected token `<<'", \
+			STDERR_FILENO);
 	else if (err_flag == NEAR_NEWRINE_ERR)
-		ft_putendl_fd("syntax error: near unexpected token `newline'", STDERR_FILENO);
+		ft_putendl_fd("syntax error: near unexpected token `newline'", \
+			STDERR_FILENO);
 	g_exit_status = 1;
 }
 

@@ -6,7 +6,7 @@
 /*   By: taejkim <taejkim@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/17 17:17:27 by taejkim           #+#    #+#             */
-/*   Updated: 2021/12/21 15:31:25 by taejkim          ###   ########.fr       */
+/*   Updated: 2021/12/22 19:27:03 by taejkim          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -69,7 +69,7 @@ static int	export_str(char *str, t_env **env)
 	{
 		*equal = 0;
 		if (has_env(str, *env))
-			modify_env(str, equal + 1, *env);
+			modify_env(str, equal + 1, 1, *env);
 		else
 			add_env(str, equal + 1, env, 1);
 		*equal = '=';
@@ -78,6 +78,8 @@ static int	export_str(char *str, t_env **env)
 	{
 		if (!has_env(str, *env))
 			add_env(str, "", env, 0);
+		else if (ft_strequ(str, "PWD") || ft_strequ(str, "OLDPWD"))
+			modify_env(str, NULL, 1, *env);
 	}
 	return (0);
 }

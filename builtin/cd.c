@@ -6,7 +6,7 @@
 /*   By: taejkim <taejkim@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/19 23:48:09 by taejkim           #+#    #+#             */
-/*   Updated: 2021/12/21 15:42:31 by taejkim          ###   ########.fr       */
+/*   Updated: 2021/12/22 19:40:19 by taejkim          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,7 +20,7 @@ static int	go_home(char *str, t_env *env)
 		if (chdir(get_value(env, "HOME")))
 		{
 			errno_print(2, str);
-			return (127);
+			return (1);
 		}
 	}
 	else
@@ -32,7 +32,7 @@ static int	go_home(char *str, t_env *env)
 				if (chdir(get_value(env, "$HOME")))
 				{
 					errno_print(2, str);
-					return (127);
+					return (1);
 				}
 				return (0);
 			}
@@ -47,7 +47,7 @@ static int	cd_absolute_path(char *str)
 	if (chdir(str))
 	{
 		errno_print(2, str);
-		return (127);
+		return (1);
 	}
 	return (0);
 }
@@ -55,38 +55,59 @@ static int	cd_absolute_path(char *str)
 static int	cd_relative_path(char *str, t_env *env)
 {
 	int		res;
-	char	*tmp1;
-	char	*tmp2;
+	char	*tmp;
 
 	res = 0;
 	if (*str == '~')
 	{
 		if (!has_env("$HOME", env))
 			return (home_error_print());
-		tmp1 = ft_strjoin(get_value(env, "$HOME"), "/");
-		tmp2 = ft_strjoin(tmp1, str);
-		if (chdir(tmp2))
+		if (str[1] == '/')
+			tmp = ft_strjoin(get_value(env, "$HOME"), str + 1);
+		else
+			tmp = ft_strdup(str);
+		if (chdir(tmp) < 0)
 		{
 			errno_print(2, str);
-			res = 127;
+			res = 1;
 		}
-		free(tmp1);
-		free(tmp2);
+		free(tmp);
 	}
-	else if (chdir(str))
+	else if (chdir(str) < 0)
 	{
 		errno_print(2, str);
-		res = 127;
+		res = 1;
 	}
 	return (res);
 }
 
+void	env_pwd_update(t_env *env)
+{
+	char	*oldpwd;
+	char	*pwd;
+
+	if (!has_env("PWD", env))
+		return ;
+	oldpwd = ft_strdup(get_value(env, "PWD"));
+	pwd = getcwd(NULL, 0);
+	modify_env("PWD", pwd, 0, env);
+	free(pwd);
+	if (has_env("OLDPWD", env))
+		modify_env("OLDPWD", oldpwd, 0, env);
+	free(oldpwd);
+}
+
 int	do_cd(char **av, t_env **env)
 {
+	int	res;
+
 	if (!av[1] || ft_strequ(av[1], "") || ft_strequ(av[1], "~"))
-		return (go_home(av[1], *env));
-	if (*(av[1]) == '/')
-		return (cd_absolute_path(av[1]));
+		res = go_home(av[1], *env);
+	else if (*(av[1]) == '/')
+		res = cd_absolute_path(av[1]);
 	else
-		return (cd_relative_path(av[1], *env));
+		res = cd_relative_path(av[1], *env);
+	if (res == 0)
+		env_pwd_update(*env);
+	return (res);
 }

@@ -6,7 +6,7 @@
 /*   By: taejkim <taejkim@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/19 20:07:55 by taejkim           #+#    #+#             */
-/*   Updated: 2021/12/21 15:33:53 by taejkim          ###   ########.fr       */
+/*   Updated: 2021/12/22 19:24:08 by taejkim          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -58,7 +58,7 @@ void	add_env(char *key, char *value, t_env **env, int is_env)
 	}
 }
 
-void	modify_env(char *key, char *value, t_env *env)
+void	modify_env(char *key, char *value, int is_env, t_env *env)
 {
 	char	*tmp;
 
@@ -66,9 +66,12 @@ void	modify_env(char *key, char *value, t_env *env)
 	{
 		if (ft_strequ(key, env->key))
 		{
+			if (is_env)
+				env->is_env = is_env;
+			if (!value)
+				return ;
 			tmp = env->value;
 			env->value = ft_strdup(value);
-			env->is_env = 1;
 			free(tmp);
 			return ;
 		}
