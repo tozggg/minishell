@@ -6,7 +6,7 @@
 /*   By: taejkim <taejkim@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/11 16:59:43 by kanlee            #+#    #+#             */
-/*   Updated: 2021/12/22 17:51:02 by kanlee           ###   ########.fr       */
+/*   Updated: 2021/12/23 19:42:16 by kanlee           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,6 +14,7 @@
 #include <stdlib.h>
 #include <unistd.h>
 #include <sys/wait.h>
+#include <errno.h>
 #include <readline/readline.h>
 #include <readline/history.h>
 #include "minishell.h"
@@ -23,23 +24,18 @@ int		g_exit_status = 0;
 
 void	sig_handler(int signo)
 {
-	pid_t	pid;
-	int		wstatus;
+	int	wstatus;
 
-	pid = waitpid(-1, &wstatus, WNOHANG);
 	if (signo == SIGINT)
 	{
-		if (pid == -1)
+		if (waitpid(-1, &wstatus, WNOHANG) == -1 && errno == ECHILD)
 		{
+			g_exit_status = 1;
 			printf("\n");
 			rl_on_new_line();
 			rl_replace_line("", 0);
 			rl_redisplay();
 		}	
-		else
-		{
-			// 자식프로세스에 SIGINT? 애초에 자식 프로세스만 구별가능??
-		}
 	}
 }
 

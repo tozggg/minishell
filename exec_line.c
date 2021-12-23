@@ -6,7 +6,7 @@
 /*   By: taejkim <taejkim@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/11 17:34:32 by kanlee            #+#    #+#             */
-/*   Updated: 2021/12/21 15:54:53 by taejkim          ###   ########.fr       */
+/*   Updated: 2021/12/23 19:19:24 by kanlee           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -65,9 +65,11 @@ static int	monitor_child(pid_t lastpid)
 			if (WIFSIGNALED(wstatus))
 			{
 				exit_code = WTERMSIG(wstatus) + 128;
-				if (exit_code == 131)
+				if (exit_code == SIGINT + 128)
+					printf("\n");
+				else if (exit_code == SIGQUIT + 128)
 					printf("Quit\n");
-				else if (exit_code != 130)
+				else
 					printf("Terminated by signal %d\n", exit_code - 128);
 			}
 		}
