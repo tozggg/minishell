@@ -6,7 +6,7 @@
 /*   By: taejkim <taejkim@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/11 16:59:43 by kanlee            #+#    #+#             */
-/*   Updated: 2021/12/23 19:42:16 by kanlee           ###   ########.fr       */
+/*   Updated: 2021/12/23 19:45:29 by kanlee           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,7 +53,7 @@ void	get_line(char **line)
 	if (*line == NULL)
 	{
 		ft_putendl_fd("exit", STDERR_FILENO);
-		exit(0);
+		exit(g_exit_status);
 	}
 	if (ft_strncmp(*line, "", 1))
 		add_history(*line);

@@ -6,7 +6,7 @@
 /*   By: taejkim <taejkim@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/18 23:01:42 by kanlee            #+#    #+#             */
-/*   Updated: 2021/12/21 15:30:12 by taejkim          ###   ########.fr       */
+/*   Updated: 2021/12/23 18:50:33 by kanlee           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,6 +14,8 @@
 #include <stdlib.h>
 #include <limits.h>
 #include "../libft/libft.h"
+
+extern int	g_exit_status;
 
 static long	ft_atol(const char *nptr, int *err)
 {
@@ -60,7 +62,7 @@ int	do_exit(int ac, char **av)
 	if (isatty(STDIN_FILENO))
 		ft_putendl_fd("exit", STDERR_FILENO);
 	if (ac == 1)
-		exit(0);
+		exit(g_exit_status);
 	arg = ft_atol(av[1], &err);
 	if (err)
 	{
@@ -72,7 +74,7 @@ int	do_exit(int ac, char **av)
 	if (ac > 2)
 	{
 		ft_putendl_fd("exit: too many arguments", STDERR_FILENO);
-		return(1);
+		return (1);
 	}
 	exit(arg % 256);
 }

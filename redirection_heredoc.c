@@ -6,7 +6,7 @@
 /*   By: taejkim <taejkim@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/17 11:51:31 by kanlee            #+#    #+#             */
-/*   Updated: 2021/12/21 15:40:40 by taejkim          ###   ########.fr       */
+/*   Updated: 2021/12/23 19:11:27 by kanlee           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,10 +37,11 @@ static int	cleanup(int stdin_bak)
 	else
 	{
 #ifdef DEBUG
-		printf("heredoc interrupted\n");
+		printf("heredoc interrupted");
 #endif
+		printf("^C\n");
 		dup2(stdin_bak, STDIN_FILENO);
-		return (130);
+		return (1);
 	}
 }
 
