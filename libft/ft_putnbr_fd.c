@@ -6,7 +6,7 @@
 /*   By: kanlee <kanlee@student.42seoul.kr>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/06 21:23:24 by kanlee            #+#    #+#             */
-/*   Updated: 2021/03/13 03:24:50 by kanlee           ###   ########.fr       */
+/*   Updated: 2021/12/23 19:57:28 by kanlee           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,7 +20,7 @@ static int	ft_abs(int n)
 	return (-n);
 }
 
-void		ft_putnbr_fd(int n, int fd)
+void	ft_putnbr_fd(int n, int fd)
 {
 	char	buf[20];
 	int		i;

@@ -6,7 +6,7 @@
 /*   By: kanlee <kanlee@student.42seoul.kr>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/05 17:54:52 by kanlee            #+#    #+#             */
-/*   Updated: 2021/12/06 17:12:02 by kanlee           ###   ########.fr       */
+/*   Updated: 2021/12/23 19:58:31 by kanlee           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,7 +19,7 @@ static int	is_space(char ch)
 		|| ch == '\v' || ch == '\r' || ch == '\f');
 }
 
-int			ft_atoi(const char *nptr)
+int	ft_atoi(const char *nptr)
 {
 	int			sign;
 	long long	result;

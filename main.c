@@ -6,7 +6,7 @@
 /*   By: taejkim <taejkim@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/11 16:59:43 by kanlee            #+#    #+#             */
-/*   Updated: 2021/12/23 19:45:29 by kanlee           ###   ########.fr       */
+/*   Updated: 2021/12/23 20:25:40 by kanlee           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,7 +41,7 @@ void	sig_handler(int signo)
 
 void	get_line(char **line)
 {
-	extern int rl_catch_signals;
+	extern int	rl_catch_signals;
 
 	rl_catch_signals = 0;
 	if (*line)
@@ -70,6 +70,15 @@ static void	inc_shlvl(t_env *env)
 	free(newlvl);
 }
 
+void	init(int ac, char **av, t_env *env)
+{
+	(void)ac;
+	(void)av;
+	signal(SIGINT, sig_handler);
+	signal(SIGQUIT, sig_handler);
+	inc_shlvl(env);
+}
+
 int	main(int ac, char **av, char **envp)
 {
 	t_env	*env;
@@ -77,12 +86,8 @@ int	main(int ac, char **av, char **envp)
 	t_cmd	*cmd;
 	int		err_flag;
 
-	(void)ac;
-	(void)av;
-	signal(SIGINT, sig_handler);
-	signal(SIGQUIT, sig_handler);
 	env = make_env(envp);
-	inc_shlvl(env);
+	init(ac, av, env);
 	line = 0;
 	cmd = 0;
 	while (1)
@@ -94,7 +99,7 @@ int	main(int ac, char **av, char **envp)
 			err_flag = check_cmd(cmd);
 		err_print(err_flag);
 		if (err_flag)
-			continue;
+			continue ;
 		parse_env(cmd, env);
 		g_exit_status = exec_line(cmd, &env, g_exit_status);
 	}

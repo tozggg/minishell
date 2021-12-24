@@ -6,7 +6,7 @@
 /*   By: kanlee <kanlee@student.42seoul.kr>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/06 00:44:20 by kanlee            #+#    #+#             */
-/*   Updated: 2021/03/13 03:20:41 by kanlee           ###   ########.fr       */
+/*   Updated: 2021/12/23 19:57:05 by kanlee           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,7 +37,7 @@ static char	*i_to_a(char *ret, int n, int len)
 	return (ret);
 }
 
-char		*ft_itoa(int n)
+char	*ft_itoa(int n)
 {
 	int		len;
 	char	*ret;

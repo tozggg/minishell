@@ -6,14 +6,14 @@
 /*   By: kanlee <kanlee@student.42seoul.kr>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/05 09:22:51 by kanlee            #+#    #+#             */
-/*   Updated: 2021/03/13 03:27:28 by kanlee           ###   ########.fr       */
+/*   Updated: 2021/12/23 19:56:48 by kanlee           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <stdlib.h>
 #include "libft.h"
 
-static int		free_all(char **ret, size_t cnt)
+static int	free_all(char **ret, size_t cnt)
 {
 	while (cnt)
 		free(ret[--cnt]);
@@ -44,7 +44,7 @@ static size_t	cnt_word(const char *s, char c)
 	return (cnt);
 }
 
-static int		ft_split_str(char const *s, char c, char **ret)
+static int	ft_split_str(char const *s, char c, char **ret)
 {
 	size_t	cnt;
 	size_t	from;
@@ -73,7 +73,7 @@ static int		ft_split_str(char const *s, char c, char **ret)
 	return (1);
 }
 
-char			**ft_split(char const *s, char c)
+char	**ft_split(char const *s, char c)
 {
 	size_t	cnt;
 	char	**ret;
