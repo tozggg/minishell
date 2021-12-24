@@ -6,7 +6,7 @@
 /*   By: taejkim <taejkim@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/11 17:34:32 by kanlee            #+#    #+#             */
-/*   Updated: 2021/12/23 20:48:48 by kanlee           ###   ########.fr       */
+/*   Updated: 2021/12/24 03:36:23 by kanlee           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -106,7 +106,7 @@ int	exec_line(t_cmd *node, t_env **env, int exit_code)
 	if (exit_code != 0)
 		return (exit_code);
 	// this mimics bash 4.4.20 behavior. Needs more tests on 3.2.57 of Cluster Mac.
-	chk_rdtarget(node);
+	// chk_rdtarget(node);
 	read_prev = STDIN_FILENO;
 	while (1)
 	{
