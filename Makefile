@@ -23,7 +23,8 @@ SRCS	= main.c \
 		  builtin/cd.c \
 		  error.c \
 		  utils.c \
-		  utils_env.c
+		  utils_env.c \
+		  main_debug.c
 HEADERS = minishell.h
 OBJS 	= $(SRCS:.c=.o)
 CFLAGS	= -Wall -Wextra

@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   main.c                                             :+:      :+:    :+:   */
+/*   main_debug.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: taejkim <taejkim@student.42seoul.kr>       +#+  +:+       +#+        */
+/*   By: kanlee <kanlee@student.42seoul.kr>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2021/12/11 16:59:43 by kanlee            #+#    #+#             */
-/*   Updated: 2021/12/24 03:19:29 by kanlee           ###   ########.fr       */
+/*   Created: 2021/12/24 03:24:38 by kanlee            #+#    #+#             */
+/*   Updated: 2021/12/24 03:24:47 by kanlee           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,9 +20,7 @@
 #include "minishell.h"
 #include "libft/libft.h"
 
-int		g_exit_status = 0;
-
-#ifndef DEBUG
+#ifdef DEBUG
 
 void	sig_handler(int signo)
 {
@@ -36,6 +34,7 @@ void	sig_handler(int signo)
 			printf("\n");
 			rl_on_new_line();
 			rl_replace_line("", 0);
+			printf("[%d]", g_exit_status);
 			rl_redisplay();
 		}	
 	}
@@ -51,6 +50,7 @@ void	get_line(char **line)
 		free(*line);
 		*line = NULL;
 	}
+	printf("[%d]", g_exit_status);
 	*line = readline("minimini-shell $ ");
 	if (*line == NULL)
 	{
@@ -62,50 +62,3 @@ void	get_line(char **line)
 }
 
 #endif
-
-static void	inc_shlvl(t_env *env)
-{
-	int		oldlvl;
-	char	*newlvl;
-
-	oldlvl = ft_atoi(get_value(env, "SHLVL"));
-	newlvl = ft_itoa(oldlvl + 1);
-	modify_env("SHLVL", newlvl, 1, env);
-	free(newlvl);
-}
-
-void	init(int ac, char **av, t_env *env)
-{
-	(void)ac;
-	(void)av;
-	signal(SIGINT, sig_handler);
-	signal(SIGQUIT, sig_handler);
-	inc_shlvl(env);
-}
-
-int	main(int ac, char **av, char **envp)
-{
-	t_env	*env;
-	char	*line;
-	t_cmd	*cmd;
-	int		err_flag;
-
-	env = make_env(envp);
-	init(ac, av, env);
-	line = 0;
-	cmd = 0;
-	while (1)
-	{
-		get_line(&line);
-		err_flag = 0;
-		parse(&cmd, line, &err_flag);
-		if (!err_flag)
-			err_flag = check_cmd(cmd);
-		err_print(err_flag);
-		if (err_flag)
-			continue ;
-		parse_env(cmd, env);
-		g_exit_status = exec_line(cmd, &env, g_exit_status);
-	}
-	return (0);
-}

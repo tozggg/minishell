@@ -6,7 +6,7 @@
 /*   By: taejkim <taejkim@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/11 17:34:32 by kanlee            #+#    #+#             */
-/*   Updated: 2021/12/23 19:19:24 by kanlee           ###   ########.fr       */
+/*   Updated: 2021/12/23 20:48:48 by kanlee           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -85,9 +85,6 @@ static int	refine(int exit_code)
 		exit_code = monitor_child(exit_code);
 	else
 		exit_code *= -1;
-#ifdef DEBUG
-	printf("exit code:[%d]\n", exit_code);
-#endif
 	return (exit_code);
 }
 

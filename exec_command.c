@@ -6,7 +6,7 @@
 /*   By: taejkim <taejkim@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/11 17:13:43 by kanlee            #+#    #+#             */
-/*   Updated: 2021/12/22 09:22:49 by kanlee           ###   ########.fr       */
+/*   Updated: 2021/12/24 03:12:41 by kanlee           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,10 +20,6 @@
 static void	child_process(char **av, t_rdinfo rd, t_pipeinfo pipeinfo,
 		t_env **env)
 {
-#ifdef DEBUG
-	printf("%s: read %d - write %d - tobefree %d\n", av[0],
-		pipeinfo.read, pipeinfo.write, pipeinfo.unused);
-#endif
 	if (pipeinfo.write != STDOUT_FILENO)
 		safe_close_readend(pipeinfo.unused);
 	dup2(pipeinfo.read, STDIN_FILENO);
@@ -54,12 +50,6 @@ static int	execute_command(t_cmd *node, t_rdinfo rd, t_pipeinfo pipeinfo,
 	pid_t	pid;
 
 	av = listtostrarray(node);
-#ifdef DEBUG
-	int i = -1;
-	while (av[++i] != 0)
-		printf("arg[%d]:%s ", i, av[i]);
-	printf("\n");
-#endif
 	if (av[0] == NULL)
 	{
 		free(av);

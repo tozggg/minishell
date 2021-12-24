@@ -6,7 +6,7 @@
 /*   By: taejkim <taejkim@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/17 11:51:31 by kanlee            #+#    #+#             */
-/*   Updated: 2021/12/23 19:11:27 by kanlee           ###   ########.fr       */
+/*   Updated: 2021/12/24 03:09:43 by kanlee           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,17 +28,9 @@ static int	cleanup(int stdin_bak)
 {
 	signal(SIGINT, sig_handler);
 	if (isatty(STDIN_FILENO))
-	{
-#ifdef DEBUG
-		printf("heredoc completed\n");
-#endif
 		return (0);
-	}
 	else
 	{
-#ifdef DEBUG
-		printf("heredoc interrupted");
-#endif
 		printf("^C\n");
 		dup2(stdin_bak, STDIN_FILENO);
 		return (1);
