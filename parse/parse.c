@@ -6,7 +6,7 @@
 /*   By: taejkim <taejkim@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/19 20:07:32 by taejkim           #+#    #+#             */
-/*   Updated: 2021/12/26 07:20:38 by kanlee           ###   ########.fr       */
+/*   Updated: 2021/12/26 21:15:38 by taejkim          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,6 +17,7 @@ static char	*envp_decision(t_cmd *cmd, char *line)
 	t_env_key	*env_key;
 
 	env_key = init_env_key();
+	env_key->out_quote = 1;
 	++line;
 	if (!is_allow_envpname(*line))
 	{

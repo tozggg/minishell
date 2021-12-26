@@ -6,7 +6,7 @@
 /*   By: taejkim <taejkim@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/11 17:00:27 by kanlee            #+#    #+#             */
-/*   Updated: 2021/12/26 08:44:19 by kanlee           ###   ########.fr       */
+/*   Updated: 2021/12/26 23:21:10 by taejkim          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -56,6 +56,7 @@ typedef struct s_cmd
 typedef struct s_env_key
 {
 	int					is_key;
+	int					out_quote;
 	char				*key;
 	struct s_env_key	*next;
 }	t_env_key;
@@ -115,6 +116,9 @@ int			is_space(char c);
 int			is_separator(char c);
 int			is_allow_envpname(char c);
 int			is_unspecified_char(char c);
+
+/* padding.c */
+void	check_padding(t_cmd *cmd, t_env *env, int pre);
 
 /* exec_line.c */
 int			exec_line(t_cmd *head, t_env **env, int exitcode);

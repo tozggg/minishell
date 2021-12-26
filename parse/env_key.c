@@ -6,7 +6,7 @@
 /*   By: taejkim <taejkim@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/19 20:04:16 by taejkim           #+#    #+#             */
-/*   Updated: 2021/12/21 15:33:07 by taejkim          ###   ########.fr       */
+/*   Updated: 2021/12/26 21:15:08 by taejkim          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,6 +21,7 @@ t_env_key	*init_env_key(void)
 	if (!env_key)
 		error_out("malloc error");
 	env_key->is_key = 0;
+	env_key->out_quote = 0;
 	env_key->key = ft_strdup("");
 	env_key->next = NULL;
 	return (env_key);

@@ -6,7 +6,7 @@
 /*   By: taejkim <taejkim@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/19 20:08:55 by taejkim           #+#    #+#             */
-/*   Updated: 2021/12/23 00:40:41 by taejkim          ###   ########.fr       */
+/*   Updated: 2021/12/26 23:19:34 by taejkim          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -82,6 +82,7 @@ void	parse_env(t_cmd *cmd, t_env *env)
 	t_env_key	*tmp;
 	char		*value;
 
+	check_padding(cmd, env, 0);
 	while (cmd)
 	{
 		pass = 0;
