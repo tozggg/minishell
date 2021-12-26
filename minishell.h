@@ -6,7 +6,7 @@
 /*   By: taejkim <taejkim@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/11 17:00:27 by kanlee            #+#    #+#             */
-/*   Updated: 2021/12/24 02:37:09 by kanlee           ###   ########.fr       */
+/*   Updated: 2021/12/25 20:38:27 by kanlee           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,8 +33,7 @@ enum e_cmdtype {
 	TYPE_GENERAL = 0,
 	TYPE_RDSIGN,
 	TYPE_RDTARGET,
-	TYPE_PIPE,
-	TYPE_INVALID
+	TYPE_PIPE
 };
 
 enum e_rdtype {
@@ -78,6 +77,7 @@ typedef struct s_pipeinfo {
 typedef struct s_rdinfo {
 	int	read;
 	int	write;
+	int	invalid;
 }	t_rdinfo;
 
 void		sig_handler(int signo);

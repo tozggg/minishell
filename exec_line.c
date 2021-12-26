@@ -6,7 +6,7 @@
 /*   By: taejkim <taejkim@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/11 17:34:32 by kanlee            #+#    #+#             */
-/*   Updated: 2021/12/24 03:36:23 by kanlee           ###   ########.fr       */
+/*   Updated: 2021/12/25 20:39:03 by kanlee           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -68,7 +68,7 @@ static int	monitor_child(pid_t lastpid)
 				if (exit_code == SIGINT + 128)
 					printf("\n");
 				else if (exit_code == SIGQUIT + 128)
-					printf("Quit\n");
+					printf("Quit: 3\n");
 				else
 					printf("Terminated by signal %d\n", exit_code - 128);
 			}
@@ -105,8 +105,6 @@ int	exec_line(t_cmd *node, t_env **env, int exit_code)
 	exit_code = chk_heredoc(node);
 	if (exit_code != 0)
 		return (exit_code);
-	// this mimics bash 4.4.20 behavior. Needs more tests on 3.2.57 of Cluster Mac.
-	// chk_rdtarget(node);
 	read_prev = STDIN_FILENO;
 	while (1)
 	{

@@ -6,7 +6,7 @@
 /*   By: taejkim <taejkim@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/17 03:40:42 by taejkim           #+#    #+#             */
-/*   Updated: 2021/12/22 17:50:47 by kanlee           ###   ########.fr       */
+/*   Updated: 2021/12/25 19:15:14 by kanlee           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,7 +48,7 @@ void	err_print(int err_flag)
 	else if (err_flag == NEAR_NEWRINE_ERR)
 		ft_putendl_fd("syntax error: near unexpected token `newline'", \
 			STDERR_FILENO);
-	g_exit_status = 1;
+	g_exit_status = 258;
 }
 
 void	errno_print(int errnum, char *place)

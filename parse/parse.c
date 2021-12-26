@@ -6,7 +6,7 @@
 /*   By: taejkim <taejkim@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/19 20:07:32 by taejkim           #+#    #+#             */
-/*   Updated: 2021/12/22 00:31:46 by taejkim          ###   ########.fr       */
+/*   Updated: 2021/12/24 04:09:46 by kanlee           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,7 +25,7 @@ static char	*envp_decision(t_cmd *cmd, char *line)
 			env_key->key = append(env_key->key, '?');
 			++line;
 		}
-		else if (*line != '\'')
+		else if (*line != '\'' && *line != '\"')
 			env_key->key = append(env_key->key, '$');
 		add_env_key(cmd, env_key);
 	}

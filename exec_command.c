@@ -6,7 +6,7 @@
 /*   By: taejkim <taejkim@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/11 17:13:43 by kanlee            #+#    #+#             */
-/*   Updated: 2021/12/24 03:12:41 by kanlee           ###   ########.fr       */
+/*   Updated: 2021/12/25 20:38:45 by kanlee           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,6 +28,10 @@ static void	child_process(char **av, t_rdinfo rd, t_pipeinfo pipeinfo,
 	dup2(pipeinfo.write, STDOUT_FILENO);
 	if (pipeinfo.write != STDOUT_FILENO)
 		close(pipeinfo.write);
+	if (rd.invalid)
+		exit(1);
+	if (av[0] == NULL)
+		exit(0);
 	dup2(rd.write, STDOUT_FILENO);
 	dup2(rd.read, STDIN_FILENO);
 	ft_execvpe(av[0], av, env);
@@ -50,12 +54,7 @@ static int	execute_command(t_cmd *node, t_rdinfo rd, t_pipeinfo pipeinfo,
 	pid_t	pid;
 
 	av = listtostrarray(node);
-	if (av[0] == NULL)
-	{
-		free(av);
-		return (0);
-	}
-	if (is_builtin(av[0]) && pipeinfo.read == 0 && pipeinfo.write == 1)
+	if (av[0] && is_builtin(av[0]) && pipeinfo.read == 0 && pipeinfo.write == 1)
 		return (exec_builtin_single(av, rd, env) * -1);
 	pid = fork();
 	if (pid < 0)
@@ -84,17 +83,18 @@ int	command(t_cmd *node, t_pipeinfo pipeinfo, t_env **env)
 	t_rdinfo	rd;
 	int			rdtype;
 
-	rd = (t_rdinfo){STDIN_FILENO, STDOUT_FILENO};
+	rd = (t_rdinfo){STDIN_FILENO, STDOUT_FILENO, 0};
 	head = node;
-	if (head->cmd_type == TYPE_INVALID)
-		return (1 * -1);
 	while (1)
 	{
 		rdtype = is_redirection_node(node);
 		if (rdtype != NONE)
 		{
 			if (store_rdinfo(node, &rd, rdtype) < 0)
-				return (1 * -1);
+			{
+				rd.invalid = 1;
+				break ;
+			}
 			node->cmd_type = TYPE_RDSIGN;
 			node->next->cmd_type = TYPE_RDTARGET;
 			node = node->next;

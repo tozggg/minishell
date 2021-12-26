@@ -6,7 +6,7 @@
 /*   By: taejkim <taejkim@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/15 11:16:04 by kanlee            #+#    #+#             */
-/*   Updated: 2021/12/21 15:27:08 by taejkim          ###   ########.fr       */
+/*   Updated: 2021/12/25 20:54:58 by kanlee           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,23 +54,8 @@ int	exec_builtin(char **av, t_env **env)
 	return (0);
 }
 
-/* runs is main process.
- * apply redirection
- * execute builtin command
- * restore STDIN/STDOUT
-*/
-int	exec_builtin_single(char **av, t_rdinfo rd, t_env **env)
+void	restore_io(int stdin_bak, int stdout_bak, t_rdinfo rd)
 {
-	int	stdin_bak;
-	int	stdout_bak;
-	int	ret;
-
-	ret = 0;
-	stdout_bak = dup(STDOUT_FILENO);
-	dup2(rd.write, STDOUT_FILENO);
-	stdin_bak = dup(STDIN_FILENO);
-	dup2(rd.read, STDIN_FILENO);
-	ret = exec_builtin(av, env);
 	if (rd.write != STDOUT_FILENO)
 	{
 		close(rd.write);
@@ -83,6 +68,31 @@ int	exec_builtin_single(char **av, t_rdinfo rd, t_env **env)
 		dup2(stdin_bak, STDIN_FILENO);
 		close(stdin_bak);
 	}
+}
+
+/* runs in main process.
+ * apply redirection
+ * execute builtin command
+ * restore STDIN/STDOUT
+*/
+int	exec_builtin_single(char **av, t_rdinfo rd, t_env **env)
+{
+	int	stdin_bak;
+	int	stdout_bak;
+	int	ret;
+
+	ret = 0;
+	if (rd.invalid)
+	{
+		free(av);
+		return (1);
+	}
+	stdout_bak = dup(STDOUT_FILENO);
+	dup2(rd.write, STDOUT_FILENO);
+	stdin_bak = dup(STDIN_FILENO);
+	dup2(rd.read, STDIN_FILENO);
+	ret = exec_builtin(av, env);
+	restore_io(stdin_bak, stdout_bak, rd);
 	free(av);
 	return (ret);
 }

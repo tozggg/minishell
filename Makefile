@@ -1,4 +1,4 @@
-NAME	= a.out
+NAME	= minishell
 SRCS	= main.c \
 		  exec_line.c \
 		  exec_command.c \
@@ -10,7 +10,6 @@ SRCS	= main.c \
 		  parse/parse.c \
 		  parse/parse_utils.c \
 		  redirection.c \
-		  redirection_validate.c \
 		  redirection_heredoc.c \
 		  ft_execvpe.c \
 		  builtin/builtin.c \
