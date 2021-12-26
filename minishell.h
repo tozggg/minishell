@@ -6,7 +6,7 @@
 /*   By: taejkim <taejkim@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/11 17:00:27 by kanlee            #+#    #+#             */
-/*   Updated: 2021/12/26 08:37:58 by kanlee           ###   ########.fr       */
+/*   Updated: 2021/12/26 08:44:19 by kanlee           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -81,7 +81,7 @@ typedef struct s_rdinfo {
 }	t_rdinfo;
 
 void		sig_handler(int signo);
-void		get_line(char **line);
+int			get_line(char **line);
 
 /* cmd.c */
 t_cmd		*init_cmd(void);

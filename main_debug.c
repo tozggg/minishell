@@ -6,7 +6,7 @@
 /*   By: kanlee <kanlee@student.42seoul.kr>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/24 03:24:38 by kanlee            #+#    #+#             */
-/*   Updated: 2021/12/24 03:24:47 by kanlee           ###   ########.fr       */
+/*   Updated: 2021/12/26 08:28:27 by kanlee           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,8 +40,9 @@ void	sig_handler(int signo)
 	}
 }
 
-void	get_line(char **line)
+int	get_line(char **line)
 {
+	char		*line_trimmed;
 	extern int	rl_catch_signals;
 
 	rl_catch_signals = 0;
@@ -57,8 +58,13 @@ void	get_line(char **line)
 		ft_putendl_fd("exit", STDERR_FILENO);
 		exit(g_exit_status);
 	}
-	if (ft_strncmp(*line, "", 1))
-		add_history(*line);
+	line_trimmed = ft_strtrim(*line, " ");
+	free(*line);
+	*line = line_trimmed;
+	if (**line == '\0')
+		return (-1);
+	add_history(*line);
+	return (0);
 }
 
 #endif

@@ -6,7 +6,7 @@
 /*   By: taejkim <taejkim@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/11 16:59:43 by kanlee            #+#    #+#             */
-/*   Updated: 2021/12/24 03:19:29 by kanlee           ###   ########.fr       */
+/*   Updated: 2021/12/26 08:35:42 by kanlee           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,8 +41,9 @@ void	sig_handler(int signo)
 	}
 }
 
-void	get_line(char **line)
+int	get_line(char **line)
 {
+	char		*line_trimmed;
 	extern int	rl_catch_signals;
 
 	rl_catch_signals = 0;
@@ -57,8 +58,13 @@ void	get_line(char **line)
 		ft_putendl_fd("exit", STDERR_FILENO);
 		exit(g_exit_status);
 	}
-	if (ft_strncmp(*line, "", 1))
-		add_history(*line);
+	line_trimmed = ft_strtrim(*line, " ");
+	free(*line);
+	*line = line_trimmed;
+	if (**line == '\0')
+		return (-1);
+	add_history(*line);
+	return (0);
 }
 
 #endif
@@ -96,7 +102,8 @@ int	main(int ac, char **av, char **envp)
 	cmd = 0;
 	while (1)
 	{
-		get_line(&line);
+		if (get_line(&line) < 0)
+			continue ;
 		err_flag = 0;
 		parse(&cmd, line, &err_flag);
 		if (!err_flag)
