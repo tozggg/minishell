@@ -6,7 +6,7 @@
 /*   By: taejkim <taejkim@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/19 19:59:29 by taejkim           #+#    #+#             */
-/*   Updated: 2021/12/23 00:40:55 by taejkim          ###   ########.fr       */
+/*   Updated: 2021/12/26 07:06:26 by kanlee           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -95,8 +95,10 @@ int	check_cmd(t_cmd *curr)
 		{
 			if (prev && is_redirection_node(prev))
 				return (get_near_errflag(curr->token));
-			if (!(curr->next) || ft_strequ(curr->next->token, "|"))
+			if (!(curr->next))
 				return (NEAR_NEWRINE_ERR);
+			if (ft_strequ(curr->next->token, "|"))
+				return (get_near_errflag(curr->token));
 		}
 		if (!(curr->next) && ft_strequ(curr->token, "|"))
 			return (NEAR_PIPE_ERR);

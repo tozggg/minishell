@@ -6,7 +6,7 @@
 /*   By: taejkim <taejkim@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/17 03:40:42 by taejkim           #+#    #+#             */
-/*   Updated: 2021/12/25 19:15:14 by kanlee           ###   ########.fr       */
+/*   Updated: 2021/12/26 08:14:16 by kanlee           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,26 +28,27 @@ void	err_print(int err_flag)
 {
 	if (!err_flag || err_flag == EMPTY_LINE)
 		return ;
-	else if (err_flag == UNSPEC_CHAR_ERR)
-		ft_putendl_fd("syntax error: unspecified special characters", \
-			STDERR_FILENO);
-	else if (err_flag == QUOTE_ERR)
-		ft_putendl_fd("syntax error: unclosed quotes", STDERR_FILENO);
+	ft_putstr_fd("syntax error: ", STDERR_FILENO);
+	if (err_flag == QUOTE_ERR)
+		ft_putendl_fd("unclosed quotes", STDERR_FILENO);
 	else if (err_flag == NEAR_PIPE_ERR)
-		ft_putendl_fd("syntax error: near unexpected token `|'", STDERR_FILENO);
+		ft_putendl_fd("near unexpected token `|'", STDERR_FILENO);
 	else if (err_flag == NEAR_WRITE_ERR)
-		ft_putendl_fd("syntax error: near unexpected token `>'", STDERR_FILENO);
+		ft_putendl_fd("near unexpected token `>'", STDERR_FILENO);
 	else if (err_flag == NEAR_READ_ERR)
-		ft_putendl_fd("syntax error: near unexpected token `<'", STDERR_FILENO);
+		ft_putendl_fd("near unexpected token `<'", STDERR_FILENO);
 	else if (err_flag == NEAR_APPEND_ERR)
-		ft_putendl_fd("syntax error: near unexpected token `>>'", \
-			STDERR_FILENO);
+		ft_putendl_fd("near unexpected token `>>'", STDERR_FILENO);
 	else if (err_flag == NEAR_HEREDOC_ERR)
-		ft_putendl_fd("syntax error: near unexpected token `<<'", \
-			STDERR_FILENO);
+		ft_putendl_fd("near unexpected token `<<'", STDERR_FILENO);
 	else if (err_flag == NEAR_NEWRINE_ERR)
-		ft_putendl_fd("syntax error: near unexpected token `newline'", \
-			STDERR_FILENO);
+		ft_putendl_fd("near unexpected token `newline'", STDERR_FILENO);
+	else if (err_flag >= UNSPEC_CHAR_ERR)
+	{
+		ft_putchar_fd('\'', STDERR_FILENO);
+		ft_putchar_fd(err_flag - UNSPEC_CHAR_ERR, STDERR_FILENO);
+		ft_putendl_fd("': unspecified special character", STDERR_FILENO);
+	}
 	g_exit_status = 258;
 }
 
