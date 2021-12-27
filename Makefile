@@ -10,6 +10,7 @@ SRCS	= main.c \
 		  parse/parse.c \
 		  parse/parse_utils.c \
 		  parse/padding.c \
+		  parse/check.c \
 		  redirection.c \
 		  redirection_heredoc.c \
 		  ft_execvpe.c \

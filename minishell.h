@@ -6,7 +6,7 @@
 /*   By: taejkim <taejkim@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/11 17:00:27 by kanlee            #+#    #+#             */
-/*   Updated: 2021/12/26 23:21:10 by taejkim          ###   ########.fr       */
+/*   Updated: 2021/12/27 18:13:48 by taejkim          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,6 +49,7 @@ typedef struct s_cmd
 	char				*token;
 	int					cmd_type;
 	int					cmd_end;
+	int					has_quote;
 	struct s_env_key	*env_key;
 	struct s_cmd		*next;
 }	t_cmd;
@@ -88,7 +89,6 @@ int			get_line(char **line);
 t_cmd		*init_cmd(void);
 void		add_cmd(t_cmd **ptr, t_cmd *cmd);
 void		destroy_cmd(t_cmd **ptr);
-int			check_cmd(t_cmd *cmd);
 
 /* env_key.c */
 t_env_key	*init_env_key(void);
@@ -118,7 +118,13 @@ int			is_allow_envpname(char c);
 int			is_unspecified_char(char c);
 
 /* padding.c */
-void	check_padding(t_cmd *cmd, t_env *env, int pre);
+void		check_padding(t_cmd *cmd, t_env *env, int pre);
+
+/* check.c */
+int			is_redirection_node(t_cmd *node);
+int			is_pipe_node(t_cmd *node);
+int			is_heredoc_node(t_cmd *node);
+int			check_cmd(t_cmd *cmd);
 
 /* exec_line.c */
 int			exec_line(t_cmd *head, t_env **env, int exitcode);
@@ -131,7 +137,6 @@ int			ft_execvpe(char *cmd, char **arg, t_env **env);
 
 /* redirection.c */
 void		chk_rdtarget(t_cmd *node);
-int			is_redirection_node(t_cmd *node);
 int			store_rdinfo(t_cmd *node, t_rdinfo *rd, int rdtype);
 int			read_heredoc(t_cmd *node, char *limit);
 

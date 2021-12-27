@@ -6,7 +6,7 @@
 /*   By: taejkim <taejkim@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/11 17:02:02 by kanlee            #+#    #+#             */
-/*   Updated: 2021/12/22 09:28:45 by kanlee           ###   ########.fr       */
+/*   Updated: 2021/12/27 18:13:40 by taejkim          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -65,7 +65,7 @@ t_cmd	*has_pipe(t_cmd *node)
 {
 	while (node != NULL)
 	{
-		if (node->next == NULL || ft_strequ(node->next->token, "|"))
+		if (node->next == NULL || is_pipe_node(node->next))
 		{
 			node->cmd_end = 1;
 			return (node->next);
@@ -79,7 +79,7 @@ t_cmd	*has_heredoc(t_cmd *node)
 {
 	while (node != NULL)
 	{
-		if (node->next != NULL && ft_strequ(node->next->token, "<<"))
+		if (node->next != NULL && is_heredoc_node(node->next))
 			return (node->next);
 		node = node->next;
 	}

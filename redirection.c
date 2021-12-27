@@ -6,7 +6,7 @@
 /*   By: taejkim <taejkim@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/12 20:53:33 by kanlee            #+#    #+#             */
-/*   Updated: 2021/12/22 09:29:30 by kanlee           ###   ########.fr       */
+/*   Updated: 2021/12/27 18:04:59 by taejkim          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,19 +16,6 @@
 #include <errno.h>
 #include "minishell.h"
 #include "libft/libft.h"
-
-int	is_redirection_node(t_cmd *node)
-{
-	if (ft_strequ(node->token, ">"))
-		return (RD_WRITE);
-	if (ft_strequ(node->token, ">>"))
-		return (RD_APPEND);
-	if (ft_strequ(node->token, "<"))
-		return (RD_READ);
-	if (ft_strequ(node->token, "<<"))
-		return (RD_HEREDOC);
-	return (NONE);
-}
 
 static int	open_target(int rdtype, char *rdtarget)
 {

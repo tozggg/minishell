@@ -6,7 +6,7 @@
 /*   By: taejkim <taejkim@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/19 20:07:32 by taejkim           #+#    #+#             */
-/*   Updated: 2021/12/26 21:15:38 by taejkim          ###   ########.fr       */
+/*   Updated: 2021/12/27 18:06:38 by taejkim          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -84,6 +84,7 @@ static char	*start_quote(t_cmd *cmd, char *line, int *err_flag)
 {
 	char	quote;
 
+	cmd->has_quote = 1;
 	quote = *line;
 	++line;
 	while (*line)
