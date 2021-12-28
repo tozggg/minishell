@@ -6,17 +6,16 @@
 /*   By: taejkim <taejkim@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/17 03:40:42 by taejkim           #+#    #+#             */
-/*   Updated: 2021/12/26 08:14:16 by kanlee           ###   ########.fr       */
+/*   Updated: 2021/12/28 12:43:08 by kanlee           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <stdlib.h>
 #include <unistd.h>
+#include <string.h>
 #include <sys/wait.h>
 #include "minishell.h"
 #include "libft/libft.h"
-#include <stdio.h>
-#include <string.h>
 
 void	error_out(char *str)
 {

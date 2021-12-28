@@ -6,7 +6,7 @@
 /*   By: taejkim <taejkim@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/12 20:53:33 by kanlee            #+#    #+#             */
-/*   Updated: 2021/12/27 18:04:59 by taejkim          ###   ########.fr       */
+/*   Updated: 2021/12/28 12:39:56 by kanlee           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,6 +32,8 @@ static int	open_target(int rdtype, char *rdtarget)
 	return (fd);
 }
 
+/* if read / write redirection is already set, ignore former
+*/
 int	store_rdinfo(t_cmd *node, t_rdinfo *rd, int rdtype)
 {
 	char	*rdtarget;
@@ -46,14 +48,12 @@ int	store_rdinfo(t_cmd *node, t_rdinfo *rd, int rdtype)
 	}
 	if (rdtype == RD_WRITE || rdtype == RD_APPEND)
 	{
-		// if write redirection is already set, ignore former
 		if (rd->write != STDOUT_FILENO)
 			close(rd->write);
 		rd->write = fd;
 	}
 	if (rdtype == RD_READ || rdtype == RD_HEREDOC)
 	{
-		// if read redirection is already set, ignore former
 		if (rd->read != STDIN_FILENO)
 			close(rd->read);
 		rd->read = fd;

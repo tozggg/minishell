@@ -6,7 +6,7 @@
 /*   By: taejkim <taejkim@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/11 17:13:43 by kanlee            #+#    #+#             */
-/*   Updated: 2021/12/25 20:38:45 by kanlee           ###   ########.fr       */
+/*   Updated: 2021/12/28 12:39:37 by kanlee           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -64,7 +64,6 @@ static int	execute_command(t_cmd *node, t_rdinfo rd, t_pipeinfo pipeinfo,
 	}
 	else if (pid == 0)
 		child_process(av, rd, pipeinfo, env);
-	// parent
 	if (rd.write != STDOUT_FILENO)
 		close(rd.write);
 	if (rd.read != STDIN_FILENO)
