@@ -28,7 +28,7 @@ SRCS	= main.c \
 		  main_debug.c
 HEADERS = minishell.h
 OBJS 	= $(SRCS:.c=.o)
-CFLAGS	= -Wall -Wextra
+CFLAGS	= -Wall -Wextra -Werror
 LDLIBS	= -lreadline -Llibft -lft
 
 UNAME := $(shell uname)
